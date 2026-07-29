@@ -9,5 +9,6 @@ void startup(Registers *state) {
             if (status->userdata != 0) status->userdata -= 1;
             else continue;
         } else continue;
+
     }
 }
