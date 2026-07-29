@@ -93,5 +93,6 @@ MIPS_Instruction_Handler cop0_table1[16] {
 
 MIPS_Instruction_Handler *target_handler(MIPS_Instruction_Handler *table, uint8_t Index);
 void RI_exception(uint32_t instr, Registers *state);
+void SC_exception(uint32_t instr, Registers *state);
 
 #endif
