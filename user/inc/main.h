@@ -6,15 +6,14 @@
 #include <stdint.h>
 #include "memory.h"
 #include "scb.h"
-#include "stm32f042_memory.h"
-#include "ahb/gpio_register.h"
+#include "stm32g474_memory.h"
+// #include "ahb/gpio_register.h"
 
 __attribute__((aligned(512))) __USED __attribute__((section(".ramvector")))
 uint32_t ram_vector_table[86];
-
 extern uint32_t g_pfnVectors[];
 
-#ifndef _STM32F042_MEMORY_H
+#ifdef _STM32G474VET6_MEMORY_H
 __STATIC_FORCEINLINE void _vector_to_ram(void) {
     uint32_t *flash_vector = g_pfnVectors;
 

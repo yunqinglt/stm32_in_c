@@ -16,7 +16,7 @@
             "label": "Start QEMU Simple",
             "type": "shell",
             "isBackground": true,
-            "command": "qemu-system-arm.exe -M netduinoplus2 -gdb tcp::9001 -S -kernel ${workspaceFolder}/build/asm_stm32.elf",
+            "command": "qemu-system-arm.exe -M netduino2 -gdb tcp::9001 -S -kernel ${workspaceFolder}/build/asm_stm32.elf",
             "presentation": {
                 "echo": true,
                 "reveal": "always",

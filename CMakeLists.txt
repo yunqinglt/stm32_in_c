@@ -48,8 +48,8 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
 file(GLOB user_src
     "${CMAKE_CURRENT_SOURCE_DIR}/user/src/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/user/src/cortex_m0/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/user/src/cortex_m0/*/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/user/src/cortex_m4/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/user/src/cortex_m4/*/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/user/lib/*/*.c"
 #        "${CMAKE_CURRENT_SOURCE_DIR}/user/lib/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c"
 )
@@ -58,8 +58,8 @@ target_sources(${PROJECT_NAME} PRIVATE ${user_src})
 
 target_include_directories(asm_stm32 PRIVATE 
     user/inc
-    user/src/cortex_m0
-    user/src/cortex_m0/STM32F042C6T6
+    user/src/cortex_m4
+    user/src/cortex_m4/STM32G474VET6
 )
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD

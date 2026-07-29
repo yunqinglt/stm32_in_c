@@ -5,13 +5,11 @@
 #include "registers.h"
 #include "op.h"
 
-typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
-
 MIPS_Instruction_Handler op_table[64] = {
     [0x00] = special1_handler,
 
     [0x02] = op_j,
-    [0x03] = op_jal
+    [0x03] = op_jal,
     [0x04] = op_beq,
     [0x05] = op_bne,
     [0x08] = op_addi,
@@ -23,7 +21,7 @@ MIPS_Instruction_Handler op_table[64] = {
     [0x0f] = op_lui,
 };
 
-MIPS_Instruction_Handler special1_table[64] {
+MIPS_Instruction_Handler special1_table[64] = {
     [0x00] = op_sll,
     [0x02] = op_srl,          // rd <- 0^mask | rt[31..mask]
     [0x03] = op_sra,

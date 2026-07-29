@@ -2,6 +2,7 @@
 #define _OP_H
 
 #include "registers.h"
+#include "instru.h"
 
 // R-Type
 #define getop(instr)    (instr >> 26)           // op_code[31..26]
