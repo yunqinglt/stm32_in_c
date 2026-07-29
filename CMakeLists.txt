@@ -24,6 +24,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     user/inc/compiler.h
 
     ${user_src}
+    user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h
 )
 
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE

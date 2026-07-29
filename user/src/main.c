@@ -3,8 +3,6 @@
 #define _RCC                (_AHB1 + 0x3800)
 #define RCC_AHB1ENR  (*(__IO uint32_t *)(_RCC + 0x30))
 
-
-
 int main(void) {
     
     // _vector_to_ram();
@@ -13,10 +11,10 @@ int main(void) {
 
     RCC_AHB1ENR |= (1 << 0);
 
-    __gpio_set_port_mode(GPIOA, 1, 7);
-    __gpio_set_output_mode(GPIOA, 0, 7);
-    __gpio_set_output_speed(GPIOA, 0, 7);
-    __gpio_set_output_pull(GPIOA, 1, 7);
+    __gpio_set_port_mode(GPIOA, GPIO_PORT_MODE_OUTPUT, 7);
+    __gpio_set_output_mode(GPIOA, GPIO_OUTPUT_PP, 7);
+    __gpio_set_output_speed(GPIOA, GPIO_SPEED_HIGH, 7);
+    __gpio_set_output_pull(GPIOA, GPIO_OUTPUT_PLDN, 7);
     __gpio_set_output_value(GPIOA, 7);
     
     while (1) {

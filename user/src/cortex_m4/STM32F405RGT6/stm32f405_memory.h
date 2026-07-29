@@ -3,16 +3,15 @@
 
 // STM32F405RGT6
 #ifndef _STM32_PERHA
-#define _STM32_PERHA
+#define _STM32_PERHA         0x40000000
 
 #include "memory.h"
 
-#define _STM32_PERH         0x40000000
 #define _AHB3               0xa0000000
-#define _AHB2               (_STM32_PERH + 0x10000000)
-#define _AHB1               (_STM32_PERH + 0x20000)
-#define _APB2               (_STM32_PERH + 0x10000)
-#define _APB1               (_STM32_PERH + 0x0)
+#define _AHB2               (_STM32_PERHA + 0x10000000)
+#define _AHB1               (_STM32_PERHA + 0x20000)
+#define _APB2               (_STM32_PERHA + 0x10000)
+#define _APB1               (_STM32_PERHA + 0x0)
 
 
 // AHB Bus

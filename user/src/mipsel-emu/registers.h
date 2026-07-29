@@ -99,6 +99,26 @@ typedef struct {
                 } cp0r5_n; // N5
             } cp0r5_t;
 
+            union {
+                r32 cp0r6[8];
+                struct {
+                    r32 Wired;
+                    r32 SRSConf0;
+                    r32 SRSConf1;
+                    r32 SRSConf2;
+                    r32 SRSConf3;
+                    r32 SRSConf4;
+                    r32 _pad6[2];
+                } cp0r6_n;
+            } cp0r6_t;
+
+            union {
+                r32 cp0r7[8];
+                struct {
+                    r32 HWREna;
+                    r32 _pad7[7];
+                } cp0r7_n;
+            } cp0r7_t;
 
 
         } byname;

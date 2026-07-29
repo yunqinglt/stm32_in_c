@@ -34,6 +34,32 @@ typedef struct {
 #define GPIOE   ((gpio_t *) GPIOE_Base)
 #define GPIOF   ((gpio_t *) GPIOF_Base)
 
+
+#define GPIO_PORT_MODE_INPUT    0x00
+#define GPIO_PORT_MODE_OUTPUT   0x01
+#define GPIO_PORT_MODE_AF       0x02
+#define GPIO_PORT_MODE_ANALOG   0x03
+
+#define GPIO_OUTPUT_PP          0x00
+#define GPIO_OUTPUT_ODR         0x01
+
+#define GPIO_SPEED_LOW          0x00
+#define GPIO_SPEED_MEDIUM       0x01
+#define GPIO_SPEED_HIGH         0x03
+
+#define GPIO_OUTPUT_NOPULL      0x00
+#define GPIO_OUTPUT_PLUP        0x01
+#define GPIO_OUTPUT_PLDN        0x02
+
+#define GPIO_AF0                0x00
+#define GPIO_AF1                0x01
+#define GPIO_AF2                0x02
+#define GPIO_AF3                0x03
+#define GPIO_AF4                0x04
+#define GPIO_AF5                0x05
+#define GPIO_AF6                0x06
+#define GPIO_AF7                0x07
+
 // 00 = Input mode, 01 = GPO mode, 10 = Alternate function mode, 11 = Analog mode
 __STATIC_FORCEINLINE void __gpio_set_port_mode(gpio_t *GPIO, uint32_t mode, uint32_t pinx) {
     GPIO->MODER[0] = ((GPIO->MODER[0] & ~(0x03 << pinx * 2)) | (mode << pinx * 2));

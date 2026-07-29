@@ -15,5 +15,6 @@
             "group": "Default"
         }
     ],
-    "cmake.buildBeforeRun": false
+    "cmake.buildBeforeRun": false,
+    "workbench.sideBar.location": "right"
 }
