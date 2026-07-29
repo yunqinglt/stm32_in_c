@@ -7,7 +7,7 @@
 
 MIPS_Instruction_Handler op_table[64] = {
     [0x00] = special1_handler,
-
+    [0x01] = regimm_handler,
     [0x02] = op_j,
     [0x03] = op_jal,
     [0x04] = op_beq,
@@ -17,8 +17,14 @@ MIPS_Instruction_Handler op_table[64] = {
 
     [0x0a] = op_slti,
     [0x0b] = op_sltiu,
-
+    [0x0c] = op_andi,
+    [0x0d] = op_ori,
+    [0x0e] = op_xori,
     [0x0f] = op_lui,
+
+    [0x10] = op_cop0_handler,
+
+    [0x14] = op_beql,
 };
 
 MIPS_Instruction_Handler special1_table[64] = {
@@ -26,14 +32,23 @@ MIPS_Instruction_Handler special1_table[64] = {
     [0x02] = op_srl,          // rd <- 0^mask | rt[31..mask]
     [0x03] = op_sra,
     [0x04] = op_sllv,
+
     [0x06] = op_srlv,
     [0x07] = op_srav,
 
+
     [0x08] = op_jr,
     [0x09] = op_jalr,
+    [0x0a] = op_movz,
+    [0x0b] = op_movn,
     [0x0c] = op_syscall,
+    [0x0d] = op_break,
+
+    [0x0f] = op_sync,
+
 
     [0x10] = op_move_from_hi, // rd <- hi
+    [0x11] = op_move_to_hi,
     [0x12] = op_move_from_lo, // rd <- lo
 
     [0x18] = op_mult,
@@ -53,5 +68,30 @@ MIPS_Instruction_Handler special1_table[64] = {
     [0x2b] = op_sltu,
 
 };
+
+
+// | --- COP0 --- |C=1 | - All Zero - | Func |
+//  < --  6   -- >< 1 >< ---  19  --- ><- 6 ->
+MIPS_Instruction_Handler cop0_table0[64] {
+    [0x01] = op_tlbr,
+    [0x02] = op_tlbwi,
+    [0x06] = op_tlbwr,
+    [0x08] = op_tlbp,
+
+    [0x18] = op_eret,
+
+    [0x1f] = op_deret, // Debug Exception Return
+    [0x20] = op_wfe,
+};
+
+// | --- COP0 --- |C=0 | Func | rt | rd | All Zero | Sel |
+// < --  6   --  >< 1 ><- 4 ->< 5 >< 5 >< -- 8 -- ><- 3 ->
+MIPS_Instruction_Handler cop0_table1[16] {
+    [0x00] = op_mfc0,
+    [0x04] = op_mtc0,
+};
+
+MIPS_Instruction_Handler *target_handler(MIPS_Instruction_Handler *table, uint8_t Index);
+void RI_exception(uint32_t instr, Registers *state);
 
 #endif

@@ -36,5 +36,6 @@ void special1_handler(uint32_t instr, Registers *state) {
 
     MIPS_Instruction_Handler handler = special1_table[funct];
 
-    
+    if (handler == NULL) RI_Exception(instr, state);
+    handler(instr, state);
 }

@@ -18,12 +18,12 @@
 // J-Type
 #define gettar(instr)   ((instr >> 0) & 0x03ffff) // target[25..0]
 
-// $0 Specialization
+// $zero Specialization
 #define S0_IS_0(state)  ((state)->gpr[0] = 0)
 
 void op_addu(uint32_t instr, Registers *state);
 void op_move_from_hi(uint32_t instr, Registers *state);
 void op_move_from_lo(uint32_t instr, Registers *state);
-
+void special1_handler(uint32_t instr, Registers *state);
 
 #endif

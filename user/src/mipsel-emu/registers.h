@@ -27,7 +27,7 @@ typedef enum {
     KERNEL,
 } CP0_Status;
 
-typedef struct {
+typedef struct Registers_t{
     r32 gpr[32];
     r32 pc;
 
@@ -86,5 +86,7 @@ typedef struct {
 #define CU30(state)     0x01 // Only CP0 usable
 #define RP(state)       (state->cp0[12][0] & 0x08000000)
 #define FR(state)       (state->cp0[12][0] & 0x04000000)
+#define RE(state)       (state->cp0[12][0] & 0x02000000)
+#define 
 
 #endif
