@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "STM32 ASM Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            // 指向你生成的 ELF 文件[cite: 4]
+            "program": "${workspaceFolder}/build/asm_stm32.elf",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            // 关键：指向你的 STM32CubeCLT 安装路径下的 GDB[cite: 1]
+            "miDebuggerPath": "D:/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // 调试前先执行上面定义的编译任务
+            "preLaunchTask": "Start QEMU Simple",
+            "miDebuggerServerAddress": "localhost:9001"
+        },
+    ]
+}

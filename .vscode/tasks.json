@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: build",
+            "type": "shell",
+            // 自动调用 cmake 进行增量编译
+            "command": "cmake --build ${workspaceFolder}/build --config Debug",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Start QEMU Simple",
+            "type": "shell",
+            "isBackground": true,
+            "command": "qemu-system-arm.exe -M netduinoplus2 -gdb tcp::9001 -S -kernel ${workspaceFolder}/build/asm_stm32.elf",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        }
+    ]
+}

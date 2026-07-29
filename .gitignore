@@ -1,0 +1,4 @@
+# Ignore build artifacts and generated outputs
+build/
+.iis/
+PY_LINK_V2.12.hex

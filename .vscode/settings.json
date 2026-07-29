@@ -1,0 +1,19 @@
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/cmake/gnu-arm-none-eabi.cmake"
+    ],
+    "iis.configDir": "",
+    "svn.ignoreMissingSvnWarning": true,
+    "C_Cpp.errorSquiggles": "disabled",
+    "favorites.resources": [
+        {
+            "filePath": "user\\src\\cortex_m0\\startup.c",
+            "group": "Default"
+        },
+        {
+            "filePath": "user\\src\\cortex_m0\\startup.h",
+            "group": "Default"
+        }
+    ],
+    "cmake.buildBeforeRun": false
+}
