@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
+# You should modify the image size in this file.
 set(LINKER_SCRIPT   "${CMAKE_CURRENT_SOURCE_DIR}/user/src/cortex_m0/STM32F042C6T6/QEMU.ld")
 
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/gnu-arm-none-eabi.cmake")
@@ -54,14 +55,12 @@ file(GLOB user_src
 
 target_sources(${PROJECT_NAME} PRIVATE ${user_src})
 
-# 假设你的 main.h 位于 E:/asm_stm32/user/inc 文件夹下
 target_include_directories(asm_stm32 PRIVATE 
     user/inc
     user/src/cortex_m0
     user/src/cortex_m0/STM32F042C6T6
 )
 
-# 生成 .hex 文件
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O ihex 
             ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf 
@@ -69,7 +68,6 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMENT "Generating HEX file..."
 )
 
-# 如果需要，也可以同时生成 .bin 文件
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O binary 
             ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf 
