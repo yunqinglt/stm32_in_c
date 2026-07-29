@@ -48,3 +48,9 @@ void OV_exception(uint32_t instr, Registers *state) {
     // epc = pc - 4
     state->pc = 0x80000180;
 }
+
+void Reset_exception(uint32_t instr, Registers *state) {
+    (void) instr;
+
+    
+}

@@ -82,11 +82,39 @@ typedef struct Registers_t{
 
 } Registers;
 
+
 // Behavior for Status (cp0r12 Select 0)
 #define CU30(state)     0x01 // Only CP0 usable
-#define RP(state)       (state->cp0[12][0] & 0x08000000)
-#define FR(state)       (state->cp0[12][0] & 0x04000000)
-#define RE(state)       (state->cp0[12][0] & 0x02000000)
-#define 
+#define RP(state)       (state->cp0.regs[12][0] & 0x08000000)
+#define FR(state)       0 // (state->cp0.regs[12][0] & 0x04000000)
+#define RE(state)       (state->cp0.regs[12][0] & 0x02000000)
+
+#define MX(state)       0 // 0x01000000
+
+#define BEV(state)      (state->cp0.regs[12][0] & 0x00400000)
+
+#define TS(state)       0 // 0x00200000
+
+#define SR(state)       (state->cp0.regs[12][0] & 0x00100000)
+#define NMI(state)      (state->cp0.regs[12][0] & 0x00080000)
+
+// #define INT(state)      (state->cp0.regs[12][0] & 0x0000fc00)
+// #define IM(state)       (state->cp0.regs[12][0] & 0x00000300)
+
+#define IM(state)       (state->cp0.regs[12][0] & 0x0000ff00)
+
+#define KX(state)       0 // unusable in MIPS32
+#define SX(state)       0
+#define UX(state)       0
+
+#define KSU(state)      (state->cp0.regs[12][0] & 0x00000018)
+#define ERL(state)      (state->cp0.regs[12][0] & 0x00000004)
+#define EXL(state)      (state->cp0.regs[12][0] & 0x00000002)
+#define IE(state)       (state->cp0.regs[12][0] & 0x00000001)
+
+#define GET_CPU_MODE(state) \
+    ((ERL(state) || EXL(state)) ? KERNEL : \
+    ((KSU(state) == 0x10) ? USER : KERNEL))
+
 
 #endif
