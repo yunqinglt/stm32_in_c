@@ -9,6 +9,13 @@ typedef enum {
     STEPPING,
     HALTING,
 } vm_state;
+typedef struct {
+    vm_state state;
+    union {
+        uint32_t u_ud;
+        void *p_ud;
+    } userdata;
+} vmstate_pointer;
 
 typedef enum {
     USER,
@@ -20,6 +27,7 @@ typedef struct {
     uint32_t gpr[32];
     uint32_t pc;
     uint32_t cp0[32];
+    
 
     struct {
         uint32_t entryhi;
@@ -30,7 +38,6 @@ typedef struct {
 
     uint32_t hi;
     uint32_t lo;
-    uint8_t exl_active;
 
 } Registers;
 
