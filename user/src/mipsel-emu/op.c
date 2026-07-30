@@ -1,5 +1,41 @@
 #include "op.h"
 
+// Near 256MB Jump
+void op_j(uint32_t instr, Registers *state) {
+    uint32_t target = gettar(instr);
+
+    state->pc = ((state->pc & 0xf0000000) | (target << 2)); // only fetch the 31..28 of PC
+}
+
+// Near 256MB Jump and place return address
+void op_jal(uint32_t instr, Registers *state) {
+    uint32_t target = gettar(instr);
+
+    state->gpr[31] = state->pc + 8;
+    state->pc = ((state->pc & 0xf0000000) | (target << 2));
+}
+
+// Branch on Equal
+void op_beq(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint16_t imm = getimm(instr);
+
+    if (state->gpr[rs] == state->gpr[rt]) {
+        state->pc = state->pc + 4 + sign_extend(imm);
+    }
+}
+
+void op_bne(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint16_t imm = getimm(instr);
+
+    if (state->gpr[rs] != state->gpr[rt]) {
+        state->pc = state->pc + 4 + sign_extend(imm);
+    }
+}
+
 void op_addu(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
@@ -74,12 +110,21 @@ void delta(uint32_t instr, Registers *state) {
     state->pc = 0x80000180;
 }
 
-// TODO: special1_handler
-// void special1_handler(uint32_t instr, Registers *state) {
-//     uint8_t funct = getfunc(instr);
+void regimm_handler(uint32_t instr, Registers *state) {
+    uint8_t rt = getrt(instr);
 
-//     MIPS_Instruction_Handler handler = special1_table[funct];
+    MIPS_Instruction_Handler handler = regimm_table[rt];
 
-//     if (handler == NULL) RI_Exception(instr, state);
-//     handler(instr, state);
-// }
+    // 100% Hit
+    handler(instr, state);
+}
+
+
+void special1_handler(uint32_t instr, Registers *state) {
+    uint8_t funct = getfunc(instr);
+
+    MIPS_Instruction_Handler handler = special1_table[funct];
+
+    // 100% Hit
+    handler(instr, state);
+}

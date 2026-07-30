@@ -4,6 +4,10 @@
 #include "registers.h"
 #include "instru.h"
 
+// Sign extend
+#define sign_extend(offset)    \
+    (offset >> 15) ? ((offset << 2) | 0xfffc0000) : ((offset << 2) | 0x00000000)
+
 // R-Type
 #define getop(instr)    (instr >> 26)           // op_code[31..26]
 #define getrs(instr)    ((instr >> 21) & 0x1f)  // rs[25..21]
@@ -21,6 +25,11 @@
 // $zero Specialization
 #define S0_IS_0(state)  ((state)->gpr[0] = 0)
 
+void op_j(uint32_t instr, Registers *state);
+void op_jal(uint32_t instr, Registers *state);
+void op_beq(uint32_t instr, Registers *state);
+void op_bne(uint32_t instr, Registers *state);
+
 void op_addu(uint32_t instr, Registers *state);
 void op_move_from_hi(uint32_t instr, Registers *state);
 void op_move_from_lo(uint32_t instr, Registers *state);
@@ -29,6 +38,7 @@ void op_multu(uint32_t instr, Registers *state);
 
 void delta(uint32_t instr, Registers *state);
 
-// void special1_handler(uint32_t instr, Registers *state);
+void regimm_handler(uint32_t instr, Registers *state);
+void special1_handler(uint32_t instr, Registers *state);
 
 #endif
