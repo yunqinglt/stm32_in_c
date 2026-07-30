@@ -58,6 +58,22 @@ void op_multu(uint32_t instr, Registers *state) {
     state->lo = (uint32_t) (tmp & 0xffffffff);
 }
 
+void delta(uint32_t instr, Registers *state) {
+    uint8_t opcode = instr >> 26;
+    uint8_t cop_id = opcode & 0x03;
+
+    state->cp0.byname.cp0r13_t.cp0r13_n.Cause &= ~((0x1f << 2) | (0x3 << 28)); // ExcCode & Coprocessor number
+    
+    state->cp0.byname.cp0r13_t.cp0r13_n.Cause |= (EXC_CpU << 2);
+    
+    state->cp0.byname.cp0r13_t.cp0r13_n.Cause |= (cop_id << 28);
+
+    state->cp0.byname.cp0r12_t.cp0r12_n.Status |= (1 << 1);
+    state->cp0.byname.cp0r14_t.cp0r14_n.EPC = state->pc;
+    
+    state->pc = 0x80000180;
+}
+
 // TODO: special1_handler
 // void special1_handler(uint32_t instr, Registers *state) {
 //     uint8_t funct = getfunc(instr);

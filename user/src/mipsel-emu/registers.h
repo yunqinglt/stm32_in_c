@@ -130,4 +130,6 @@ typedef struct Registers_t {
 #define PRID_OPT        ((uint8_t) "Y" << 24)
 
 
+__static_inline uint32_t pfn_translate(uint32_t target, Registers *state);
+
 #endif

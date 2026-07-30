@@ -78,7 +78,25 @@ MIPS_Instruction_Handler op_table[64] = {
     [0x1f] = special3_handler,
 
     [0x20] = op_lb,
-    
+    [0x21] = op_lh,
+    [0x22] = op_lwl,
+    [0x23] = op_lw,
+    [0x24] = op_lbu,
+    [0x25] = op_lhu,
+    [0x26] = op_lwr,
+    [0x27] = beta,
+
+    [0x28] = op_sb,
+    [0x29] = op_sh,
+    [0x2a] = op_swl,
+    [0x2b] = op_sw,
+    [0x2c] = beta,
+    [0x2d] = beta,
+    [0x2e] = op_swr,
+    [0x2f] = op_cache, // complicated
+
+    [0x30] = op_ll,
+    [0x31] = delta,
 };
 
 MIPS_Instruction_Handler special1_table[64] = {

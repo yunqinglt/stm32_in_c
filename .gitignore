@@ -2,3 +2,5 @@
 build/
 .iis/
 PY_LINK_V2.12.hex
+/readelf.txt
+/vmlinuz
