@@ -5,6 +5,36 @@
 #include "registers.h"
 #include "op.h"
 
+#define EXC_INT     0x00
+#define EXC_MOD     0x01
+#define EXC_TLBL    0x02
+#define EXC_TLBS    0x03
+#define EXC_AdEL    0x04
+#define EXC_AdES    0x05
+
+#define EXC_IBE     0x06 // Bus Error Instruction
+#define EXC_DBE     0x07 // Data
+
+#define EXC_SC      0x08 // SysCall
+#define EXC_BP      0x09 // not willing to implement jtag debug
+
+#define EXC_RI      0x0a // Reserved Instruction
+#define EXC_CpU     0x0b // Unusable Coprocessor
+#define EXC_Ov      0x0c // Overflow
+#define EXC_Tr      0x0d // Trap
+
+#define EXC_FPE     0x0f // TODO: Float Point
+
+#define EXC_C2E     0x12 // Not implemented
+#define EXC_DSP     0x16
+
+#define EXC_WATCH   0x17
+#define EXC_MCheck  0x18
+
+#define EXC_THR     0x19
+#define EXC_CAH     0x1e
+
+
 MIPS_Instruction_Handler op_table[64] = {
     [0x00] = special1_handler,
     [0x01] = regimm_handler,
@@ -12,9 +42,11 @@ MIPS_Instruction_Handler op_table[64] = {
     [0x03] = op_jal,
     [0x04] = op_beq,
     [0x05] = op_bne,
-    [0x08] = op_addi,
-    [0x09] = op_addiu,
+    [0x06] = op_blez,
+    [0x07] = op_bgtz,
 
+    [0x08] = op_addi,
+    [0x09] = op_addiu,  // rt = rs + imm
     [0x0a] = op_slti,
     [0x0b] = op_sltiu,
     [0x0c] = op_andi,
@@ -23,8 +55,30 @@ MIPS_Instruction_Handler op_table[64] = {
     [0x0f] = op_lui,
 
     [0x10] = op_cop0_handler,
+    
+    [0x11] = delta, // Unusable Coprocessor
+    [0x12] = delta,
+    [0x13] = delta,
 
     [0x14] = op_beql,
+    [0x15] = op_bnel,
+    [0x16] = op_blezl,
+    [0x17] = op_bgtzl,
+
+    [0x18] = beta, // Reversed Instruction
+    [0x19] = beta,
+    [0x1a] = beta,
+    [0x1b] = beta,
+
+    [0x1c] = special2_handler,
+    [0x1d] = op_jalx,
+
+    [0x1e] = beta,
+
+    [0x1f] = special3_handler,
+
+    [0x20] = op_lb,
+    
 };
 
 MIPS_Instruction_Handler special1_table[64] = {

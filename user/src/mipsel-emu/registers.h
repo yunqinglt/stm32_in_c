@@ -8,29 +8,23 @@
 typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
 
 typedef enum {
+    RESET,
     RUNNING,
     STEPPING,
     HALTING,
-} vm_state;
+} cpu_state;
 
 typedef struct {
-    vm_state state;
-    union {
-        uint32_t u_ud;
-        void *p_ud;
-    } userdata;
-} vmstate_pointer;
+    cpu_state state;
+    // This is struct pointer for data essential in any state
+    Registers *cpu_ctx;
+    uint32_t steps;
+    uint64_t clock; // clock rate
+} vmstate_t;
 
-typedef enum {
-    USER,
-    SUPERVISOR,
-    KERNEL,
-} CP0_Status;
-
-typedef struct Registers_t{
+typedef struct Registers_t {
     r32 gpr[32];
     r32 pc;
-
     // uint32_t cp0[32];
     union {
         r32 regs[32][8];
@@ -51,7 +45,7 @@ typedef struct Registers_t{
             union { r32 cp0r13[8]; struct { r32 Cause; r32 _pad13[7]; } cp0r13_n; } cp0r13_t;
             union { r32 cp0r14[8]; struct { r32 EPC; r32 _pad14[7]; } cp0r14_n; } cp0r14_t;
             union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } cp0r15_n; } cp0r15_t;
-            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r32 Config4; r32 Config5; r32 _pad16[2]; } cp0r16_n; } cp0r16_t;
+            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r32 Config4; r32 Config5; r32 _pad16[2]; } cp0r16_n; } cp0r16_t; // R-only
             union { r32 cp0r17[8]; struct { r32 LLAddr; r32 _pad17[7]; } cp0r17_n; } cp0r17_t;
             union { r32 cp0r18[8]; struct { r32 WatchLo[8]; } cp0r18_n; } cp0r18_t;
             union { r32 cp0r19[8]; struct { r32 WatchHi[8]; } cp0r19_n; } cp0r19_t;
@@ -85,15 +79,15 @@ typedef struct Registers_t{
 
 // Behavior for Status (cp0r12 Select 0)
 #define CU30(state)     0x01 // Only CP0 usable
-#define RP(state)       (state->cp0.regs[12][0] & 0x08000000)
+#define RP(state)       0 // (state->cp0.regs[12][0] & 0x08000000)
 #define FR(state)       0 // (state->cp0.regs[12][0] & 0x04000000)
-#define RE(state)       (state->cp0.regs[12][0] & 0x02000000)
+#define RE(state)       0 // (state->cp0.regs[12][0] & 0x02000000)
 
 #define MX(state)       0 // 0x01000000
 
 #define BEV(state)      (state->cp0.regs[12][0] & 0x00400000)
 
-#define TS(state)       0 // 0x00200000
+#define TS(state)       (state->cp0.regs[12][0] & 0x00200000) // when Machine Check Exception raised
 
 #define SR(state)       (state->cp0.regs[12][0] & 0x00100000)
 #define NMI(state)      (state->cp0.regs[12][0] & 0x00080000)
@@ -115,6 +109,25 @@ typedef struct Registers_t{
 #define GET_CPU_MODE(state) \
     ((ERL(state) || EXL(state)) ? KERNEL : \
     ((KSU(state) == 0x10) ? USER : KERNEL))
+
+
+
+// Behavior for Cause (cp0r13 select 0)
+#define BD(state)       0 // TODO: (state->cp0.regs[13][0] & 0x80000000)
+#define TI(state)       (state->cp0.regs[13][0] & 0x40000000)
+#define CE(state)       (state->cp0.regs[13][0] & 0x30000000)
+
+#define DC(state)       0
+#define PCI(state)      0
+
+
+
+
+
+#define INIT_STATUS     0x10400004
+#define INIT_RANDOM     0x3f
+
+#define PRID_OPT        ((uint8_t) "Y" << 24)
 
 
 #endif

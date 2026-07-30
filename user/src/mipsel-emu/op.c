@@ -31,11 +31,39 @@ void op_srl(uint32_t instr, Registers *state) {
     // To be implemented
 }
 
-void special1_handler(uint32_t instr, Registers *state) {
-    uint8_t funct = getfunc(instr);
+void op_subu(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
 
-    MIPS_Instruction_Handler handler = special1_table[funct];
-
-    if (handler == NULL) RI_Exception(instr, state);
-    handler(instr, state);
+    state->gpr[rd] = state->gpr[rs] - state->gpr[rt];
+    S0_IS_0(state);
 }
+
+void op_addiu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint16_t imm = getimm(instr);
+
+    state->gpr[rt] = state->gpr[rs] + imm;
+    S0_IS_0(state);
+}
+
+void op_multu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint64_t tmp = state->gpr[rs] * state->gpr[rt];
+
+    state->hi = (uint32_t) (tmp >> 32);
+    state->lo = (uint32_t) (tmp & 0xffffffff);
+}
+
+// TODO: special1_handler
+// void special1_handler(uint32_t instr, Registers *state) {
+//     uint8_t funct = getfunc(instr);
+
+//     MIPS_Instruction_Handler handler = special1_table[funct];
+
+//     if (handler == NULL) RI_Exception(instr, state);
+//     handler(instr, state);
+// }

@@ -24,6 +24,9 @@
 void op_addu(uint32_t instr, Registers *state);
 void op_move_from_hi(uint32_t instr, Registers *state);
 void op_move_from_lo(uint32_t instr, Registers *state);
-void special1_handler(uint32_t instr, Registers *state);
+void op_addiu(uint32_t instr, Registers *state);
+void op_multu(uint32_t instr, Registers *state);
+
+// void special1_handler(uint32_t instr, Registers *state);
 
 #endif
