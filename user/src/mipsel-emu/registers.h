@@ -4,7 +4,7 @@
 #include "compiler.h"
 #include <stdint.h>
 
-#define r32     uint32_t
+typedef r32     uint32_t
 typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
 
 typedef enum {
@@ -25,6 +25,7 @@ typedef struct {
 typedef struct Registers_t {
     r32 gpr[32];
     r32 pc;
+    r32 next_pc; // flush pc at the tail of loop
     // uint32_t cp0[32];
     union {
         r32 regs[32][8];
@@ -77,59 +78,109 @@ typedef struct Registers_t {
 } Registers;
 
 
-// Behavior for Status (cp0r12 Select 0)
-#define CU30(state)     0x01 // Only CP0 usable
-#define RP(state)       0 // (state->cp0.regs[12][0] & 0x08000000)
-#define FR(state)       0 // (state->cp0.regs[12][0] & 0x04000000)
-#define RE(state)       0 // (state->cp0.regs[12][0] & 0x02000000)
+#define GET_BITFIELD(reg, pos, len) \
+    (((reg) >> (pos)) & ((1U << (len)) - 1))
 
-#define MX(state)       0 // 0x01000000
+#define SET_BITFIELD(reg, pos, len, val) \
+    (((reg) & ~(((1U << (len)) - 1) << (pos))) | (((val) & ((1U << (len)) - 1)) << (pos)))
 
-#define BEV(state)      (state->cp0.regs[12][0] & 0x00400000)
+// CP0 Register 12 (Status) Bitfield Definitions
+#define CP0_STATUS_CU_POS       28
+#define CP0_STATUS_CU_LEN       4
+#define CP0_STATUS_RP_POS       27
+#define CP0_STATUS_RP_LEN       1
+#define CP0_STATUS_FR_POS       26
+#define CP0_STATUS_FR_LEN       1
+#define CP0_STATUS_RE_POS       25
+#define CP0_STATUS_RE_LEN       1
+#define CP0_STATUS_MX_POS       24
+#define CP0_STATUS_MX_LEN       1
+#define CP0_STATUS_PX_POS       23
+#define CP0_STATUS_PX_LEN       1
+#define CP0_STATUS_BEV_POS      22
+#define CP0_STATUS_BEV_LEN      1
+#define CP0_STATUS_TS_POS       21
+#define CP0_STATUS_TS_LEN       1
+#define CP0_STATUS_SR_POS       20
+#define CP0_STATUS_SR_LEN       1
+#define CP0_STATUS_NMI_POS      19
+#define CP0_STATUS_NMI_LEN      1
+#define CP0_STATUS_IM_POS       8
+#define CP0_STATUS_IM_LEN       8
+#define CP0_STATUS_KX_POS       7
+#define CP0_STATUS_KX_LEN       1
+#define CP0_STATUS_SX_POS       6
+#define CP0_STATUS_SX_LEN       1
+#define CP0_STATUS_UX_POS       5
+#define CP0_STATUS_UX_LEN       1
+#define CP0_STATUS_KSU_POS      3
+#define CP0_STATUS_KSU_LEN      2
+#define CP0_STATUS_ERL_POS      2
+#define CP0_STATUS_ERL_LEN      1
+#define CP0_STATUS_EXL_POS      1
+#define CP0_STATUS_EXL_LEN      1
+#define CP0_STATUS_IE_POS       0
+#define CP0_STATUS_IE_LEN       1
 
-#define TS(state)       (state->cp0.regs[12][0] & 0x00200000) // when Machine Check Exception raised
-
-#define SR(state)       (state->cp0.regs[12][0] & 0x00100000)
-#define NMI(state)      (state->cp0.regs[12][0] & 0x00080000)
-
-// #define INT(state)      (state->cp0.regs[12][0] & 0x0000fc00)
-// #define IM(state)       (state->cp0.regs[12][0] & 0x00000300)
-
-#define IM(state)       (state->cp0.regs[12][0] & 0x0000ff00)
-
-#define KX(state)       0 // unusable in MIPS32
-#define SX(state)       0
-#define UX(state)       0
-
-#define KSU(state)      (state->cp0.regs[12][0] & 0x00000018)
-#define ERL(state)      (state->cp0.regs[12][0] & 0x00000004)
-#define EXL(state)      (state->cp0.regs[12][0] & 0x00000002)
-#define IE(state)       (state->cp0.regs[12][0] & 0x00000001)
+#define STATUS_BEV(state)  GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_BEV_POS, CP0_STATUS_BEV_LEN)
+#define STATUS_IM(state)   GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_IM_POS, CP0_STATUS_IM_LEN)
+#define STATUS_KSU(state)  GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_KSU_POS, CP0_STATUS_KSU_LEN)
+#define STATUS_ERL(state)  GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_ERL_POS, CP0_STATUS_ERL_LEN)
+#define STATUS_EXL(state)  GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_EXL_POS, CP0_STATUS_EXL_LEN)
+#define STATUS_IE(state)   GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_IE_POS, CP0_STATUS_IE_LEN)
 
 #define GET_CPU_MODE(state) \
-    ((ERL(state) || EXL(state)) ? KERNEL : \
-    ((KSU(state) == 0x10) ? USER : KERNEL))
+    ((STATUS_ERL(state) || STATUS_EXL(state)) ? KERNEL : \
+    ((STATUS_KSU(state) == 0x2) ? USER : KERNEL))
 
 
+// CP0 Register 13 (Cause) Bitfield Definitions
+#define CP0_CAUSE_BD_POS        31
+#define CP0_CAUSE_BD_LEN        1
+#define CP0_CAUSE_TI_POS        30
+#define CP0_CAUSE_TI_LEN        1
+#define CP0_CAUSE_CE_POS        28
+#define CP0_CAUSE_CE_LEN        2
+#define CP0_CAUSE_DC_POS        27
+#define CP0_CAUSE_DC_LEN        1
+#define CP0_CAUSE_PCI_POS       26
+#define CP0_CAUSE_PCI_LEN       1
+#define CP0_CAUSE_IV_POS        23
+#define CP0_CAUSE_IV_LEN        1
+#define CP0_CAUSE_WP_POS        22
+#define CP0_CAUSE_WP_LEN        1
+#define CP0_CAUSE_IP_POS        8
+#define CP0_CAUSE_IP_LEN        8
+#define CP0_CAUSE_RIPL_POS      10  // EIC 模式下 IP2~IP7 被重定义为 RIPL
+#define CP0_CAUSE_RIPL_LEN      6
+#define CP0_CAUSE_EXCCODE_POS   2
+#define CP0_CAUSE_EXCCODE_LEN   5
 
-// Behavior for Cause (cp0r13 select 0)
-#define BD(state)       0 // TODO: (state->cp0.regs[13][0] & 0x80000000)
-#define TI(state)       (state->cp0.regs[13][0] & 0x40000000)
-#define CE(state)       (state->cp0.regs[13][0] & 0x30000000)
+#define CAUSE_BD(state)         GET_BITFIELD((state)->cp0.byname.cp0r13_t.cp0r13_n.Cause, CP0_CAUSE_BD_POS, CP0_CAUSE_BD_LEN)
+#define CAUSE_IP(state)         GET_BITFIELD((state)->cp0.byname.cp0r13_t.cp0r13_n.Cause, CP0_CAUSE_IP_POS, CP0_CAUSE_IP_LEN)
+#define CAUSE_RIPL(state)       GET_BITFIELD((state)->cp0.byname.cp0r13_t.cp0r13_n.Cause, CP0_CAUSE_RIPL_POS, CP0_CAUSE_RIPL_LEN)
+#define CAUSE_EXCCODE(state)    GET_BITFIELD((state)->cp0.byname.cp0r13_t.cp0r13_n.Cause, CP0_CAUSE_EXCCODE_POS, CP0_CAUSE_EXCCODE_LEN)
 
-#define DC(state)       0
-#define PCI(state)      0
+// CP0 Register 12 Select 2 (SRSCtl) Bitfield Definitions
+#define CP0_SRSCTL_HSS_POS      26
+#define CP0_SRSCTL_HSS_LEN      4
+#define CP0_SRSCTL_EICSS_POS    18
+#define CP0_SRSCTL_EICSS_LEN    4
+#define CP0_SRSCTL_ESS_POS      14
+#define CP0_SRSCTL_ESS_LEN      4
+#define CP0_SRSCTL_PSS_POS      6
+#define CP0_SRSCTL_PSS_LEN      4
+#define CP0_SRSCTL_CSS_POS      0
+#define CP0_SRSCTL_CSS_LEN      4
 
 
-
-
+#define SRSCTL_CSS(state)       GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.SRSCtl, CP0_SRSCTL_CSS_POS, CP0_SRSCTL_CSS_LEN)
 
 #define INIT_STATUS     0x10400004
 #define INIT_RANDOM     0x3f
 
 #define PRID_OPT        ((uint8_t) "Y" << 24)
 
-
-__static_inline uint32_t pfn_translate(uint32_t target, Registers *state);
+__STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state);
 
 #endif
