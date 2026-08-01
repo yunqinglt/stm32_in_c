@@ -5,8 +5,11 @@
 #include "instru.h"
 
 // Sign extend
-#define sign_extend(offset)    \
-    (offset >> 15) ? ((offset << 2) | 0xfffc0000) : ((offset << 2) | 0x00000000)
+#define sign_extend(imm) ((int32_t)(int16_t)(imm))
+
+// Zero extend
+#define zero_extend(offset)    \
+    (offset & 0x0000ffff)
 
 // R-Type
 #define getop(instr)    (instr >> 26)           // op_code[31..26]
@@ -29,7 +32,16 @@ void op_j(uint32_t instr, Registers *state);
 void op_jal(uint32_t instr, Registers *state);
 void op_beq(uint32_t instr, Registers *state);
 void op_bne(uint32_t instr, Registers *state);
+void op_blez(uint32_t instr, Registers *state);
+void op_bgtz(uint32_t instr, Registers *state);
+void op_bgez(uint32_t instr, Registers *state);
 
+void op_slti(uint32_t instr, Registers *state);
+void op_sltiu(uint32_t instr, Registers *state);
+void op_andi(uint32_t instr, Register *state);
+void op_ori(uint32_t instr, Registers *state);
+
+void op_srl(uint32_t instr, Registers *state);
 void op_addu(uint32_t instr, Registers *state);
 void op_move_from_hi(uint32_t instr, Registers *state);
 void op_move_from_lo(uint32_t instr, Registers *state);

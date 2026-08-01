@@ -5,6 +5,9 @@
 #include "registers.h"
 #include "op.h"
 
+#define EXC_RESET   0xfe
+#define EXC_SRES    0xf0
+
 #define EXC_INT     0x00
 #define EXC_MOD     0x01
 #define EXC_TLBL    0x02

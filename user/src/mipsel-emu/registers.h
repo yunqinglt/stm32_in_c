@@ -4,7 +4,7 @@
 #include "compiler.h"
 #include <stdint.h>
 
-typedef r32     uint32_t
+typedef uint32_t    r32;
 typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
 
 typedef enum {
@@ -23,7 +23,7 @@ typedef struct {
 } vmstate_t;
 
 typedef struct Registers_t {
-    r32 gpr[32];
+    r32 gpr[32]; // shadow register set
     r32 pc;
     r32 next_pc; // flush pc at the tail of loop
     // uint32_t cp0[32];
@@ -151,7 +151,7 @@ typedef struct Registers_t {
 #define CP0_CAUSE_WP_LEN        1
 #define CP0_CAUSE_IP_POS        8
 #define CP0_CAUSE_IP_LEN        8
-#define CP0_CAUSE_RIPL_POS      10  // EIC 模式下 IP2~IP7 被重定义为 RIPL
+#define CP0_CAUSE_RIPL_POS      10
 #define CP0_CAUSE_RIPL_LEN      6
 #define CP0_CAUSE_EXCCODE_POS   2
 #define CP0_CAUSE_EXCCODE_LEN   5
@@ -182,5 +182,6 @@ typedef struct Registers_t {
 #define PRID_OPT        ((uint8_t) "Y" << 24)
 
 __STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state);
+__STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info);
 
 #endif

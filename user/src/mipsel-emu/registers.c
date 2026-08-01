@@ -1,8 +1,17 @@
 #include "registers.h"
+#include "exception.h"
 
 
-__static_inline uint32_t pfn_translate(uint32_t target, Registers *state) {
+// op_xx should not do anything when addr == 0
+__STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
+    if (target & 0x03) {
+        // Address unaligned
+        trigger_exception_helper(EXC_AdEL, state, target);
+        return 0;
+    }
+
     if (target >= 0x80000000 && target <= 0xBFFFFFFF) {
+        // no need to translate
         return target & 0x1FFFFFFF;
     }
 
@@ -23,8 +32,18 @@ __static_inline uint32_t pfn_translate(uint32_t target, Registers *state) {
                 uint32_t even_odd_bit = ((pmask | 0x1FFF) + 1) >> 1;
                 uint32_t elo = (target & even_odd_bit) ? elo1 : elo0;
 
+                // !Valid
                 if (!(elo & 0x02)) {
+                    // op_xx should rewrite state->Cause by its type
+                    // TLB Invalid Exception
+                    trigger_exception_helper(EXC_TLBL, state, target);
                     return 0; 
+                }
+
+                // !Dirty
+                if (is_write && !(elo & 0x04)) {
+                    trigger_exception_helper(EXC_MOD, state, target);
+                    return 0;
                 }
 
                 uint32_t pfn = (elo >> 6) & 0xFFFFFF;
@@ -35,5 +54,24 @@ __static_inline uint32_t pfn_translate(uint32_t target, Registers *state) {
             }
         }
     }
+
+    // TLB Refill Exception
+    trigger_exception_helper(EXC_TLBL, state, target);
     return 0;
+}
+
+__STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info) {
+    // 
+
+    switch (exc) {
+        case EXC_RESET:
+            reset_cpu(state);
+            break;
+
+        case EXC_CpU:
+            state->cp0.byname.cp0r13_t.cp0r13_n.Cause = 
+                SET_BITFIELD(state->cp0.byname.cp0r13_t.cp0r13_n.Cause,\
+                     CP0_CAUSE_CE_POS, CP0_CAUSE_CE_LEN, 0x00);
+            break;
+    }
 }

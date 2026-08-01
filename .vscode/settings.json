@@ -2,7 +2,7 @@
     "cmake.configureArgs": [
         "-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/cmake/gnu-arm-none-eabi.cmake"
     ],
-    "iis.configDir": "",
+    "iis.configDir": "${workspaceFolder}\\tools\\sdl-player\\.iis",
     "svn.ignoreMissingSvnWarning": true,
     "C_Cpp.errorSquiggles": "disabled",
     "favorites.resources": [

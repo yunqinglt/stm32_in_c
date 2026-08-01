@@ -4,3 +4,6 @@ build/
 PY_LINK_V2.12.hex
 /readelf.txt
 /vmlinuz
+
+/tools/sdl-player/.vscode/
+/tools/sdl-player/SDL2-2.30.4/
