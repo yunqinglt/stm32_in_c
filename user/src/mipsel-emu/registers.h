@@ -173,6 +173,12 @@ typedef struct Registers_t {
 #define CP0_SRSCTL_CSS_POS      0
 #define CP0_SRSCTL_CSS_LEN      4
 
+// CP0 Register 4 Select 0 (Context)
+#define CP0_CONTEXT_PTEB_POS    23
+#define CP0_CONTEXT_PTEB_LEN    8
+#define CP0_CONTEXT_BVPN2_POS   4
+#define CP0_CONTEXT_BVPN2_LEN   19
+
 
 #define SRSCTL_CSS(state)       GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.SRSCtl, CP0_SRSCTL_CSS_POS, CP0_SRSCTL_CSS_LEN)
 

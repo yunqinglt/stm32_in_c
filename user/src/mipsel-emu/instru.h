@@ -265,6 +265,8 @@ MIPS_Instruction_Handler special3_table[64] = {
 // | --- COP0 --- |C=1 | - All Zero - | Func |
 //  < --  6   -- >< 1 >< ---  19  --- ><- 6 ->
 MIPS_Instruction_Handler cop0_table0[64] = {
+    [0 .. 63] = delta,
+
     [0x01] = op_tlbr,
     [0x02] = op_tlbwi,
     [0x06] = op_tlbwr,
@@ -280,6 +282,7 @@ MIPS_Instruction_Handler cop0_table0[64] = {
 // < --  6   --  >< 1 ><- 4 ->< 5 >< 5 >< -- 8 -- ><- 3 ->
 MIPS_Instruction_Handler cop0_table1[16] = {
     // beta
+    [0 .. 15] = delta,
 
     [0x00] = op_mfc0,
     [0x04] = op_mtc0,

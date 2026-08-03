@@ -7,11 +7,13 @@
     [/] basic mips32 release 2 behavior
     [ ] branch delay
     [ ] virtual mmio device
-    [ ] -   Console
-    [ ] -   Display
-    [ ] shadow register set
+    [ ] ->   UART Console
+    [ ] ->   Display
+    [ ] Multi-Thread Application-Specific Extension
+    [ ] ->   shadow register set
     [ ] virtual debug support
-    [ ] -   GDB
+    [ ] ->   GDB
+
     [-] FPU
 
     So hard!!!!!!!!

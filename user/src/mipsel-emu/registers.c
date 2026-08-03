@@ -1,7 +1,6 @@
 #include "registers.h"
 #include "exception.h"
 
-
 // op_xx should not do anything when addr == 0
 __STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
     if (target & 0x03) {
@@ -61,7 +60,7 @@ __STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state, u
 }
 
 __STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info) {
-    // 
+    // next_pc will be rewrite at this section
 
     switch (exc) {
         case EXC_RESET:
@@ -71,7 +70,23 @@ __STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *stat
         case EXC_CpU:
             state->cp0.byname.cp0r13_t.cp0r13_n.Cause = 
                 SET_BITFIELD(state->cp0.byname.cp0r13_t.cp0r13_n.Cause,\
-                     CP0_CAUSE_CE_POS, CP0_CAUSE_CE_LEN, 0x00);
+                     CP0_CAUSE_CE_POS, CP0_CAUSE_CE_LEN, exc_info);
             break;
+
+        case EXC_AdEL:
+        case EXC_AdES:
+        case EXC_TLBL:
+        case EXC_TLBS:
+            state->cp0.byname.cp0r8_t.cp0r8_n.BadVAddr = exc_info; // BadVAddr
+            state->cp0.byname.cp0r4_t.cp0r4_n.Context =
+                SET_BITFIELD(state->cp0.byname.cp0r4_t.cp0r4_n.Context,\
+                    CP0_CONTEXT_BVPN2_POS, CP0_CONTEXT_BVPN2_LEN, (exc_info >> 13)); // BadVPN2
+
+            state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi = 
+                SET_BITFIELD(state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi,\
+                    13, 19, (exc_info >> 13)); // EntryHi
+            break;
+
+
     }
 }

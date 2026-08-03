@@ -25,6 +25,11 @@
 // J-Type
 #define gettar(instr)   ((instr >> 0) & 0x03ffff) // target[25..0]
 
+// CP0 C[25] == 1 -> table0 else table1
+#define CFLAG(instr)    ((instr >> 25) & 0x01)
+#define getsel(instr)   ((instr >> 0) & 0x07) // sel[2:0]
+
+
 // $zero Specialization
 #define S0_IS_0(state)  ((state)->gpr[0] = 0)
 
@@ -38,8 +43,14 @@ void op_bgez(uint32_t instr, Registers *state);
 
 void op_slti(uint32_t instr, Registers *state);
 void op_sltiu(uint32_t instr, Registers *state);
-void op_andi(uint32_t instr, Register *state);
+void op_andi(uint32_t instr, Registers *state);
 void op_ori(uint32_t instr, Registers *state);
+void op_addi(uint32_t instr, Registers *state);
+void op_xori(uint32_t instr, Registers *state);
+void op_lui(uint32_t instr, Registers *state);
+
+
+
 
 void op_srl(uint32_t instr, Registers *state);
 void op_addu(uint32_t instr, Registers *state);
@@ -49,8 +60,17 @@ void op_addiu(uint32_t instr, Registers *state);
 void op_multu(uint32_t instr, Registers *state);
 
 void delta(uint32_t instr, Registers *state);
+void beta(uint32_t instr, Registers *state);
 
 void regimm_handler(uint32_t instr, Registers *state);
 void special1_handler(uint32_t instr, Registers *state);
+void op_cop0_handler(uint32_t instr, Registers *state);
+
+void op_mfc0(uint32_t instr, Registers *state);
+void op_mtc0(uint32_t instr, Registers *state);
+__ALIAS("delta") void op_rdpgpr(uint32_t instr, Registers *state);
+__ALIAS("delta") void op_wrpgpr(uint32_t instr, Registers *state); // TODO
+void op_mfmc0(uint32_t instr, Registers *state);
+
 
 #endif
