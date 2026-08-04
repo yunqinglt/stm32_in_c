@@ -179,8 +179,141 @@ typedef struct Registers_t {
 #define CP0_CONTEXT_BVPN2_POS   4
 #define CP0_CONTEXT_BVPN2_LEN   19
 
+// #define SRSCTL_CSS(state)       GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.SRSCtl, CP0_SRSCTL_CSS_POS, CP0_SRSCTL_CSS_LEN)
 
-#define SRSCTL_CSS(state)       GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.SRSCtl, CP0_SRSCTL_CSS_POS, CP0_SRSCTL_CSS_LEN)
+// CP0 Register 16 Select 0 (Config0)
+#define CP0_CONF0_M_POS         31
+#define CP0_CONF0_M_LEN         1
+#define CP0_CONF0_K23_POS       28
+#define CP0_CONF0_K23_LEN       3
+#define CP0_CONF0_KU_POS        25
+#define CP0_CONF0_KU_LEN        3
+#define CP0_CONF0_BE_POS        15
+#define CP0_CONF0_BE_LEN        1
+#define CP0_CONF0_AT_POS        13
+#define CP0_CONF0_AT_LEN        2
+#define CP0_CONF0_AR_POS        10
+#define CP0_CONF0_AR_LEN        3
+#define CP0_CONF0_MT_POS        7
+#define CP0_CONF0_MT_LEN        3
+#define CP0_CONF0_K0_POS        0
+#define CP0_CONF0_K0_LEN        3
+
+#define CONF0_M(state)    GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config, CP0_CONF0_M_POS, CP0_CONF0_M_LEN)
+#define CONF0_K23(state)  GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config, CP0_CONF0_K23_POS, CP0_CONF0_K23_LEN)
+#define CONF0_KU(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config, CP0_CONF0_KU_POS, CP0_CONF0_KU_LEN)
+#define CONF0_BE(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config, CP0_CONF0_BE_POS, CP0_CONF0_BE_LEN)
+#define CONF0_AT(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config, CP0_CONF0_AT_POS, CP0_CONF0_AT_LEN)
+#define CONF0_AR(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config, CP0_CONF0_AR_POS, CP0_CONF0_AR_LEN)
+#define CONF0_MT(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config, CP0_CONF0_MT_POS, CP0_CONF0_MT_LEN)
+#define CONF0_K0(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config, CP0_CONF0_K0_POS, CP0_CONF0_K0_LEN)
+
+// CP0 Register 16 Select 1 (Config1)
+#define CP0_CONF1_M_POS         31
+#define CP0_CONF1_M_LEN         1
+#define CP0_CONF1_MMUSIZE_POS   25
+#define CP0_CONF1_MMUSIZE_LEN   6
+#define CP0_CONF1_IS_POS        22
+#define CP0_CONF1_IS_LEN        3
+#define CP0_CONF1_IL_POS        19
+#define CP0_CONF1_IL_LEN        3
+#define CP0_CONF1_IA_POS        16
+#define CP0_CONF1_IA_LEN        3
+#define CP0_CONF1_DS_POS        13
+#define CP0_CONF1_DS_LEN        3
+#define CP0_CONF1_DL_POS        10
+#define CP0_CONF1_DL_LEN        3
+#define CP0_CONF1_DA_POS        7
+#define CP0_CONF1_DA_LEN        3
+#define CP0_CONF1_C2_POS        6
+#define CP0_CONF1_C2_LEN        1
+#define CP0_CONF1_MD_POS        5
+#define CP0_CONF1_MD_LEN        1
+#define CP0_CONF1_PC_POS        4
+#define CP0_CONF1_PC_LEN        1
+#define CP0_CONF1_WR_POS        3
+#define CP0_CONF1_WR_LEN        1
+#define CP0_CONF1_CA_POS        2
+#define CP0_CONF1_CA_LEN        1
+#define CP0_CONF1_EP_POS        1
+#define CP0_CONF1_EP_LEN        1
+#define CP0_CONF1_FP_POS        0
+#define CP0_CONF1_FP_LEN        1
+
+#define CONF1_M(state)        GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_M_POS, CP0_CONF1_M_LEN)
+#define CONF1_MMUSIZE(state)  GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_MMUSIZE_POS, CP0_CONF1_MMUSIZE_LEN)
+#define CONF1_IS(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_IS_POS, CP0_CONF1_IS_LEN)
+#define CONF1_IL(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_IL_POS, CP0_CONF1_IL_LEN)
+#define CONF1_IA(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_IA_POS, CP0_CONF1_IA_LEN)
+#define CONF1_DS(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_DS_POS, CP0_CONF1_DS_LEN)
+#define CONF1_DL(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_DL_POS, CP0_CONF1_DL_LEN)
+#define CONF1_DA(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_DA_POS, CP0_CONF1_DA_LEN)
+#define CONF1_C2(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_C2_POS, CP0_CONF1_C2_LEN)
+#define CONF1_MD(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_MD_POS, CP0_CONF1_MD_LEN)
+#define CONF1_PC(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_PC_POS, CP0_CONF1_PC_LEN)
+#define CONF1_WR(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_WR_POS, CP0_CONF1_WR_LEN)
+#define CONF1_CA(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_CA_POS, CP0_CONF1_CA_LEN)
+#define CONF1_EP(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_EP_POS, CP0_CONF1_EP_LEN)
+#define CONF1_FP(state)       GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config1, CP0_CONF1_FP_POS, CP0_CONF1_FP_LEN)
+
+// CP0 Register 16 Select 2 (Config2)
+#define CP0_CONF2_M_POS         31
+#define CP0_CONF2_M_LEN         1
+#define CP0_CONF2_TU_POS        28
+#define CP0_CONF2_TU_LEN        3
+#define CP0_CONF2_TS_POS        24
+#define CP0_CONF2_TS_LEN        4
+#define CP0_CONF2_TL_POS        20
+#define CP0_CONF2_TL_LEN        4
+#define CP0_CONF2_TA_POS        16
+#define CP0_CONF2_TA_LEN        4
+#define CP0_CONF2_SU_POS        12
+#define CP0_CONF2_SU_LEN        4
+#define CP0_CONF2_SS_POS        8
+#define CP0_CONF2_SS_LEN        4
+#define CP0_CONF2_SL_POS        4
+#define CP0_CONF2_SL_LEN        4
+#define CP0_CONF2_SA_POS        0
+#define CP0_CONF2_SA_LEN        4
+
+#define CONF2_M(state)    GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_M_POS, CP0_CONF2_M_LEN)
+#define CONF2_TU(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_TU_POS, CP0_CONF2_TU_LEN)
+#define CONF2_TS(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_TS_POS, CP0_CONF2_TS_LEN)
+#define CONF2_TL(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_TL_POS, CP0_CONF2_TL_LEN)
+#define CONF2_TA(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_TA_POS, CP0_CONF2_TA_LEN)
+#define CONF2_SU(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_SU_POS, CP0_CONF2_SU_LEN)
+#define CONF2_SS(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_SS_POS, CP0_CONF2_SS_LEN)
+#define CONF2_SL(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_SL_POS, CP0_CONF2_SL_LEN)
+#define CONF2_SA(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config2, CP0_CONF2_SA_POS, CP0_CONF2_SA_LEN)
+
+// CP0 Register 16 Select 3 (Config3)
+#define CP0_CONF3_M_POS         31
+#define CP0_CONF3_M_LEN         1
+#define CP0_CONF3_BPG_POS       30
+#define CP0_CONF3_BPG_LEN       1
+#define CP0_CONF3_CMGCR_POS     29
+#define CP0_CONF3_CMGCR_LEN     1
+#define CP0_CONF3_DSPP_POS      10
+#define CP0_CONF3_DSPP_LEN      1
+#define CP0_CONF3_LPA_POS       7
+#define CP0_CONF3_LPA_LEN       1
+#define CP0_CONF3_VEIC_POS      6
+#define CP0_CONF3_VEIC_LEN      1
+#define CP0_CONF3_VINT_POS      5
+#define CP0_CONF3_VINT_LEN      1
+#define CP0_CONF3_SP_POS        4
+#define CP0_CONF3_SP_LEN        1
+#define CP0_CONF3_MT_POS        2
+#define CP0_CONF3_MT_LEN        1
+#define CP0_CONF3_SM_POS        1
+#define CP0_CONF3_SM_LEN        1
+#define CP0_CONF3_TL_POS        0
+#define CP0_CONF3_TL_LEN        1
+
+#define CONF3_M(state)      GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config3, CP0_CONF3_M_POS, CP0_CONF3_M_LEN)
+#define CONF3_VEIC(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config3, CP0_CONF3_VEIC_POS, CP0_CONF3_VEIC_LEN)
+#define CONF3_VINT(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config3, CP0_CONF3_VINT_POS, CP0_CONF3_VINT_LEN)
+#define CONF3_SP(state)     GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config3, CP0_CONF3_SP_POS, CP0_CONF3_SP_LEN)
 
 #define INIT_STATUS     0x10400004
 #define INIT_RANDOM     0x3f

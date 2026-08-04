@@ -66,11 +66,23 @@ void regimm_handler(uint32_t instr, Registers *state);
 void special1_handler(uint32_t instr, Registers *state);
 void op_cop0_handler(uint32_t instr, Registers *state);
 
+void op_tlbr(uint32_t instr, Registers *state);
+void op_tlbwi(uint32_t instr, Registers *state);
+void op_tlbwr(uint32_t instr, Registers *state);
+void op_tlbp(uint32_t instr, Registers *state);
+
 void op_mfc0(uint32_t instr, Registers *state);
 void op_mtc0(uint32_t instr, Registers *state);
 __ALIAS("delta") void op_rdpgpr(uint32_t instr, Registers *state);
 __ALIAS("delta") void op_wrpgpr(uint32_t instr, Registers *state); // TODO
 void op_mfmc0(uint32_t instr, Registers *state);
 
+// posedge of clock -> tail of an inf loop
+__STATIC_FORCEINLINE void decrease_random(Registers *state) {
+    if ((state->cp0.byname.cp0r1_t.cp0r1_n.Random <= (state->cp0.byname.cp0r6_t.cp0r6_n.Wired & 0x3f)) ||
+        (state->cp0.byname.cp0r1_t.cp0r1_n.Random >= 63))
+        state->cp0.byname.cp0r1_t.cp0r1_n.Random = 63;
+    else state->cp0.byname.cp0r1_t.cp0r1_n.Random -= 1;
+}
 
 #endif

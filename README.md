@@ -33,3 +33,26 @@ The repository excludes the following generated files and directories:
 - `build/`
 - `.iis/`
 - `PY_LINK_V2.12.hex`
+
+### MIPS32EL Release 2 Emulator(/user/src/mipsel-emu)
+```C
+// CPU: MIPS32 Little Endian Release 2 no FPU / Version 0.1
+/*
+    Features: 
+    [*] single pipeline
+    [/] basic mips32 release 2 behavior
+    [ ] branch delay
+    [ ] virtual mmio device
+    [ ] ->   UART Console
+    [ ] ->   Display
+    [ ] Multi-Thread Application-Specific Extension
+    [ ] ->   shadow register set
+    [ ] virtual debug support
+    [ ] ->   GDB
+
+    [-] FPU
+
+    So hard!!!!!!!!
+    [-] 5-way pipeline simulation
+*/
+```

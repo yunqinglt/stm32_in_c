@@ -222,16 +222,90 @@ void op_cop0_handler(uint32_t instr, Registers *state) {
     handler(instr, state);
 }
 
+void op_tlbr(uint32_t instr, Registers *state) {
+    uint8_t index = (state->cp0.byname.cp0r0_t.cp0r0_n.Index & 0x0000003f); // [5:0]
 
+    if (index < 64) {
+        uint8_t g = (state->tlb[index].entrylo0 & 1) && (state->tlb[index].entrylo1 & 1);
 
+        state->cp0.regs[5][0] = state->tlb[index].pmask; // PageMask
+        state->cp0.regs[10][0] = state->tlb[index].entryhi; // EntryHi
 
+        state->cp0.regs[2][0] = (state->tlb[index].entrylo0 & ~1U) | g; // EntryLo0
+        state->cp0.regs[3][0] = (state->tlb[index].entrylo1 & ~1U) | g; // EntryLo1
+    }   // else = undefined -> do nothing
+}
+
+void op_tlbwi(uint32_t instr, Registers *state) {
+    uint8_t index = (state->cp0.byname.cp0r0_t.cp0r0_n.Index & 0x0000003f); // [5:0]
+
+    if (index < 64) {
+        uint32_t pmask = state->cp0.regs[5][0];
+        uint8_t g = (state->cp0.regs[2][0] & 1) && (state->cp0.regs[3][0] & 1);
+
+        state->tlb[index].pmask = pmask;
+        state->tlb[index].entryhi = state->cp0.regs[10][0] & ~(pmask & 0x1fffe000);
+
+        state->tlb[index].entrylo0 = (state->cp0.regs[2][0] & ~1U) | g;
+        state->tlb[index].entrylo1 = (state->cp0.regs[3][0] & ~1U) | g;
+    }
+}
+
+void op_tlbwr(uint32_t instr, Registers *state) {
+    uint8_t index = (state->cp0.byname.cp0r1_t.cp0r1_n.Random & 0x3f);
+
+    if (index < 64) {
+        uint32_t pmask = state->cp0.regs[5][0];
+        uint8_t g = (state->cp0.regs[2][0] & 1) && (state->cp0.regs[3][0] & 1);
+
+        state->tlb[index].pmask = pmask;
+        state->tlb[index].entryhi = state->cp0.regs[10][0] & ~(pmask & 0x1fffe000);
+
+        state->tlb[index].entrylo0 = (state->cp0.regs[2][0] & ~1U) | g;
+        state->tlb[index].entrylo1 = (state->cp0.regs[3][0] & ~1U) | g;
+    }
+}
+
+// Probe TLB for matching entry
+void op_tlbp(uint32_t instr, Registers *state) {
+    uint8_t current_asid = state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi & 0xFF;
+    uint8_t matched = 0;
+
+    for (int i = 0; i < 64; ++i) {
+        uint32_t pmask = state->tlb[i].pmask;
+        uint32_t ehi   = state->tlb[i].entryhi;
+        uint32_t elo0  = state->tlb[i].entrylo0;
+        uint32_t elo1  = state->tlb[i].entrylo1;
+
+        uint32_t mask = ~(pmask | 0x1FFF);
+
+        if ((target & mask) == (ehi & mask)) {
+            uint8_t is_global = (elo0 & 1) & (elo1 & 1);
+            if (is_global || (ehi & 0xFF) == current_asid) {
+                matched = i;
+            }
+        }
+    }
+
+    if (matched != 0) {
+        state->cp0.byname.cp0r0_t.cp0r0_n.Index = 
+            SET_BITFIELD(state->cp0.byname.cp0r0_t.cp0r0_n.Index, 0, 6, matched);
+        state->cp0.byname.cp0r0_t.cp0r0_n.Index = 
+            SET_BITFIELD(state->cp0.byname.cp0r0_t.cp0r0_n.Index, 31, 1, 0);
+    }
+    else {
+        // Undefined -> The index field left its value
+        state->cp0.byname.cp0r0_t.cp0r0_n.Index = 
+            SET_BITFIELD(state->cp0.byname.cp0r0_t.cp0r0_n.Index, 31, 1, 1);
+    }
+}
 
 void op_mfc0(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
     uint8_t sel = getsel(instr);
 
-    state->gpr[rt] = state->cp0[rd][sel];
+    state->gpr[rt] = state->cp0.regs[rd][sel];
     S0_IS_0(state);
 }
 
@@ -240,7 +314,7 @@ void op_mtc0(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t sel = getsel(instr);
 
-    state->cp0[rd][sel] = state->gpr[rt];
+    state->cp0.regs[rd][sel] = state->gpr[rt];
 }
 
 // Enable and disable interrupts
@@ -249,17 +323,15 @@ void op_mfmc0(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
 
-    if (rd != 12) trigger_exception_helper(EXC_CpU, state, 0);
+    if (rd != 12) {
+        trigger_exception_helper(EXC_CpU, state, 0);
+    }
 
     state->gpr[rt] = state->cp0.byname.cp0r12_t.cp0r12_n.Status;
-    if ((func >> 5) & 0x01) 
-        state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
-            SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status,
-                CP0_STATUS_IE_POS, CP0_STATUS_IE_LEN, 1);
-    else
-        state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
-            SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status,
-                CP0_STATUS_IE_POS, CP0_STATUS_IE_LEN, 1);
+    uint32_t ie_val = ((func >> 5) & 0x01) ? 1 : 0;
+    state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
+        SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status,\
+            CP0_STATUS_IE_POS, CP0_STATUS_IE_LEN, ie_val);
 
     S0_IS_0(state);
 }

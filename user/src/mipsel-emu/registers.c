@@ -9,6 +9,7 @@ __STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state, u
         return 0;
     }
 
+    // kseg0: 0x8000_0000-0x9fff_ffff, kseg1: 0xa000_0000-0xbfff_ffff
     if (target >= 0x80000000 && target <= 0xBFFFFFFF) {
         // no need to translate
         return target & 0x1FFFFFFF;
@@ -45,10 +46,11 @@ __STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state, u
                     return 0;
                 }
 
+                uint32_t page_offset_mask = even_odd_bit - 1;
+                uint32_t offset = target & page_offset_mask;
                 uint32_t pfn = (elo >> 6) & 0xFFFFFF;
-                uint32_t offset = target & (pmask | 0x1FFF);
 
-                uint32_t pa = ((pfn << 12) & mask) | offset;
+                uint32_t pa = ((pfn << 12) & ~page_offset_mask) | offset;
                 return pa;
             }
         }

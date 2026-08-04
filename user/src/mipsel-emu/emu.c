@@ -11,6 +11,7 @@
     [ ] ->   Display
     [ ] Multi-Thread Application-Specific Extension
     [ ] ->   shadow register set
+    [ ] SmartMIPS Application-Specific Extension
     [ ] virtual debug support
     [ ] ->   GDB
 
