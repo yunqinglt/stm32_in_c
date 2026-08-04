@@ -16,6 +16,8 @@
     [ ] ->   GDB
 
     [-] FPU
+    [-] XPA eXtended Physical Address
+    [*] VPS Variable Page Sizes
 
     So hard!!!!!!!!
     [-] 5-way pipeline simulation

@@ -35,3 +35,35 @@
 #define __BIT_CONCAT(a, b)  __BIT_CONCAT_INTERNAL(a, b)
 
 #define __reserved_bit(n, x)    uint32_t __BIT_CONCAT(__reserved_bit_, n) : x
+
+// Advanced type
+typedef enum {
+    Ok,
+    Err,
+} ResultTag;
+
+typedef struct {
+    ResultTag tag;
+    union {
+        int64_t ok;
+        int64_t reason;
+    } value;
+} Result;
+
+Result OK(int64_t val) {
+    return (Result) {Ok, .value.ok = val};
+}
+
+Result ERR(int64_t val) {
+    return (Result) {Err, .value.reason = val};
+}
+
+// repr: Result
+#define TEST_RESULT(res) (res.tag == Ok)
+
+// use rarely
+#define UNWRAP(res) \
+    { \
+        if (TEST_RESULT(res)) return res.value.ok; \
+        else return res.value.reason; \
+    }

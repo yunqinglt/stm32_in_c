@@ -1,26 +1,12 @@
 #ifndef _REGISTER_H
 #define _REGISTER_H
 
+// Type definition
+
 #include "compiler.h"
 #include <stdint.h>
 
 typedef uint32_t    r32;
-typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
-
-typedef enum {
-    RESET,
-    RUNNING,
-    STEPPING,
-    HALTING,
-} cpu_state;
-
-typedef struct {
-    cpu_state state;
-    // This is struct pointer for data essential in any state
-    Registers *cpu_ctx;
-    uint32_t steps;
-    uint64_t clock; // clock rate
-} vmstate_t;
 
 typedef struct Registers_t {
     r32 gpr[32]; // shadow register set
@@ -75,8 +61,28 @@ typedef struct Registers_t {
     uint32_t hi;
     uint32_t lo;
 
+    uint8_t ISAMode; // Reserved for future use
+    uint8_t ll_bit;
+    uint32_t ll_addr;
+
 } Registers;
 
+typedef enum {
+    RESET,
+    RUNNING,
+    STEPPING,
+    HALTING,
+} cpu_state;
+
+typedef struct {
+    cpu_state state;
+    // This is struct pointer for data essential in any state
+    Registers *cpu_ctx;
+    uint32_t steps;
+    uint64_t clock; // clock rate
+} vmstate_t;
+
+typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
 
 #define GET_BITFIELD(reg, pos, len) \
     (((reg) >> (pos)) & ((1U << (len)) - 1))
@@ -320,7 +326,7 @@ typedef struct Registers_t {
 
 #define PRID_OPT        ((uint8_t) "Y" << 24)
 
-__STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state);
+__STATIC_FORCEINLINE Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write);
 __STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info);
 
 #endif

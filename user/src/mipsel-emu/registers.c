@@ -2,17 +2,17 @@
 #include "exception.h"
 
 // op_xx should not do anything when addr == 0
-__STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
+// -3 = Address Error, -2 = TLB Refill, -1 = TLB Invalid, 0 = TLB Modified
+__STATIC_FORCEINLINE Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
     if (target & 0x03) {
         // Address unaligned
-        trigger_exception_helper(EXC_AdEL, state, target);
-        return 0;
+        return ERR(-3);
     }
 
     // kseg0: 0x8000_0000-0x9fff_ffff, kseg1: 0xa000_0000-0xbfff_ffff
     if (target >= 0x80000000 && target <= 0xBFFFFFFF) {
         // no need to translate
-        return target & 0x1FFFFFFF;
+        return OK(target & 0x1FFFFFFF);
     }
 
     uint8_t current_asid = state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi & 0xFF;
@@ -36,14 +36,12 @@ __STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state, u
                 if (!(elo & 0x02)) {
                     // op_xx should rewrite state->Cause by its type
                     // TLB Invalid Exception
-                    trigger_exception_helper(EXC_TLBL, state, target);
-                    return 0; 
+                    return ERR(-1);
                 }
 
                 // !Dirty
                 if (is_write && !(elo & 0x04)) {
-                    trigger_exception_helper(EXC_MOD, state, target);
-                    return 0;
+                    return ERR(0);
                 }
 
                 uint32_t page_offset_mask = even_odd_bit - 1;
@@ -51,16 +49,16 @@ __STATIC_FORCEINLINE uint32_t pfn_translate(uint32_t target, Registers *state, u
                 uint32_t pfn = (elo >> 6) & 0xFFFFFF;
 
                 uint32_t pa = ((pfn << 12) & ~page_offset_mask) | offset;
-                return pa;
+                return OK(pa);
             }
         }
     }
 
     // TLB Refill Exception
-    trigger_exception_helper(EXC_TLBL, state, target);
-    return 0;
+    return ERR(-2);
 }
 
+// Building
 __STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info) {
     // next_pc will be rewrite at this section
 

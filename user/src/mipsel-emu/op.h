@@ -2,7 +2,8 @@
 #define _OP_H
 
 #include "registers.h"
-#include "instru.h"
+// #include "instru.h"
+#include "exception.h"
 
 // Sign extend
 #define sign_extend(imm) ((int32_t)(int16_t)(imm))
@@ -64,12 +65,18 @@ void beta(uint32_t instr, Registers *state);
 
 void regimm_handler(uint32_t instr, Registers *state);
 void special1_handler(uint32_t instr, Registers *state);
+void special2_handler(uint32_t instr, Registers *state);
 void op_cop0_handler(uint32_t instr, Registers *state);
+void special3_handler(uint32_t instr, Registers *state);
 
 void op_tlbr(uint32_t instr, Registers *state);
 void op_tlbwi(uint32_t instr, Registers *state);
 void op_tlbwr(uint32_t instr, Registers *state);
 void op_tlbp(uint32_t instr, Registers *state);
+void op_eret(uint32_t instr, Registers *state);
+__ALIAS("delta") void op_deret(uint32_t instr, Registers *state);
+__ALIAS("delta") void op_wfe(uint32_t instr, Registers *state);
+
 
 void op_mfc0(uint32_t instr, Registers *state);
 void op_mtc0(uint32_t instr, Registers *state);

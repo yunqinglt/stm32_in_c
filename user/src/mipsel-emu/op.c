@@ -1,4 +1,13 @@
 #include "op.h"
+#include "registers.h"
+#include <stdint.h>
+
+extern MIPS_Instruction_Handler regimm_table[];
+extern MIPS_Instruction_Handler special1_table[];
+extern MIPS_Instruction_Handler special2_table[];
+extern MIPS_Instruction_Handler special3_table[];
+extern MIPS_Instruction_Handler cop0_table0[];
+extern MIPS_Instruction_Handler cop0_table1[];
 
 // Near 256MB Jump
 void op_j(uint32_t instr, Registers *state) {
@@ -172,6 +181,16 @@ void op_lui(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
+// branch likely
+
+void op_lb(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr); // Base
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = offset + state->gpr[rs];
+}
+
 
 
 void op_addiu(uint32_t instr, Registers *state) {
@@ -210,15 +229,6 @@ void regimm_handler(uint32_t instr, Registers *state) {
     MIPS_Instruction_Handler handler = regimm_table[rt];
 
     // 100% Hit
-    handler(instr, state);
-}
-
-void op_cop0_handler(uint32_t instr, Registers *state) {
-    if (CFLAG(instr) == 1)
-        MIPS_Instruction_Handler handler = cop0_table0[getfunc(instr)]; // FUNC[5:0]
-    else
-        MIPS_Instruction_Handler handler = cop0_table1[getrs(instr)]; // RS[25:21]
-
     handler(instr, state);
 }
 
@@ -279,7 +289,7 @@ void op_tlbp(uint32_t instr, Registers *state) {
 
         uint32_t mask = ~(pmask | 0x1FFF);
 
-        if ((target & mask) == (ehi & mask)) {
+        if ((state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi & mask) == (ehi & mask)) {
             uint8_t is_global = (elo0 & 1) & (elo1 & 1);
             if (is_global || (ehi & 0xFF) == current_asid) {
                 matched = i;
@@ -299,6 +309,21 @@ void op_tlbp(uint32_t instr, Registers *state) {
             SET_BITFIELD(state->cp0.byname.cp0r0_t.cp0r0_n.Index, 31, 1, 1);
     }
 }
+
+void op_eret(uint32_t instr, Registers *state) {
+    if (STATUS_ERL(state) == 1) {
+        state->next_pc = state->cp0.byname.cp0r30_t.cp0r30_n.ErrorEPC;
+        state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
+            SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_ERL_POS, CP0_STATUS_ERL_LEN, 0);
+        // Clear flag
+    } else {
+        state->next_pc = state->cp0.byname.cp0r30_t.cp0r30_n.ErrorEPC;
+        state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
+            SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_EXL_POS, CP0_STATUS_EXL_LEN, 0);
+    }
+}
+
+
 
 void op_mfc0(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
@@ -336,11 +361,48 @@ void op_mfmc0(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
+void op_bshfl(uint32_t instr, Registers *state) {
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    if (getrs(instr) == 0x10) {
+        // SEB rd, rt:  GPR[rd] <- SignExtend(GPR[rt][7:0])
+        state->gpr[rd] = sign_extend((uint8_t) state->gpr[rt]);
+    }
+}
+
 void special1_handler(uint32_t instr, Registers *state) {
     uint8_t funct = getfunc(instr);
 
     MIPS_Instruction_Handler handler = special1_table[funct];
 
     // 100% Hit
+    handler(instr, state);
+}
+
+void special2_handler(uint32_t instr, Registers *state) {
+    uint8_t funct = getfunc(instr);
+
+    MIPS_Instruction_Handler handler = special2_table[funct];
+
+    // 100% Hit
+    handler(instr, state);
+}
+
+void special3_handler(uint32_t instr, Registers *state) {
+    uint8_t funct = getfunc(instr);
+
+    MIPS_Instruction_Handler handler = special3_table[funct];
+
+    // 100% Hit
+    handler(instr, state);
+}
+
+void op_cop0_handler(uint32_t instr, Registers *state) {
+    MIPS_Instruction_Handler handler = cop0_table1[getrs(instr)]; // RS[25:21]
+
+    if (CFLAG(instr) == 1)
+        handler = cop0_table0[getfunc(instr)]; // FUNC[5:0]
+
     handler(instr, state);
 }

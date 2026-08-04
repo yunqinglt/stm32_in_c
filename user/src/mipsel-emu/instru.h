@@ -3,39 +3,7 @@
 
 #include "compiler.h"
 #include "registers.h"
-#include "op.h"
-
-#define EXC_RESET   0xfe
-#define EXC_SRES    0xf0
-
-#define EXC_INT     0x00
-#define EXC_MOD     0x01
-#define EXC_TLBL    0x02
-#define EXC_TLBS    0x03
-#define EXC_AdEL    0x04
-#define EXC_AdES    0x05
-
-#define EXC_IBE     0x06 // Bus Error Instruction
-#define EXC_DBE     0x07 // Data
-
-#define EXC_SC      0x08 // SysCall
-#define EXC_BP      0x09 // not willing to implement jtag debug
-
-#define EXC_RI      0x0a // Reserved Instruction
-#define EXC_CpU     0x0b // Unusable Coprocessor
-#define EXC_Ov      0x0c // Overflow
-#define EXC_Tr      0x0d // Trap
-
-#define EXC_FPE     0x0f // TODO: Float Point
-
-#define EXC_C2E     0x12 // Not implemented
-#define EXC_DSP     0x16
-
-#define EXC_WATCH   0x17
-#define EXC_MCheck  0x18
-
-#define EXC_THR     0x19
-#define EXC_CAH     0x1e
+#include "./op.h"
 
 
 MIPS_Instruction_Handler op_table[64] = {
@@ -63,7 +31,7 @@ MIPS_Instruction_Handler op_table[64] = {
     [0x12] = delta,
     [0x13] = delta,
 
-    [0x14] = op_beql,
+    [0x14] = op_beql, // delayed branch -> skip slot instructions
     [0x15] = op_bnel,
     [0x16] = op_blezl,
     [0x17] = op_bgtzl,
@@ -294,9 +262,5 @@ MIPS_Instruction_Handler cop0_table1[16] = {
 
     // delta
 };
-
-MIPS_Instruction_Handler *target_handler(MIPS_Instruction_Handler *table, uint8_t Index);
-void RI_exception(uint32_t instr, Registers *state);
-void SC_exception(uint32_t instr, Registers *state);
 
 #endif
