@@ -1,4 +1,5 @@
 #include "op.h"
+#include "exception.h"
 #include "registers.h"
 #include <stdint.h>
 
@@ -181,16 +182,63 @@ void op_lui(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-// branch likely
+// TODO: branch likely
 
+// load byte
 void op_lb(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr); // Base
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = offset + state->gpr[rs];
+
+    // Little Endian
+    Result pa = pfn_translate(va, state, 0);
+    if (TEST_RESULT(pa)) {
+        uint32_t data = sign_extend(read8((uint32_t) pa.value.ok));
+        state->gpr[rt] = data;
+    } else {
+        switch (pa.value.reason) {
+            case 1:
+                trigger_exception_helper(EXC_AdEL, state, va);
+                break;
+            case 2:
+            case 3:
+                trigger_exception_helper(EXC_TLBL, state, va);
+                break;
+        }
+    }
+
+    S0_IS_0(state);
 }
 
+// load half
+void op_lh(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr); // Base
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = offset + state->gpr[rs];
+
+    // Little Endian
+    Result pa = pfn_translate(va, state, 0);
+    if (TEST_RESULT(pa)) {
+        uint32_t data = sign_extend(read16((uint32_t) pa.value.ok));
+        state->gpr[rt] = data;
+    } else {
+        switch (pa.value.reason) {
+            case 1:
+                trigger_exception_helper(EXC_AdEL, state, va);
+                break;
+            case 2:
+            case 3:
+                trigger_exception_helper(EXC_TLBL, state, va);
+                break;
+        }
+    }
+
+    S0_IS_0(state);
+}
 
 
 void op_addiu(uint32_t instr, Registers *state) {

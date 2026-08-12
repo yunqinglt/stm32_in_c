@@ -45,21 +45,21 @@ typedef enum {
 typedef struct {
     ResultTag tag;
     union {
-        int64_t ok;
-        int64_t reason;
+        uint32_t ok;
+        uint32_t reason;
     } value;
 } Result;
 
-Result OK(int64_t val) {
+__STATIC_FORCEINLINE Result OK(uint32_t val) {
     return (Result) {Ok, .value.ok = val};
 }
 
-Result ERR(int64_t val) {
+__STATIC_FORCEINLINE Result ERR(uint32_t val) {
     return (Result) {Err, .value.reason = val};
 }
 
 // repr: Result
-#define TEST_RESULT(res) (res.tag == Ok)
+#define TEST_RESULT(res) ((res).tag == Ok)
 
 // use rarely
 #define UNWRAP(res) \

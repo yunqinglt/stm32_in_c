@@ -1,12 +1,11 @@
 #include "registers.h"
 #include "exception.h"
 
-// op_xx should not do anything when addr == 0
-// -3 = Address Error, -2 = TLB Refill, -1 = TLB Invalid, 0 = TLB Modified
+// 1 = Address Error, 2 = TLB Refill, 3 = TLB Invalid, 4 = TLB Modified
 __STATIC_FORCEINLINE Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
     if (target & 0x03) {
         // Address unaligned
-        return ERR(-3);
+        return ERR(1);
     }
 
     // kseg0: 0x8000_0000-0x9fff_ffff, kseg1: 0xa000_0000-0xbfff_ffff
@@ -34,14 +33,13 @@ __STATIC_FORCEINLINE Result pfn_translate(uint32_t target, Registers *state, uin
 
                 // !Valid
                 if (!(elo & 0x02)) {
-                    // op_xx should rewrite state->Cause by its type
                     // TLB Invalid Exception
-                    return ERR(-1);
+                    return ERR(3);
                 }
 
-                // !Dirty
+                // !Dirty TLB Modified Exception
                 if (is_write && !(elo & 0x04)) {
-                    return ERR(0);
+                    return ERR(4);
                 }
 
                 uint32_t page_offset_mask = even_odd_bit - 1;
@@ -55,7 +53,7 @@ __STATIC_FORCEINLINE Result pfn_translate(uint32_t target, Registers *state, uin
     }
 
     // TLB Refill Exception
-    return ERR(-2);
+    return ERR(2);
 }
 
 // Building

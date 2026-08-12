@@ -8,6 +8,16 @@
 
 typedef uint32_t    r32;
 
+
+// will be used at future implementation
+extern uint32_t read32(uint32_t addr);
+extern uint16_t read16(uint32_t addr);
+extern uint8_t read8(uint32_t addr);
+
+extern void write32(uint32_t addr, uint32_t data);
+extern void write16(uint32_t addr, uint16_t data);
+extern void write8(uint32_t addr, uint8_t data);
+
 typedef struct Registers_t {
     r32 gpr[32]; // shadow register set
     r32 pc;

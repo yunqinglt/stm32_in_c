@@ -50,7 +50,8 @@ void op_addi(uint32_t instr, Registers *state);
 void op_xori(uint32_t instr, Registers *state);
 void op_lui(uint32_t instr, Registers *state);
 
-
+void op_lb(uint32_t instr, Registers *state);
+void op_lh(uint32_t instr, Registers *state);
 
 
 void op_srl(uint32_t instr, Registers *state);
