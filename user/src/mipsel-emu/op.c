@@ -240,6 +240,206 @@ void op_lh(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
+void op_lwl(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+    uint32_t aligned_va = va & ~0x03; // Mask to 32-bit boundary
+    uint32_t byte_offset = va & 0x03;
+
+    // Translate the aligned address to bypass the target & 0x03 check
+    Result pa = pfn_translate(aligned_va, state, 0);
+
+    if (TEST_RESULT(pa)) {
+        uint32_t word = read32((uint32_t) pa.value.ok);
+        uint32_t reg_val = state->gpr[rt];
+        
+        switch (byte_offset) {
+            case 0: reg_val = (reg_val & 0x00ffffff) | (word << 24); break;
+            case 1: reg_val = (reg_val & 0x0000ffff) | (word << 16); break;
+            case 2: reg_val = (reg_val & 0x000000ff) | (word << 8);  break;
+            case 3: reg_val = word; break;
+        }
+        state->gpr[rt] = reg_val;
+    } else {
+        switch (pa.value.reason) {
+            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
+            case 2:
+            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+        }
+    }
+
+    S0_IS_0(state);
+}
+
+void op_lwr(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+    uint32_t aligned_va = va & ~0x03; 
+    uint32_t byte_offset = va & 0x03;
+
+    Result pa = pfn_translate(aligned_va, state, 0);
+
+    if (TEST_RESULT(pa)) {
+        uint32_t word = read32((uint32_t) pa.value.ok);
+        uint32_t reg_val = state->gpr[rt];
+        
+        switch (byte_offset) {
+            case 0: reg_val = word; break;
+            case 1: reg_val = (reg_val & 0xff000000) | (word >> 8);  break;
+            case 2: reg_val = (reg_val & 0xffff0000) | (word >> 16); break;
+            case 3: reg_val = (reg_val & 0xffffff00) | (word >> 24); break;
+        }
+        state->gpr[rt] = reg_val;
+    } else {
+        switch (pa.value.reason) {
+            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
+            case 2:
+            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+        }
+    }
+
+    S0_IS_0(state);
+}
+
+void op_lbu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+    uint32_t aligned_va = va & ~0x03; 
+    uint32_t byte_offset = va & 0x03;
+
+    Result pa = pfn_translate(aligned_va, state, 0);
+
+    if (TEST_RESULT(pa)) {
+        uint32_t word = read32((uint32_t) pa.value.ok);
+        state->gpr[rt] = (word >> (byte_offset * 8)) & 0xff;
+    } else {
+        switch (pa.value.reason) {
+            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
+            case 2:
+            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+        }
+    }
+
+    S0_IS_0(state);
+}
+
+void op_lhu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+    uint32_t aligned_va = va & ~0x03; 
+    uint32_t byte_offset = va & 0x03;
+
+    Result pa = pfn_translate(aligned_va, state, 0);
+
+    if (TEST_RESULT(pa)) {
+        uint32_t word = read32((uint32_t) pa.value.ok);
+        state->gpr[rt] = (word >> (byte_offset * 16) * 0xffff);
+    } else {
+        switch (pa.value.reason) {
+            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
+            case 2:
+            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+        }
+    }
+
+    S0_IS_0(state);
+}
+
+void op_lw(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+    
+    Result pa = pfn_translate(va, state, 0);
+    if (TEST_RESULT(pa)) {
+        uint32_t word = read32((uint32_t) pa.value.ok);
+        state->gpr[rt] = word;
+    } else {
+        switch (pa.value.reason) {
+            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
+            case 2:
+            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+        }
+    }
+
+    S0_IS_0(state);
+}
+
+void op_sb(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+    uint32_t aligned_va = va & ~0x03; 
+    uint32_t byte_offset = va & 0x03;
+
+    Result pa = pfn_translate(aligned_va, state, 1);
+
+    if (TEST_RESULT(pa)) {
+        write8((uint32_t) pa.value.ok + byte_offset, (uint8_t)(state->gpr[rt] & 0xff));
+    } else {
+        switch (pa.value.reason) {
+            case 1:
+                trigger_exception_helper(EXC_AdES, state, va);
+                break;
+            case 2:
+            case 3:
+                trigger_exception_helper(EXC_TLBS, state, va);
+                break;
+            case 4:
+                trigger_exception_helper(EXC_MOD, state, va);
+                break;
+        }
+    }
+}
+
+void op_sh(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+    uint32_t aligned_va = va & ~0x03; 
+    uint32_t byte_offset = va & 0x03;
+
+    if (byte_offset & 0x01) {
+        trigger_exception_helper(EXC_AdES, state, va);
+        return;
+    }
+
+    Result pa = pfn_translate(aligned_va, state, 1);
+    if (TEST_RESULT(pa)) {
+        write16((uint32_t) pa.value.ok + byte_offset, (uint16_t)(state->gpr[rt] & 0xffff));
+    } else {
+        switch (pa.value.reason) {
+            case 1:
+                trigger_exception_helper(EXC_AdES, state, va);
+                break;
+            case 2:
+            case 3:
+                trigger_exception_helper(EXC_TLBS, state, va);
+                break;
+            case 4:
+                trigger_exception_helper(EXC_MOD, state, va);
+                break;
+        }
+    }
+}
 
 void op_addiu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);

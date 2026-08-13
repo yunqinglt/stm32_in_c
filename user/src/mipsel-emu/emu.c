@@ -17,10 +17,9 @@
 
     [-] FPU
     [-] XPA eXtended Physical Address
-    [*] VPS Variable Page Sizes
-
-    So hard!!!!!!!!
     [-] 5-way pipeline simulation
+    
+    [*] VPS Variable Page Sizes
 */
 
 extern vmstate_t *status;

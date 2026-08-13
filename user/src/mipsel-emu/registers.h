@@ -71,6 +71,10 @@ typedef struct Registers_t {
     uint32_t hi;
     uint32_t lo;
 
+    uint8_t is_delay_slot;
+    uint8_t is_taken;
+    uint32_t target_pc;
+
     uint8_t ISAMode; // Reserved for future use
     uint8_t ll_bit;
     uint32_t ll_addr;

@@ -51,7 +51,15 @@ void op_xori(uint32_t instr, Registers *state);
 void op_lui(uint32_t instr, Registers *state);
 
 void op_lb(uint32_t instr, Registers *state);
+void op_lbu(uint32_t instr, Registers *state);
 void op_lh(uint32_t instr, Registers *state);
+void op_lw(uint32_t instr, Registers *state);
+void op_lwl(uint32_t instr, Registers *state);
+void op_lwr(uint32_t instr, Registers *state);
+void op_lhu(uint32_t instr, Registers *state);
+
+void op_sb(uint32_t instr, Registers *state);
+void op_sh(uint32_t instr, Registers *state);
 
 
 void op_srl(uint32_t instr, Registers *state);
