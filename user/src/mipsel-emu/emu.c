@@ -29,7 +29,7 @@ extern vmstate_t *status;
 void startup(Registers *state) {
     while (1) {
         if (status->state == RUNNING) {/* Do something */}
-        // Execute ( read32 ( state->pc ) , state )
+        // Execute ( read32 ( state->pc ) , state ) // ISA will modify next_pc when branching
         // state->pc = state->next_pc;
         // state->next_pc += 4;
 

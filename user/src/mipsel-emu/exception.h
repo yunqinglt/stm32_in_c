@@ -2,6 +2,8 @@
 #define _EXCEPTION_H
 
 #include "registers.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 #define EXC_RESET   0xfe
 #define EXC_SRES    0xf0
@@ -35,6 +37,18 @@
 #define EXC_THR     0x19
 #define EXC_CAH     0x1e
 
+typedef enum {
+    MIPS_VECTOR_GENERAL,
+    MIPS_VECTOR_TLB_REFILL,
+    MIPS_VECTOR_INTERRUPT,
+    MIPS_VECTOR_CACHE_ERROR,
+    MIPS_VECTOR_RESET,
+} VectorClass;
+
 void reset_cpu(Registers *state);
+
+// TODO: Reset with secondary state?
+extern void soft_reset_cpu(Registers *state);
+extern void linux_load_reset(Registers *state);
 
 #endif

@@ -159,6 +159,7 @@ void op_addi(uint32_t instr, Registers *state) {
 
     if ((imm > 0 && state->gpr[rs] > INT32_MAX - imm) || (imm < 0 && state->gpr[rs] < INT32_MIN - imm)) {
         trigger_exception_helper(EXC_Ov, state, 0);
+        return;
     } else {
         state->gpr[rt] = state->gpr[rs] + imm;
     }
@@ -192,16 +193,18 @@ void op_lb(uint32_t instr, Registers *state) {
 
     uint32_t va = offset + state->gpr[rs];
 
+    // if (va & 0x01) {
+    //     trigger_exception_helper(EXC_AdEL, state, va);
+    //     return;
+    // }
+
     // Little Endian
     Result pa = pfn_translate(va, state, 0);
     if (TEST_RESULT(pa)) {
-        uint32_t data = sign_extend(read8((uint32_t) pa.value.ok));
+        uint32_t data = (uint32_t)(int32_t)(int8_t) (read8((uint32_t) pa.value.ok));
         state->gpr[rt] = data;
     } else {
         switch (pa.value.reason) {
-            case 1:
-                trigger_exception_helper(EXC_AdEL, state, va);
-                break;
             case 2:
             case 3:
                 trigger_exception_helper(EXC_TLBL, state, va);
@@ -220,16 +223,19 @@ void op_lh(uint32_t instr, Registers *state) {
 
     uint32_t va = offset + state->gpr[rs];
 
+    if (va & 0x01) {
+        trigger_exception_helper(EXC_AdEL, state, va);
+        return;
+    }
+
     // Little Endian
     Result pa = pfn_translate(va, state, 0);
+
     if (TEST_RESULT(pa)) {
         uint32_t data = sign_extend(read16((uint32_t) pa.value.ok));
         state->gpr[rt] = data;
     } else {
         switch (pa.value.reason) {
-            case 1:
-                trigger_exception_helper(EXC_AdEL, state, va);
-                break;
             case 2:
             case 3:
                 trigger_exception_helper(EXC_TLBL, state, va);
@@ -246,10 +252,10 @@ void op_lwl(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    uint32_t aligned_va = va & ~0x03; // Mask to 32-bit boundary
+
+    uint32_t aligned_va = va & ~0x03;
     uint32_t byte_offset = va & 0x03;
 
-    // Translate the aligned address to bypass the target & 0x03 check
     Result pa = pfn_translate(aligned_va, state, 0);
 
     if (TEST_RESULT(pa)) {
@@ -265,7 +271,6 @@ void op_lwl(uint32_t instr, Registers *state) {
         state->gpr[rt] = reg_val;
     } else {
         switch (pa.value.reason) {
-            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
             case 2:
             case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
         }
@@ -280,7 +285,8 @@ void op_lwr(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    uint32_t aligned_va = va & ~0x03; 
+
+    uint32_t aligned_va = va & ~0x03;
     uint32_t byte_offset = va & 0x03;
 
     Result pa = pfn_translate(aligned_va, state, 0);
@@ -298,7 +304,6 @@ void op_lwr(uint32_t instr, Registers *state) {
         state->gpr[rt] = reg_val;
     } else {
         switch (pa.value.reason) {
-            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
             case 2:
             case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
         }
@@ -313,17 +318,14 @@ void op_lbu(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    uint32_t aligned_va = va & ~0x03; 
-    uint32_t byte_offset = va & 0x03;
 
-    Result pa = pfn_translate(aligned_va, state, 0);
+    Result pa = pfn_translate(va, state, 0);
 
     if (TEST_RESULT(pa)) {
-        uint32_t word = read32((uint32_t) pa.value.ok);
-        state->gpr[rt] = (word >> (byte_offset * 8)) & 0xff;
+        uint8_t byte = read8((uint32_t) pa.value.ok);
+        state->gpr[rt] = zero_extend(byte);
     } else {
         switch (pa.value.reason) {
-            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
             case 2:
             case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
         }
@@ -338,17 +340,19 @@ void op_lhu(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    uint32_t aligned_va = va & ~0x03; 
-    uint32_t byte_offset = va & 0x03;
+    
+    if (va & 0x01) {
+        trigger_exception_helper(EXC_AdEL, state, va);
+        return;
+    }
 
-    Result pa = pfn_translate(aligned_va, state, 0);
+    Result pa = pfn_translate(va, state, 0);
 
     if (TEST_RESULT(pa)) {
-        uint32_t word = read32((uint32_t) pa.value.ok);
-        state->gpr[rt] = (word >> (byte_offset * 16) * 0xffff);
+        uint16_t half = read16((uint32_t) pa.value.ok);
+        state->gpr[rt] = zero_extend(half);
     } else {
         switch (pa.value.reason) {
-            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
             case 2:
             case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
         }
@@ -364,13 +368,17 @@ void op_lw(uint32_t instr, Registers *state) {
 
     uint32_t va = state->gpr[rs] + offset;
     
+    if (va & 0x03) {
+        trigger_exception_helper(EXC_AdEL, state, va);
+        return;
+    }
+
     Result pa = pfn_translate(va, state, 0);
     if (TEST_RESULT(pa)) {
         uint32_t word = read32((uint32_t) pa.value.ok);
         state->gpr[rt] = word;
     } else {
         switch (pa.value.reason) {
-            case 1: trigger_exception_helper(EXC_AdEL, state, va); break;
             case 2:
             case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
         }
@@ -385,18 +393,13 @@ void op_sb(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    uint32_t aligned_va = va & ~0x03; 
-    uint32_t byte_offset = va & 0x03;
 
-    Result pa = pfn_translate(aligned_va, state, 1);
+    Result pa = pfn_translate(va, state, 1);
 
     if (TEST_RESULT(pa)) {
-        write8((uint32_t) pa.value.ok + byte_offset, (uint8_t)(state->gpr[rt] & 0xff));
+        write8((uint32_t) pa.value.ok, (uint8_t)(state->gpr[rt] & 0xff));
     } else {
         switch (pa.value.reason) {
-            case 1:
-                trigger_exception_helper(EXC_AdES, state, va);
-                break;
             case 2:
             case 3:
                 trigger_exception_helper(EXC_TLBS, state, va);
@@ -414,22 +417,45 @@ void op_sh(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    uint32_t aligned_va = va & ~0x03; 
-    uint32_t byte_offset = va & 0x03;
 
-    if (byte_offset & 0x01) {
+    if (va & 0x01) {
         trigger_exception_helper(EXC_AdES, state, va);
         return;
     }
 
-    Result pa = pfn_translate(aligned_va, state, 1);
+    Result pa = pfn_translate(va, state, 1);
     if (TEST_RESULT(pa)) {
-        write16((uint32_t) pa.value.ok + byte_offset, (uint16_t)(state->gpr[rt] & 0xffff));
+        write16((uint32_t) pa.value.ok, (uint16_t)(state->gpr[rt] & 0xffff));
     } else {
         switch (pa.value.reason) {
-            case 1:
-                trigger_exception_helper(EXC_AdES, state, va);
+            case 2:
+            case 3:
+                trigger_exception_helper(EXC_TLBS, state, va);
                 break;
+            case 4:
+                trigger_exception_helper(EXC_MOD, state, va);
+                break;
+        }
+    }
+}
+
+void op_sw(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+
+    if (va & 0x03) {
+        trigger_exception_helper(EXC_AdES, state, va);
+        return;
+    }
+
+    Result pa = pfn_translate(va, state, 1);
+    if (TEST_RESULT(pa)) {
+        write32((uint32_t) pa.value.ok, state->gpr[rt]);
+    } else {
+        switch (pa.value.reason) {
             case 2:
             case 3:
                 trigger_exception_helper(EXC_TLBS, state, va);
@@ -565,7 +591,7 @@ void op_eret(uint32_t instr, Registers *state) {
             SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_ERL_POS, CP0_STATUS_ERL_LEN, 0);
         // Clear flag
     } else {
-        state->next_pc = state->cp0.byname.cp0r30_t.cp0r30_n.ErrorEPC;
+        state->next_pc = state->cp0.byname.cp0r14_t.cp0r14_n.EPC;
         state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
             SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_EXL_POS, CP0_STATUS_EXL_LEN, 0);
     }
@@ -615,7 +641,7 @@ void op_bshfl(uint32_t instr, Registers *state) {
 
     if (getrs(instr) == 0x10) {
         // SEB rd, rt:  GPR[rd] <- SignExtend(GPR[rt][7:0])
-        state->gpr[rd] = sign_extend((uint8_t) state->gpr[rt]);
+        state->gpr[rd] = sign_extend((int16_t)(uint8_t) state->gpr[rt]);
     }
 }
 

@@ -18,6 +18,9 @@ extern void write32(uint32_t addr, uint32_t data);
 extern void write16(uint32_t addr, uint16_t data);
 extern void write8(uint32_t addr, uint8_t data);
 
+#define CHECK_AL2(addr)     (addr & 0x01)
+#define CHECK_AL4(addr)     (addr & 0x03)
+
 typedef struct Registers_t {
     r32 gpr[32]; // shadow register set
     r32 pc;
@@ -340,7 +343,7 @@ typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
 
 #define PRID_OPT        ((uint8_t) "Y" << 24)
 
-__STATIC_FORCEINLINE Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write);
-__STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info);
+inline Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write);
+inline void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info);
 
 #endif

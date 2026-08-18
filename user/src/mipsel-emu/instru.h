@@ -3,7 +3,7 @@
 
 #include "compiler.h"
 #include "registers.h"
-#include "./op.h"
+#include "op.h"
 
 
 MIPS_Instruction_Handler op_table[64] = {

@@ -1,13 +1,9 @@
 #include "registers.h"
 #include "exception.h"
+#include <stdint.h>
 
-// 1 = Address Error, 2 = TLB Refill, 3 = TLB Invalid, 4 = TLB Modified
-__STATIC_FORCEINLINE Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
-    if (target & 0x03) {
-        // Address unaligned
-        return ERR(1);
-    }
-
+// 2 = TLB Refill, 3 = TLB Invalid, 4 = TLB Modified
+inline Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
     // kseg0: 0x8000_0000-0x9fff_ffff, kseg1: 0xa000_0000-0xbfff_ffff
     if (target >= 0x80000000 && target <= 0xBFFFFFFF) {
         // no need to translate
@@ -57,8 +53,27 @@ __STATIC_FORCEINLINE Result pfn_translate(uint32_t target, Registers *state, uin
 }
 
 // Building
-__STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info) {
+inline void trigger_exception_helper(uint32_t exc, Registers *state, uint32_t exc_info) {
     // next_pc will be rewrite at this section
+    /*
+        Base = 
+
+        Type/Status.BEV
+        |      |             0           |         1           |
+        | Hard |                    0xBFC0_0000                |
+        | Soft | (EBase[32..12] || 0^12) |      0xBFC0_0200    |
+
+        Offset = 
+
+        Type/Status.EXL
+        |      |             0           |         1           |
+        | Hard |                       None                    |
+        | TLB Refill |     0x100         |      0x180          |
+        | Others |                     0x180                   |
+
+        next_pc = Base + Offset;
+    */
+
 
     switch (exc) {
         case EXC_RESET:
@@ -71,10 +86,7 @@ __STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *stat
                      CP0_CAUSE_CE_POS, CP0_CAUSE_CE_LEN, exc_info);
             break;
 
-        case EXC_AdEL:
-        case EXC_AdES:
-        case EXC_TLBL:
-        case EXC_TLBS:
+        case EXC_MOD:
             state->cp0.byname.cp0r8_t.cp0r8_n.BadVAddr = exc_info; // BadVAddr
             state->cp0.byname.cp0r4_t.cp0r4_n.Context =
                 SET_BITFIELD(state->cp0.byname.cp0r4_t.cp0r4_n.Context,\
@@ -83,6 +95,14 @@ __STATIC_FORCEINLINE void trigger_exception_helper(uint32_t exc, Registers *stat
             state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi = 
                 SET_BITFIELD(state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi,\
                     13, 19, (exc_info >> 13)); // EntryHi
+            if (STATUS_EXL(state))
+
+        case EXC_AdEL:
+        case EXC_AdES:
+
+
+        case EXC_TLBL:
+        case EXC_TLBS:
             break;
 
 

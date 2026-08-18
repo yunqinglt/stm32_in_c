@@ -16,5 +16,10 @@
         }
     ],
     "cmake.buildBeforeRun": false,
+    "cmake.environment": {
+        "TEMP": "C:\\Temp",
+        "TMP": "C:\\Temp"
+    },
+
     "workbench.sideBar.location": "right"
 }

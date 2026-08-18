@@ -1,3 +1,6 @@
+#ifndef _COMPILER_H
+#define _COMPILER_H
+
 #include <stdint.h>
 
 // Symbol config
@@ -67,3 +70,6 @@ __STATIC_FORCEINLINE Result ERR(uint32_t val) {
         if (TEST_RESULT(res)) return res.value.ok; \
         else return res.value.reason; \
     }
+
+
+#endif
