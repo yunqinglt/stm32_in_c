@@ -5,6 +5,7 @@
     Features: 
     [*] single pipeline
     [/] basic mips32 release 2 behavior
+    [/] Cache and Sync
     [ ] branch delay
     [ ] virtual mmio device
     [ ] ->   UART Console

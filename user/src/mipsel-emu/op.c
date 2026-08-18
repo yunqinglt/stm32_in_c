@@ -1,6 +1,9 @@
 #include "op.h"
+#include "compiler.h"
 #include "exception.h"
+#include "platform.h"
 #include "registers.h"
+#include <signal.h>
 #include <stdint.h>
 
 extern MIPS_Instruction_Handler regimm_table[];
@@ -9,6 +12,12 @@ extern MIPS_Instruction_Handler special2_table[];
 extern MIPS_Instruction_Handler special3_table[];
 extern MIPS_Instruction_Handler cop0_table0[];
 extern MIPS_Instruction_Handler cop0_table1[];
+
+__STATIC_FORCEINLINE void nop(uint32_t instr, Registers *state) {}
+
+__ALIAS("nop") void op_cache(uint32_t instr, Registers *state);
+__ALIAS("nop") void op_sync(uint32_t instr, Registers *state);
+__ALIAS("nop") void op_synci(uint32_t instr, Registers *state);
 
 // Near 256MB Jump
 void op_j(uint32_t instr, Registers *state) {
@@ -158,7 +167,7 @@ void op_addi(uint32_t instr, Registers *state) {
     int32_t imm = sign_extend(getimm(instr));
 
     if ((imm > 0 && state->gpr[rs] > INT32_MAX - imm) || (imm < 0 && state->gpr[rs] < INT32_MIN - imm)) {
-        trigger_exception_helper(EXC_Ov, state, 0);
+        raise_exception(state, 0, EXC_Ov, MIPS_VECTOR_GENERAL);
         return;
     } else {
         state->gpr[rt] = state->gpr[rs] + imm;
@@ -206,8 +215,10 @@ void op_lb(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
+                break;
             case 3:
-                trigger_exception_helper(EXC_TLBL, state, va);
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -224,7 +235,7 @@ void op_lh(uint32_t instr, Registers *state) {
     uint32_t va = offset + state->gpr[rs];
 
     if (va & 0x01) {
-        trigger_exception_helper(EXC_AdEL, state, va);
+        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -237,8 +248,10 @@ void op_lh(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
+                break;
             case 3:
-                trigger_exception_helper(EXC_TLBL, state, va);
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -272,7 +285,11 @@ void op_lwl(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
-            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_GENERAL);
+                break;
         }
     }
 
@@ -305,7 +322,11 @@ void op_lwr(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
-            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_GENERAL);
+                break;
         }
     }
 
@@ -327,7 +348,11 @@ void op_lbu(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
-            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_GENERAL);
+                break;
         }
     }
 
@@ -342,7 +367,7 @@ void op_lhu(uint32_t instr, Registers *state) {
     uint32_t va = state->gpr[rs] + offset;
     
     if (va & 0x01) {
-        trigger_exception_helper(EXC_AdEL, state, va);
+        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -354,7 +379,11 @@ void op_lhu(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
-            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_GENERAL);
+                break;
         }
     }
 
@@ -369,7 +398,7 @@ void op_lw(uint32_t instr, Registers *state) {
     uint32_t va = state->gpr[rs] + offset;
     
     if (va & 0x03) {
-        trigger_exception_helper(EXC_AdEL, state, va);
+        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -380,7 +409,11 @@ void op_lw(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
-            case 3: trigger_exception_helper(EXC_TLBL, state, va); break;
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_GENERAL);
+                break;
         }
     }
 
@@ -401,11 +434,13 @@ void op_sb(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_TLB_REFILL);
+                break;
             case 3:
-                trigger_exception_helper(EXC_TLBS, state, va);
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                trigger_exception_helper(EXC_MOD, state, va);
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -419,7 +454,7 @@ void op_sh(uint32_t instr, Registers *state) {
     uint32_t va = state->gpr[rs] + offset;
 
     if (va & 0x01) {
-        trigger_exception_helper(EXC_AdES, state, va);
+        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -429,11 +464,13 @@ void op_sh(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_TLB_REFILL);
+                break;
             case 3:
-                trigger_exception_helper(EXC_TLBS, state, va);
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                trigger_exception_helper(EXC_MOD, state, va);
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -447,7 +484,7 @@ void op_sw(uint32_t instr, Registers *state) {
     uint32_t va = state->gpr[rs] + offset;
 
     if (va & 0x03) {
-        trigger_exception_helper(EXC_AdES, state, va);
+        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -457,11 +494,153 @@ void op_sw(uint32_t instr, Registers *state) {
     } else {
         switch (pa.value.reason) {
             case 2:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_TLB_REFILL);
+                break;
             case 3:
-                trigger_exception_helper(EXC_TLBS, state, va);
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                trigger_exception_helper(EXC_MOD, state, va);
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                break;
+        }
+    }
+}
+
+void op_swl(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+
+    uint32_t aligned_va = va & ~0x03;
+    uint32_t byte_offset = va & 0x03;
+
+    Result pa = pfn_translate(aligned_va, state, 1);
+    if (TEST_RESULT(pa)) {
+        uint32_t word = read32((uint32_t) pa.value.ok);
+        uint32_t reg = state->gpr[rt];
+
+        switch (byte_offset) {
+            case 0: word = ((word & 0xffffff00) | (reg >> 24)); break;
+            case 1: word = ((word & 0xffff0000) | (reg >> 16)); break;
+            case 2: word = ((word & 0xff000000) | (reg >> 8)); break;
+            case 3: word = reg; break;
+        }
+
+        write32((uint32_t) pa.value.ok, word);
+    } else {
+        switch (pa.value.reason) {
+            case 2:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                break;
+            case 4:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                break;
+        }
+    }
+}
+
+void op_swr(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+
+    uint32_t aligned_va = va & ~0x03;
+    uint32_t byte_offset = va & 0x03;
+
+    Result pa = pfn_translate(aligned_va, state, 1);
+    if (TEST_RESULT(pa)) {
+        uint32_t word = read32((uint32_t) pa.value.ok);
+        uint32_t reg = state->gpr[rt];
+
+        switch (byte_offset) {
+            case 0: word = reg; break;
+            case 1: word = ((word & 0x000000ff) | (reg << 8)); break;
+            case 2: word = ((word & 0x0000ffff) | (reg << 16)); break;
+            case 3: word = ((word & 0x00ffffff) | (reg << 24)); break;
+        }
+
+        write32((uint32_t) pa.value.ok, word);
+    } else {
+        switch (pa.value.reason) {
+            case 2:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                break;
+            case 4:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                break;
+        }
+    }
+}
+
+void op_ll(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+    
+    if (va & 0x03) {
+        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    Result pa = pfn_translate(va, state, 0);
+    if (TEST_RESULT(pa)) {
+        uint32_t word = read32((uint32_t) pa.value.ok);
+        state->gpr[rt] = word;
+        state->ll_bit = 1;
+
+        // state->ll_addr?
+    } else {
+        switch (pa.value.reason) {
+            case 2:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBL, MIPS_VECTOR_GENERAL);
+                break;
+        }
+    }
+
+    S0_IS_0(state);
+}
+
+void op_sc(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint32_t offset = sign_extend(getimm(instr));
+
+    uint32_t va = state->gpr[rs] + offset;
+
+    if (va & 0x03) {
+        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    Result pa = pfn_translate(va, state, 1);
+    if (TEST_RESULT(pa)) {
+        write32((uint32_t) pa.value.ok, state->gpr[rt]);
+        state->ll_bit = 0;
+    } else {
+        switch (pa.value.reason) {
+            case 2:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_TLB_REFILL);
+                break;
+            case 3:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                break;
+            case 4:
+                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -488,13 +667,13 @@ void op_multu(uint32_t instr, Registers *state) {
 
 // Reserved Instruction
 void beta(uint32_t instr, Registers *state) {
-    trigger_exception_helper(EXC_RI, state, 0);
+    raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
 }
 
 // Coprocessor Unusable
 void delta(uint32_t instr, Registers *state) {
     uint8_t cop_id = getop(instr) & 0x03;
-    trigger_exception_helper(EXC_CpU, state, cop_id);
+    raise_exception(state, cop_id, EXC_CpU, MIPS_VECTOR_GENERAL);
 }
 
 void regimm_handler(uint32_t instr, Registers *state) {
@@ -623,7 +802,7 @@ void op_mfmc0(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
 
     if (rd != 12) {
-        trigger_exception_helper(EXC_CpU, state, 0);
+        raise_exception(state, 0, EXC_CpU, MIPS_VECTOR_GENERAL);
     }
 
     state->gpr[rt] = state->cp0.byname.cp0r12_t.cp0r12_n.Status;

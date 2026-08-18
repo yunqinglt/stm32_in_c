@@ -1,9 +1,11 @@
 #ifndef _OP_H
 #define _OP_H
 
+#include "compiler.h"
 #include "registers.h"
 // #include "instru.h"
 #include "exception.h"
+#include <stdint.h>
 
 // Sign extend
 #define sign_extend(imm) ((int32_t)(int16_t)(imm))
@@ -62,6 +64,12 @@ void op_sb(uint32_t instr, Registers *state);
 void op_sh(uint32_t instr, Registers *state);
 void op_sw(uint32_t instr, Registers *state);
 
+void op_cache(uint32_t instr, Registers *state);
+void op_ll(uint32_t instr, Registers *state);
+void op_sc(uint32_t instr, Registers *state);
+void op_sync(uint32_t instr, Registers *state);
+void op_synci(uint32_t instr, Registers *state);
+
 void op_srl(uint32_t instr, Registers *state);
 void op_addu(uint32_t instr, Registers *state);
 void op_move_from_hi(uint32_t instr, Registers *state);
@@ -100,5 +108,7 @@ __STATIC_FORCEINLINE void decrease_random(Registers *state) {
         state->cp0.byname.cp0r1_t.cp0r1_n.Random = 63;
     else state->cp0.byname.cp0r1_t.cp0r1_n.Random -= 1;
 }
+
+
 
 #endif
