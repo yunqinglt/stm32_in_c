@@ -26,7 +26,7 @@
 #define getimm(instr)   ((instr >> 0) & 0xffff) // imm[15..0]
 
 // J-Type
-#define gettar(instr)   ((instr >> 0) & 0x03ffff) // target[25..0]
+#define gettar(instr)   ((instr >> 0) & 0x03ffffff) // target[25..0]
 
 // CP0 C[25] == 1 -> table0 else table1
 #define CFLAG(instr)    ((instr >> 25) & 0x01)
@@ -44,6 +44,9 @@ void op_blez(uint32_t instr, Registers *state);
 void op_bgtz(uint32_t instr, Registers *state);
 void op_bgez(uint32_t instr, Registers *state);
 
+void op_jalr(uint32_t instr, Registers *state);
+void op_jalx(uint32_t instr, Registers *state);
+
 void op_slti(uint32_t instr, Registers *state);
 void op_sltiu(uint32_t instr, Registers *state);
 void op_andi(uint32_t instr, Registers *state);
@@ -51,6 +54,13 @@ void op_ori(uint32_t instr, Registers *state);
 void op_addi(uint32_t instr, Registers *state);
 void op_xori(uint32_t instr, Registers *state);
 void op_lui(uint32_t instr, Registers *state);
+
+void op_beql(uint32_t instr, Registers *state);
+void op_bnel(uint32_t instr, Registers *state);
+void op_blezl(uint32_t instr, Registers *state);
+void op_bgtzl(uint32_t instr, Registers *state);
+
+void op_pref(uint32_t instr, Registers *state);
 
 void op_lb(uint32_t instr, Registers *state);
 void op_lbu(uint32_t instr, Registers *state);
@@ -71,6 +81,16 @@ void op_sync(uint32_t instr, Registers *state);
 void op_synci(uint32_t instr, Registers *state);
 
 void op_srl(uint32_t instr, Registers *state);
+void op_sll(uint32_t instr, Registers *state);
+void op_sra(uint32_t instr, Registers *state);
+void op_sllv(uint32_t instr, Registers *state);
+void op_srlv(uint32_t instr, Registers *state);
+void op_srav(uint32_t instr, Registers *state);
+void op_jr(uint32_t instr, Registers *state);
+
+void op_swl(uint32_t instr, Registers *state);
+void op_swr(uint32_t instr, Registers *state);
+
 void op_addu(uint32_t instr, Registers *state);
 void op_move_from_hi(uint32_t instr, Registers *state);
 void op_move_from_lo(uint32_t instr, Registers *state);

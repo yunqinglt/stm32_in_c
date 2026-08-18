@@ -5,6 +5,7 @@
 #include "registers.h"
 #include <signal.h>
 #include <stdint.h>
+#include <sys/types.h>
 
 extern MIPS_Instruction_Handler regimm_table[];
 extern MIPS_Instruction_Handler special1_table[];
@@ -18,19 +19,28 @@ __STATIC_FORCEINLINE void nop(uint32_t instr, Registers *state) {}
 __ALIAS("nop") void op_cache(uint32_t instr, Registers *state);
 __ALIAS("nop") void op_sync(uint32_t instr, Registers *state);
 __ALIAS("nop") void op_synci(uint32_t instr, Registers *state);
+__ALIAS("nop") void op_pref(uint32_t instr, Registers *state);
+
+__STATIC_FORCEINLINE void unconditional_branch(Registers *state) {
+    state->is_delay_slot = 1;
+    state->is_taken = 1;
+}
+
 
 // Near 256MB Jump
 void op_j(uint32_t instr, Registers *state) {
     uint32_t target = gettar(instr);
 
-    state->next_pc = (((state->pc + 4) & 0xf0000000) | (target << 2)); // fetch 31..28 of delay slot PC
+    unconditional_branch(state);
+    state->target_pc = (((state->pc + 4) & 0xf0000000) | (target << 2)); // fetch 31..28 of delay slot PC
 }
 
 // Near 256MB Jump and place return address
 void op_jal(uint32_t instr, Registers *state) {
     uint32_t target = gettar(instr);
 
-    state->gpr[31] = state->pc + 4;
+    unconditional_branch(state);
+    state->gpr[31] = state->pc + 8;
     state->next_pc = (((state->pc + 4) & 0xf0000000) | (target << 2));
 }
 
@@ -40,8 +50,12 @@ void op_beq(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
 
+    state->is_delay_slot = 1; // execute branch delay
     if (state->gpr[rs] == state->gpr[rt]) {
-        state->next_pc = state->pc + 4 + sign_extend(imm);
+        state->is_taken = 1;
+        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+    } else {
+        state->is_taken = 0;
     }
 }
 
@@ -50,8 +64,12 @@ void op_bne(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
 
+    state->is_delay_slot = 1;
     if (state->gpr[rs] != state->gpr[rt]) {
-        state->next_pc = state->pc + 4 + sign_extend(imm);
+        state->is_taken = 1;
+        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+    } else {
+        state->is_taken = 0;
     }
 }
 
@@ -59,8 +77,12 @@ void op_blez(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
+    state->is_delay_slot = 1;
     if ((int32_t)state->gpr[rs] <= 0) {
-        state->next_pc = state->pc + 4 + sign_extend(imm);
+        state->is_taken = 1;
+        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+    } else {
+        state->is_taken = 0;
     }
 }
 
@@ -68,8 +90,12 @@ void op_bgtz(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
+    state->is_delay_slot = 1;
     if ((int32_t)state->gpr[rs] > 0) {
-        state->next_pc = state->pc + 4 + sign_extend(imm);
+        state->is_taken = 1;
+        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+    } else {
+        state->is_taken = 0;
     }
 }
 
@@ -77,9 +103,35 @@ void op_bgez(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
+    state->is_delay_slot = 1;
     if ((int32_t)state->gpr[rs] >= 0) {
-        state->next_pc = state->pc + 4 + sign_extend(imm);
+        state->is_taken = 1;
+        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+    } else {
+        state->is_taken = 0;
     }
+}
+
+void op_jalr(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t rd = getrd(instr);
+    uint32_t target = state->gpr[rs];
+
+    if ((target & 0x01) && (!CONF1_CA(state))) {
+        raise_exception(state, target, EXC_AdEL, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    uint32_t ret_addr = state->pc + 8;
+    state->gpr[rd] = ret_addr | state->ISAMode;
+
+    S0_IS_0(state);
+
+    state->is_delay_slot = 1;
+    state->is_taken = 1;
+    state->target_pc = target & ~0x01;
+    
+    state->ISAMode = target & 0x01;
 }
 
 void op_slti(uint32_t instr, Registers *state) {
@@ -192,7 +244,73 @@ void op_lui(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-// TODO: branch likely
+void op_beql(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint16_t offset = getimm(instr);
+
+    if (state->gpr[rs] == state->gpr[rt]) {
+        unconditional_branch(state);
+        state->target_pc = state->pc + 4 + (sign_extend(offset) << 2);
+    } else {
+        state->is_delay_slot = 0;
+        state->is_taken = 0;
+        state->next_pc = state->pc + 8;
+    }
+}
+
+void op_bnel(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint16_t offset = getimm(instr);
+
+    if (state->gpr[rs] == state->gpr[rt]) {
+        unconditional_branch(state);
+        state->target_pc = state->pc + 4 + (sign_extend(offset) << 2);
+    } else {
+        state->is_delay_slot = 0;
+        state->is_taken = 0;
+        state->next_pc = state->pc + 8;
+    }
+}
+
+void op_blezl(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t offset = getimm(instr);
+
+    if ((int32_t)state->gpr[rs] <= 0) {
+        unconditional_branch(state);
+        state->target_pc = state->pc + 4 + (sign_extend(offset) << 2);
+    } else {
+        state->is_delay_slot = 0;
+        state->is_taken = 0;
+        state->next_pc = state->pc + 8;
+    }
+}
+
+void op_bgtzl(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t offset = getimm(instr);
+
+    if ((int32_t)state->gpr[rs] >= 0) {
+        unconditional_branch(state);
+        state->target_pc = state->pc + 4 + (sign_extend(offset) << 2);
+    } else {
+        state->is_delay_slot = 0;
+        state->is_taken = 0;
+        state->next_pc = state->pc + 8;
+    }
+}
+
+void op_jalx(uint32_t instr, Registers *state) {
+    uint32_t target = gettar(instr);
+
+    unconditional_branch(state);
+    state->gpr[31] = state->pc + 8;
+    state->target_pc = (state->pc & 0xf0000000) | (target << 2);
+
+    state->ISAMode ^= state->ISAMode;
+}
 
 // load byte
 void op_lb(uint32_t instr, Registers *state) {
@@ -644,6 +762,77 @@ void op_sc(uint32_t instr, Registers *state) {
                 break;
         }
     }
+}
+
+void op_sll(uint32_t instr, Registers *state) {
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+    uint8_t mask = getmask(instr);
+
+    state->gpr[rd] = state->gpr[rt] << mask;
+    S0_IS_0(state);
+}
+
+void op_sra(uint32_t instr, Registers *state) {
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+    uint8_t mask = getmask(instr) & 0x1f;
+
+    state->gpr[rd] = (uint32_t) ((int32_t)state->gpr[rt] >> mask);
+    S0_IS_0(state);
+}
+
+void op_sllv(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    state->gpr[rd] = state->gpr[rt] << (state->gpr[rs] & 0x1f);
+    S0_IS_0(state);
+}
+
+void op_srlv(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    state->gpr[rd] = state->gpr[rt] >> (state->gpr[rs] & 0x1f);
+    S0_IS_0(state);
+}
+
+void op_srav(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    state->gpr[rd] = (uint32_t) ((int32_t)state->gpr[rt] >> (state->gpr[rs] & 0x1f));
+    S0_IS_0(state);
+}
+
+void op_jr(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint32_t target = state->gpr[rs];
+
+    if ((target & 0x01) && (!CONF1_CA(state))) {
+        raise_exception(state, target, EXC_AdEL, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    S0_IS_0(state);
+
+    state->is_delay_slot = 1;
+    state->is_taken = 1;
+    state->target_pc = target & ~0x01;
+    
+    state->ISAMode = target & 0x01;
+}
+
+void op_movz(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    
 }
 
 void op_addiu(uint32_t instr, Registers *state) {
