@@ -1,4 +1,5 @@
 #include "instru.h"
+#include "op.h"
 #include "registers.h"
 #include "exception.h"
 #include <stdint.h>
@@ -7,8 +8,8 @@
 /*
     Features: 
     [*] single pipeline
-    [/] basic mips32 release 2 behavior
-    [/] Cache and Sync
+    [*] basic mips32 release 2 behavior
+    [x] Cache and Sync (C-based emulator has no hazard)
     [*] branch delay
     [ ] virtual mmio device
     [ ] ->   UART Console
@@ -35,12 +36,25 @@ void execute_instr(uint32_t instr, Registers *state) {
     handler(instr, state);
 }
 
+static void commit_pending_exception(Registers *state) {
+    state->pc = state->next_pc;
+    state->next_pc = state->pc + 4u;
+    state->exception_pending = 0;
+}
+
 void cpu_step(Registers *state) {
     uint32_t instr;
 
+    /* Also handles an interrupt or other exception raised between steps. */
+    if (state->exception_pending) {
+        commit_pending_exception(state);
+        return;
+    }
+
     if (state->pc & 0x03) {
         raise_exception(state, state->pc, EXC_AdEL, MIPS_VECTOR_GENERAL);
-        instr = read32(state->pc); // exception vector
+        commit_pending_exception(state);
+        return;
     }
 
     Result pa = pfn_translate(state->pc, state, 0);
@@ -48,21 +62,35 @@ void cpu_step(Registers *state) {
         switch (pa.value.reason) {
             case 2:
                 raise_exception(state, state->pc, EXC_TLBL, MIPS_VECTOR_TLB_REFILL);
-                break;
+                commit_pending_exception(state);
+                return;
             case 3:
                 raise_exception(state, state->pc, EXC_TLBL, MIPS_VECTOR_GENERAL);
-                break;
+                commit_pending_exception(state);
+                return;
         }
-        instr = read32(state->pc); // exception vector
-    } else {
-        instr = read32((uint32_t) pa.value.ok);
     }
 
+    instr = read32((uint32_t) pa.value.ok);
     execute_instr(instr, state);
 
+    /* A synchronous instruction exception wins over normal/branch commit. */
+    if (state->exception_pending) {
+        commit_pending_exception(state);
+        return;
+    }
+
+    state->bds = 0;
+
     if (state->is_delay_slot) {
+        state->bds = 1;
+
         if (state->is_taken) {
-            state->pc = state->target_pc; // branch taken
+            state->pc = state->next_pc; // branch taken
+            state->next_pc = state->target_pc;
+            state->is_delay_slot = 0;
+            state->is_taken = 0;
+            return;
         } else {
             state->pc += 4; // branch not taken
         }
@@ -76,9 +104,18 @@ void cpu_step(Registers *state) {
     state->next_pc += 4;
 }
 
+void update_cycle(Registers *state) {
+    decrease_random(state);
+    increase_counter(state);
+}
+
 void startup(Registers *state) {
     while (1) {
-        if (status->state == RUNNING) {
+        if (status->state == RESET) {
+            reset_cpu(state);
+            status->state = RUNNING;
+        }
+        else if (status->state == RUNNING) {
             cpu_step(state);
         }
         else if (status->state == STEPPING) {

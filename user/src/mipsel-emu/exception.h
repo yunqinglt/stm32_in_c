@@ -45,16 +45,13 @@ typedef enum {
     MIPS_VECTOR_RESET,
 } VectorClass;
 
-static const uint32_t refill_vector[2][2] = {
-    {0x80000000, 0x80000180},
-    {0xbfc00200, 0xbfc00380},
-};
-
+/* Cold reset, architectural soft reset, and direct bundled-Linux entry. */
 void reset_cpu(Registers *state);
-void raise_exception(Registers *state, uint32_t exc_info, uint8_t exc_code, VectorClass class);
+void soft_reset_cpu(Registers *state);
+void linux_load_reset(Registers *state);
 
-// TODO: Reset with secondary state?
-extern void soft_reset_cpu(Registers *state);
-extern void linux_load_reset(Registers *state);
+/* Schedule a precise exception. cpu_step() commits the selected vector. */
+void raise_exception(Registers *state, uint32_t exc_info,
+                     uint8_t exc_code, VectorClass class);
 
 #endif

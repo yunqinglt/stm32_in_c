@@ -74,6 +74,8 @@ typedef struct Registers_t {
     uint8_t is_delay_slot;
     uint8_t is_taken;
     uint32_t target_pc;
+    uint8_t bds; // current instruction is in a branch delay slot
+    uint8_t exception_pending; // next_pc contains an exception vector
 
     uint8_t ISAMode; // Reserved for future use
     uint8_t ll_bit;
@@ -143,6 +145,7 @@ typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
 #define CP0_STATUS_IE_LEN       1
 
 #define STATUS_BEV(state)  GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_BEV_POS, CP0_STATUS_BEV_LEN)
+#define STATUS_CU0(state)  GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_CU_POS, 1)
 #define STATUS_IM(state)   GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_IM_POS, CP0_STATUS_IM_LEN)
 #define STATUS_KSU(state)  GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_KSU_POS, CP0_STATUS_KSU_LEN)
 #define STATUS_ERL(state)  GET_BITFIELD((state)->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_ERL_POS, CP0_STATUS_ERL_LEN)
@@ -195,7 +198,7 @@ typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
 
 // CP0 Register 4 Select 0 (Context)
 #define CP0_CONTEXT_PTEB_POS    23
-#define CP0_CONTEXT_PTEB_LEN    8
+#define CP0_CONTEXT_PTEB_LEN    9
 #define CP0_CONTEXT_BVPN2_POS   4
 #define CP0_CONTEXT_BVPN2_LEN   19
 
@@ -335,13 +338,22 @@ typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);
 #define CONF3_VINT(state)   GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config3, CP0_CONF3_VINT_POS, CP0_CONF3_VINT_LEN)
 #define CONF3_SP(state)     GET_BITFIELD((state)->cp0.byname.cp0r16_t.cp0r16_n.Config3, CP0_CONF3_SP_POS, CP0_CONF3_SP_LEN)
 
-#define INIT_STATUS     0x10400004
-#define INIT_CONFIG0_R1 0xfe00008a
-#define INIT_CONFIG0_R2 0xfe00408a
-#define INIT_RANDOM     0x3f
+#define MIPS_RESET_VECTOR       0xbfc00000u
+#define MIPS_DEFAULT_EBASE      0x80000000u
+#define MIPS_LINUX_ENTRY        0x802b0000u
 
-#define PRID_OPT        ((uint8_t) "Y" << 24)
+/*
+ * Generic little-endian MIPS32 core implemented by this emulator:
+ * 64-entry R4K-style TLB, Release 2, no FPU and no modeled cache.
+ */
+#define INIT_STATUS             0x00400004u /* BEV | ERL */
+#define INIT_CONFIG0_R1         0x80000082u /* M | MT=TLB | K0=uncached */
+#define INIT_CONFIG0_R2         0x80000482u /* Config0.AR = Release 2 */
+#define INIT_CONFIG1            0x7e000000u /* MMUSize = 64 - 1 */
+#define INIT_RANDOM             0x0000003fu
+#define INIT_PRID               0x00010000u /* MIPS/QEMU generic core */
+#define INIT_INTCTL             0xe0000000u /* timer interrupt on IP7 */
 
-inline Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write);
+Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write);
 
 #endif

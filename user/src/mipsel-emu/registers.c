@@ -3,11 +3,16 @@
 #include <stdint.h>
 
 // 2 = TLB Refill, 3 = TLB Invalid, 4 = TLB Modified
-inline Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
+Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
     // kseg0: 0x8000_0000-0x9fff_ffff, kseg1: 0xa000_0000-0xbfff_ffff
     if (target >= 0x80000000 && target <= 0xBFFFFFFF) {
         // no need to translate
         return OK(target & 0x1FFFFFFF);
+    }
+
+    /* Status.ERL makes kuseg an unmapped, uncached physical window. */
+    if (STATUS_ERL(state) && target < 0x80000000u) {
+        return OK(target);
     }
 
     uint8_t current_asid = state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi & 0xFF;

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define PLATFORM_MEMORY_SIZE (16u * 1024u)
+#define PLATFORM_MEMORY_SIZE (16u * 1024u + 1024u)
 
 /* A single byte-addressed RAM instance owned by platform.c. */
 extern uint8_t pool[PLATFORM_MEMORY_SIZE];

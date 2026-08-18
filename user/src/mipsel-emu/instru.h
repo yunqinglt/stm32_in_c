@@ -5,6 +5,7 @@
 #include "registers.h"
 #include "op.h"
 
+#ifdef MIPSEL_EMU_DEFINE_INSTRUCTION_TABLES
 
 MIPS_Instruction_Handler op_table[64] = {
     [0x00] = special1_handler,
@@ -230,10 +231,18 @@ MIPS_Instruction_Handler special3_table[64] = {
 };
 
 
+MIPS_Instruction_Handler bshfl_table[32] = {
+    [0 ... 31] = beta,
+
+    [0x02] = op_wsbh,
+    [0x10] = op_seb,
+    [0x18] = op_seh,
+};
+
 // | --- COP0 --- |C=1 | - All Zero - | Func |
 //  < --  6   -- >< 1 >< ---  19  --- ><- 6 ->
 MIPS_Instruction_Handler cop0_table0[64] = {
-    [0 .. 63] = delta,
+    [0 ... 63] = beta,
 
     [0x01] = op_tlbr,
     [0x02] = op_tlbwi,
@@ -249,8 +258,7 @@ MIPS_Instruction_Handler cop0_table0[64] = {
 // | --- COP0 --- |C=0 | Func | rt | rd | All Zero | Sel |
 // < --  6   --  >< 1 ><- 4 ->< 5 >< 5 >< -- 8 -- ><- 3 ->
 MIPS_Instruction_Handler cop0_table1[16] = {
-    // beta
-    [0 .. 15] = delta,
+    [0 ... 15] = beta,
 
     [0x00] = op_mfc0,
     [0x04] = op_mtc0,
@@ -262,5 +270,18 @@ MIPS_Instruction_Handler cop0_table1[16] = {
 
     // delta
 };
+
+#else
+
+extern MIPS_Instruction_Handler op_table[64];
+extern MIPS_Instruction_Handler special1_table[64];
+extern MIPS_Instruction_Handler regimm_table[32];
+extern MIPS_Instruction_Handler special2_table[64];
+extern MIPS_Instruction_Handler special3_table[64];
+extern MIPS_Instruction_Handler bshfl_table[32];
+extern MIPS_Instruction_Handler cop0_table0[64];
+extern MIPS_Instruction_Handler cop0_table1[16];
+
+#endif
 
 #endif

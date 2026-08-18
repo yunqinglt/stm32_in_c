@@ -1,9 +1,9 @@
 #include "op.h"
 #include "compiler.h"
 #include "exception.h"
+#include "instru.h"
 #include "platform.h"
 #include "registers.h"
-#include <signal.h>
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -26,6 +26,11 @@ __STATIC_FORCEINLINE void unconditional_branch(Registers *state) {
     state->is_taken = 1;
 }
 
+__STATIC_FORCEINLINE uint32_t branch_target(const Registers *state,
+                                            uint16_t immediate) {
+    return state->pc + 4u + (uint32_t)(sign_extend(immediate) * 4);
+}
+
 
 // Near 256MB Jump
 void op_j(uint32_t instr, Registers *state) {
@@ -41,7 +46,7 @@ void op_jal(uint32_t instr, Registers *state) {
 
     unconditional_branch(state);
     state->gpr[31] = state->pc + 8;
-    state->next_pc = (((state->pc + 4) & 0xf0000000) | (target << 2));
+    state->target_pc = (((state->pc + 4) & 0xf0000000) | (target << 2));
 }
 
 // Branch on Equal
@@ -53,7 +58,7 @@ void op_beq(uint32_t instr, Registers *state) {
     state->is_delay_slot = 1; // execute branch delay
     if (state->gpr[rs] == state->gpr[rt]) {
         state->is_taken = 1;
-        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+        state->target_pc = branch_target(state, imm);
     } else {
         state->is_taken = 0;
     }
@@ -67,7 +72,7 @@ void op_bne(uint32_t instr, Registers *state) {
     state->is_delay_slot = 1;
     if (state->gpr[rs] != state->gpr[rt]) {
         state->is_taken = 1;
-        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+        state->target_pc = branch_target(state, imm);
     } else {
         state->is_taken = 0;
     }
@@ -80,7 +85,7 @@ void op_blez(uint32_t instr, Registers *state) {
     state->is_delay_slot = 1;
     if ((int32_t)state->gpr[rs] <= 0) {
         state->is_taken = 1;
-        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+        state->target_pc = branch_target(state, imm);
     } else {
         state->is_taken = 0;
     }
@@ -93,9 +98,108 @@ void op_bgtz(uint32_t instr, Registers *state) {
     state->is_delay_slot = 1;
     if ((int32_t)state->gpr[rs] > 0) {
         state->is_taken = 1;
-        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+        state->target_pc = branch_target(state, imm);
     } else {
         state->is_taken = 0;
+    }
+}
+
+void op_bltz(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    state->is_delay_slot = 1;
+    if ((int32_t)state->gpr[rs] < 0) {
+        state->is_taken = 1;
+        state->target_pc = branch_target(state, imm);
+    } else {
+        state->is_taken = 0;
+    }
+}
+
+void op_bltzl(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t offset = getimm(instr);
+
+    if ((int32_t)state->gpr[rs] < 0) {
+        unconditional_branch(state);
+        state->target_pc = branch_target(state, offset);
+    } else {
+        state->is_delay_slot = 0;
+        state->is_taken = 0;
+        state->next_pc = state->pc + 8;
+    }
+}
+
+void op_bgezl(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t offset = getimm(instr);
+
+    if ((int32_t)state->gpr[rs] >= 0) {
+        unconditional_branch(state);
+        state->target_pc = branch_target(state, offset);
+    } else {
+        state->is_delay_slot = 0;
+        state->is_taken = 0;
+        state->next_pc = state->pc + 8;
+    }
+}
+
+void op_bgezal(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    state->gpr[31] = state->pc + 8;
+    state->is_delay_slot = 1;
+    if ((int32_t)state->gpr[rs] >= 0) {
+        state->is_taken = 1;
+        state->target_pc = branch_target(state, imm);
+    } else {
+        state->is_taken = 0;
+    }
+}
+
+void op_bltzal(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    state->gpr[31] = state->pc + 8;
+    state->is_delay_slot = 1;
+    if ((int32_t)state->gpr[rs] < 0) {
+        state->is_taken = 1;
+        state->target_pc = branch_target(state, imm);
+    } else {
+        state->is_taken = 0;
+    }
+}
+
+void op_bgezall(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t offset = getimm(instr);
+
+    state->gpr[31] = state->pc + 8;
+    if ((int32_t)state->gpr[rs] >= 0) {
+        unconditional_branch(state);
+        state->target_pc = branch_target(state, offset);
+    } else {
+        state->is_delay_slot = 0;
+        state->is_taken = 0;
+        state->next_pc = state->pc + 8;
+    }
+}
+
+void op_bltzall(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t offset = getimm(instr);
+
+    state->gpr[31] = state->pc + 8;
+    if ((int32_t)state->gpr[rs] < 0) {
+        unconditional_branch(state);
+        state->target_pc = branch_target(state, offset);
+    } else {
+        state->is_delay_slot = 0;
+        state->is_taken = 0;
+        state->next_pc = state->pc + 8;
     }
 }
 
@@ -106,7 +210,7 @@ void op_bgez(uint32_t instr, Registers *state) {
     state->is_delay_slot = 1;
     if ((int32_t)state->gpr[rs] >= 0) {
         state->is_taken = 1;
-        state->next_pc = state->pc + 4 + (sign_extend(imm) << 2);
+        state->target_pc = branch_target(state, imm);
     } else {
         state->is_taken = 0;
     }
@@ -117,11 +221,6 @@ void op_jalr(uint32_t instr, Registers *state) {
     uint16_t rd = getrd(instr);
     uint32_t target = state->gpr[rs];
 
-    if ((target & 0x01) && (!CONF1_CA(state))) {
-        raise_exception(state, target, EXC_AdEL, MIPS_VECTOR_GENERAL);
-        return;
-    }
-
     uint32_t ret_addr = state->pc + 8;
     state->gpr[rd] = ret_addr | state->ISAMode;
 
@@ -129,9 +228,8 @@ void op_jalr(uint32_t instr, Registers *state) {
 
     state->is_delay_slot = 1;
     state->is_taken = 1;
-    state->target_pc = target & ~0x01;
-    
-    state->ISAMode = target & 0x01;
+    /* A misaligned target faults on the target fetch, after the delay slot. */
+    state->target_pc = target;
 }
 
 void op_slti(uint32_t instr, Registers *state) {
@@ -213,16 +311,187 @@ void op_subu(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
+void op_and(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    state->gpr[rd] = (state->gpr[rs] & state->gpr[rt]);
+    S0_IS_0(state);
+}
+
+void op_or(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    state->gpr[rd] = (state->gpr[rs] | state->gpr[rt]);
+    S0_IS_0(state);
+}
+
+void op_xor(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    state->gpr[rd] = (state->gpr[rs] ^ state->gpr[rt]);
+    S0_IS_0(state);
+}
+
+void op_slt(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    if ((int32_t) state->gpr[rs] < (int32_t) state->gpr[rt]) {
+        state->gpr[rd] = 1;
+    } else {
+        state->gpr[rd] = 0;
+    }
+}
+
+void op_sltu(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    if (state->gpr[rs] < state->gpr[rt]) {
+        state->gpr[rd] = 1;
+    } else {
+        state->gpr[rd] = 0;
+    }
+}
+
+void op_nor(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    state->gpr[rd] = ~(state->gpr[rs] | state->gpr[rt]);
+    S0_IS_0(state);
+}
+
+
+void op_tge(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    if ((int32_t) state->gpr[rs] >= (int32_t) state->gpr[rt]) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tgeu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    if (state->gpr[rs] >= state->gpr[rt]) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tlt(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    if ((int32_t) state->gpr[rs] < (int32_t) state->gpr[rt]) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tltu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    if (state->gpr[rs] < state->gpr[rt]) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_teq(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    if (state->gpr[rs] == state->gpr[rt]) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tne(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    if (state->gpr[rs] != state->gpr[rt]) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tgei(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    if ((int32_t) state->gpr[rs] >= sign_extend(imm)) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tgeiu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    if (state->gpr[rs] >= (uint32_t) sign_extend(imm)) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tlti(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    if ((int32_t) state->gpr[rs] < sign_extend(imm)) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tltiu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    if (state->gpr[rs] < (uint32_t) sign_extend(imm)) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_teqi(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    if (state->gpr[rs] == (uint32_t) sign_extend(imm)) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
+void op_tnei(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint16_t imm = getimm(instr);
+
+    if (state->gpr[rs] != (uint32_t) sign_extend(imm)) {
+        raise_exception(state, 0, EXC_Tr, MIPS_VECTOR_GENERAL);
+    }
+}
+
 void op_addi(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
+    int32_t value = (int32_t)state->gpr[rs];
     int32_t imm = sign_extend(getimm(instr));
 
-    if ((imm > 0 && state->gpr[rs] > INT32_MAX - imm) || (imm < 0 && state->gpr[rs] < INT32_MIN - imm)) {
+    if ((imm > 0 && value > INT32_MAX - imm) ||
+        (imm < 0 && value < INT32_MIN - imm)) {
         raise_exception(state, 0, EXC_Ov, MIPS_VECTOR_GENERAL);
         return;
     } else {
-        state->gpr[rt] = state->gpr[rs] + imm;
+        state->gpr[rt] = (uint32_t)(value + imm);
     }
     S0_IS_0(state);
 }
@@ -251,7 +520,7 @@ void op_beql(uint32_t instr, Registers *state) {
 
     if (state->gpr[rs] == state->gpr[rt]) {
         unconditional_branch(state);
-        state->target_pc = state->pc + 4 + (sign_extend(offset) << 2);
+        state->target_pc = branch_target(state, offset);
     } else {
         state->is_delay_slot = 0;
         state->is_taken = 0;
@@ -264,9 +533,9 @@ void op_bnel(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint16_t offset = getimm(instr);
 
-    if (state->gpr[rs] == state->gpr[rt]) {
+    if (state->gpr[rs] != state->gpr[rt]) {
         unconditional_branch(state);
-        state->target_pc = state->pc + 4 + (sign_extend(offset) << 2);
+        state->target_pc = branch_target(state, offset);
     } else {
         state->is_delay_slot = 0;
         state->is_taken = 0;
@@ -280,7 +549,7 @@ void op_blezl(uint32_t instr, Registers *state) {
 
     if ((int32_t)state->gpr[rs] <= 0) {
         unconditional_branch(state);
-        state->target_pc = state->pc + 4 + (sign_extend(offset) << 2);
+        state->target_pc = branch_target(state, offset);
     } else {
         state->is_delay_slot = 0;
         state->is_taken = 0;
@@ -292,9 +561,9 @@ void op_bgtzl(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t offset = getimm(instr);
 
-    if ((int32_t)state->gpr[rs] >= 0) {
+    if ((int32_t)state->gpr[rs] > 0) {
         unconditional_branch(state);
-        state->target_pc = state->pc + 4 + (sign_extend(offset) << 2);
+        state->target_pc = branch_target(state, offset);
     } else {
         state->is_delay_slot = 0;
         state->is_taken = 0;
@@ -309,7 +578,7 @@ void op_jalx(uint32_t instr, Registers *state) {
     state->gpr[31] = state->pc + 8;
     state->target_pc = (state->pc & 0xf0000000) | (target << 2);
 
-    state->ISAMode ^= state->ISAMode;
+    state->ISAMode = state->ISAMode ^ 0x01;
 }
 
 // load byte
@@ -353,7 +622,7 @@ void op_lh(uint32_t instr, Registers *state) {
     uint32_t va = offset + state->gpr[rs];
 
     if (va & 0x01) {
-        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
+        raise_exception(state, va, EXC_AdEL, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -485,7 +754,7 @@ void op_lhu(uint32_t instr, Registers *state) {
     uint32_t va = state->gpr[rs] + offset;
     
     if (va & 0x01) {
-        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
+        raise_exception(state, va, EXC_AdEL, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -516,7 +785,7 @@ void op_lw(uint32_t instr, Registers *state) {
     uint32_t va = state->gpr[rs] + offset;
     
     if (va & 0x03) {
-        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
+        raise_exception(state, va, EXC_AdEL, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -558,7 +827,7 @@ void op_sb(uint32_t instr, Registers *state) {
                 raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                raise_exception(state, va, EXC_MOD, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -588,7 +857,7 @@ void op_sh(uint32_t instr, Registers *state) {
                 raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                raise_exception(state, va, EXC_MOD, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -618,7 +887,7 @@ void op_sw(uint32_t instr, Registers *state) {
                 raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                raise_exception(state, va, EXC_MOD, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -656,7 +925,7 @@ void op_swl(uint32_t instr, Registers *state) {
                 raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                raise_exception(state, va, EXC_MOD, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -694,7 +963,7 @@ void op_swr(uint32_t instr, Registers *state) {
                 raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                raise_exception(state, va, EXC_MOD, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -708,7 +977,7 @@ void op_ll(uint32_t instr, Registers *state) {
     uint32_t va = state->gpr[rs] + offset;
     
     if (va & 0x03) {
-        raise_exception(state, va, EXC_AdES, MIPS_VECTOR_GENERAL);
+        raise_exception(state, va, EXC_AdEL, MIPS_VECTOR_GENERAL);
         return;
     }
 
@@ -758,7 +1027,7 @@ void op_sc(uint32_t instr, Registers *state) {
                 raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
                 break;
             case 4:
-                raise_exception(state, va, EXC_TLBS, MIPS_VECTOR_GENERAL);
+                raise_exception(state, va, EXC_MOD, MIPS_VECTOR_GENERAL);
                 break;
         }
     }
@@ -813,18 +1082,10 @@ void op_jr(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint32_t target = state->gpr[rs];
 
-    if ((target & 0x01) && (!CONF1_CA(state))) {
-        raise_exception(state, target, EXC_AdEL, MIPS_VECTOR_GENERAL);
-        return;
-    }
-
-    S0_IS_0(state);
-
     state->is_delay_slot = 1;
     state->is_taken = 1;
-    state->target_pc = target & ~0x01;
-    
-    state->ISAMode = target & 0x01;
+    /* A misaligned target faults on the target fetch, after the delay slot. */
+    state->target_pc = target;
 }
 
 void op_movz(uint32_t instr, Registers *state) {
@@ -832,7 +1093,267 @@ void op_movz(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
 
-    
+    if (state->gpr[rt] == 0) {
+        state->gpr[rd] = state->gpr[rs];
+    }
+
+    S0_IS_0(state);
+}
+
+void op_movn(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    if (state->gpr[rt] != 0) {
+        state->gpr[rd] = state->gpr[rs];
+    }
+
+    S0_IS_0(state);
+}
+
+void op_syscall(uint32_t instr, Registers *state) {
+    raise_exception(state, 0, EXC_SC, MIPS_VECTOR_GENERAL);
+}
+
+void op_break(uint32_t instr, Registers *state) {
+    raise_exception(state, 0, EXC_BP, MIPS_VECTOR_GENERAL);
+}
+
+void op_move_to_hi(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    state->hi = state->gpr[rs];
+}
+
+void op_move_to_lo(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    state->lo = state->gpr[rs];
+}
+
+void op_mult(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    int64_t prod = (int64_t) state->gpr[rs] * (int64_t) state->gpr[rt];
+    state->hi = (uint32_t) (prod >> 32);
+    state->lo = (uint32_t) (prod & 0xffffffff);
+}
+
+void op_div(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    int32_t num = (int32_t)state->gpr[rs];
+    int32_t den = (int32_t)state->gpr[rt];
+
+    if (den == 0) {
+        return;
+    }
+
+    if (num == (int32_t)0x80000000 && den == -1) {
+        state->lo = 0x80000000;
+        state->hi = 0;
+        return;
+    }
+
+    state->lo = (uint32_t)(num / den);
+    state->hi = (uint32_t)(num % den);
+}
+
+void op_divu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    uint32_t num = state->gpr[rs];
+    uint32_t den = state->gpr[rt];
+
+    if (den == 0) {
+        return;
+    }
+
+    state->lo = num / den;
+    state->hi = num % den;
+}
+
+void op_add(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    int32_t a = (int32_t)state->gpr[rs];
+    int32_t b = (int32_t)state->gpr[rt];
+
+    if ((a > 0 && b > INT32_MAX - a) ||
+        (a < 0 && b < INT32_MIN - a)) {
+        raise_exception(state, 0, EXC_Ov, MIPS_VECTOR_GENERAL);
+        return;
+    } else {
+        if (rd != 0) {
+            state->gpr[rd] = (uint32_t)(a + b);
+        }
+    }
+
+    S0_IS_0(state);
+}
+
+void op_sub(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    uint32_t a = state->gpr[rs];
+    uint32_t b = state->gpr[rt];
+    uint32_t res = a - b;
+
+    if (((a ^ b) & (a ^ res)) & 0x80000000U) {
+        raise_exception(state, 0, EXC_Ov, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    if (rd != 0) {
+        state->gpr[rd] = res;
+    }
+
+    S0_IS_0(state);
+}
+
+
+void op_madd(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    int64_t a = (int32_t)state->gpr[rs];
+    int64_t b = (int32_t)state->gpr[rt];
+
+    int64_t prod = a * b;
+
+    int64_t acc = (int64_t)(((uint64_t)state->hi << 32) | (uint32_t)state->lo);
+
+    int64_t res = acc + prod;
+
+    state->hi = (uint32_t)((uint64_t)res >> 32);
+    state->lo = (uint32_t)(res & 0xFFFFFFFFULL);
+}
+
+void op_maddu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    uint64_t a = (uint32_t)state->gpr[rs];
+    uint64_t b = (uint32_t)state->gpr[rt];
+
+    uint64_t prod = a * b;
+
+    uint64_t acc = ((uint64_t)state->hi << 32) | (uint32_t)state->lo;
+
+    uint64_t res = acc + prod;
+
+    state->hi = (uint32_t)(res >> 32);
+    state->lo = (uint32_t)(res & 0xFFFFFFFFULL);
+}
+
+void op_mul(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t rd = getrd(instr);
+
+    int64_t prod = (int64_t) state->gpr[rs] * (int64_t) state->gpr[rt];
+
+    state->gpr[rd] = (uint32_t) (prod & 0xffffffff);
+    S0_IS_0(state);
+}
+
+void op_msub(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    int64_t a = (int32_t)state->gpr[rs];
+    int64_t b = (int32_t)state->gpr[rt];
+
+    int64_t prod = a * b;
+
+    int64_t acc = (int64_t)(((uint64_t)state->hi << 32) | (uint32_t)state->lo);
+
+    int64_t res = acc - prod;
+
+    state->hi = (uint32_t)((uint64_t)res >> 32);
+    state->lo = (uint32_t)(res & 0xFFFFFFFFULL);
+}
+
+void op_msubu(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+
+    uint64_t a = (uint32_t)state->gpr[rs];
+    uint64_t b = (uint32_t)state->gpr[rt];
+
+    uint64_t prod = a * b;
+
+    uint64_t acc = ((uint64_t)state->hi << 32) | (uint32_t)state->lo;
+
+    uint64_t res = acc - prod;
+
+    state->hi = (uint32_t)(res >> 32);
+    state->lo = (uint32_t)(res & 0xFFFFFFFFULL);
+}
+
+// counter
+void op_clo(uint32_t instr, Registers *state) {
+    uint32_t count = 0;
+    uint8_t rs = getrs(instr);
+    uint8_t rd = getrd(instr);
+
+    uint32_t num = state->gpr[rs];
+    while (num != 0) {
+        num &= (num - 1);
+        count += 1;
+    }
+
+    state->gpr[rd] = count;
+    S0_IS_0(state);
+}
+
+void op_clz(uint32_t instr, Registers *state) {
+    uint32_t count = 0;
+    uint8_t rs = getrs(instr);
+    uint8_t rd = getrd(instr);
+
+    uint32_t num = ~state->gpr[rs];
+    while (num != 0) {
+        num &= (num - 1);
+        count += 1;
+    }
+
+    state->gpr[rd] = count;
+    S0_IS_0(state);
+}
+
+
+void op_ext(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t msbd = getrd(instr);
+    uint8_t lsb = getmask(instr);
+
+    if (!(TCregion(msbd, 0, 32) && TCregion(lsb, 0, 32) && TCregion(msbd + lsb, 0, 32))) return;
+    state->gpr[rt] = (state->gpr[rs] >> lsb) & ((1 << (msbd + 1)) - 1);
+
+    S0_IS_0(state);
+}
+
+void op_ins(uint32_t instr, Registers *state) {
+    uint8_t rs = getrs(instr);
+    uint8_t rt = getrt(instr);
+    uint8_t msb = getrd(instr);
+    uint8_t lsb = getmask(instr);
+
+    if (!(TCregion(msb, 0, 32) && TCregion(lsb, 0, 32) && TCregion(msb + lsb, 0, 32))) return;
+
+    uint32_t temp = (state->gpr[rs] & ((1 << (msb - lsb + 1)) - 1) << lsb);
+    state->gpr[rt] &= ~(((1 << (msb - lsb + 1)) - 1) << lsb);
+    state->gpr[rt] |= temp;
+
+    S0_IS_0(state);
 }
 
 void op_addiu(uint32_t instr, Registers *state) {
@@ -863,6 +1384,22 @@ void beta(uint32_t instr, Registers *state) {
 void delta(uint32_t instr, Registers *state) {
     uint8_t cop_id = getop(instr) & 0x03;
     raise_exception(state, cop_id, EXC_CpU, MIPS_VECTOR_GENERAL);
+}
+
+void op_deret(uint32_t instr, Registers *state) {
+    delta(instr, state);
+}
+
+void op_wfe(uint32_t instr, Registers *state) {
+    delta(instr, state);
+}
+
+void op_rdpgpr(uint32_t instr, Registers *state) {
+    delta(instr, state);
+}
+
+void op_wrpgpr(uint32_t instr, Registers *state) {
+    delta(instr, state);
 }
 
 void regimm_handler(uint32_t instr, Registers *state) {
@@ -922,6 +1459,7 @@ void op_tlbwr(uint32_t instr, Registers *state) {
 void op_tlbp(uint32_t instr, Registers *state) {
     uint8_t current_asid = state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi & 0xFF;
     uint8_t matched = 0;
+    uint8_t found = 0;
 
     for (int i = 0; i < 64; ++i) {
         uint32_t pmask = state->tlb[i].pmask;
@@ -934,12 +1472,14 @@ void op_tlbp(uint32_t instr, Registers *state) {
         if ((state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi & mask) == (ehi & mask)) {
             uint8_t is_global = (elo0 & 1) & (elo1 & 1);
             if (is_global || (ehi & 0xFF) == current_asid) {
-                matched = i;
+                matched = (uint8_t)i;
+                found = 1;
+                break;
             }
         }
     }
 
-    if (matched != 0) {
+    if (found) {
         state->cp0.byname.cp0r0_t.cp0r0_n.Index = 
             SET_BITFIELD(state->cp0.byname.cp0r0_t.cp0r0_n.Index, 0, 6, matched);
         state->cp0.byname.cp0r0_t.cp0r0_n.Index = 
@@ -963,6 +1503,14 @@ void op_eret(uint32_t instr, Registers *state) {
         state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
             SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_EXL_POS, CP0_STATUS_EXL_LEN, 0);
     }
+
+    state->ll_bit = 0;
+    state->ll_addr = 0;
+    state->is_delay_slot = 0;
+    state->is_taken = 0;
+    state->target_pc = 0;
+    state->bds = 0;
+    state->exception_pending = 0;
 }
 
 
@@ -991,7 +1539,8 @@ void op_mfmc0(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
 
     if (rd != 12) {
-        raise_exception(state, 0, EXC_CpU, MIPS_VECTOR_GENERAL);
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
     }
 
     state->gpr[rt] = state->cp0.byname.cp0r12_t.cp0r12_n.Status;
@@ -1003,13 +1552,66 @@ void op_mfmc0(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_bshfl(uint32_t instr, Registers *state) {
-    uint8_t rt = getrt(instr);
+void op_wsbh(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
+    uint8_t rt = getrt(instr);
 
-    if (getrs(instr) == 0x10) {
-        // SEB rd, rt:  GPR[rd] <- SignExtend(GPR[rt][7:0])
-        state->gpr[rd] = sign_extend((int16_t)(uint8_t) state->gpr[rt]);
+    if (rd == 0) return;
+
+    uint32_t v = state->gpr[rt];
+    state->gpr[rd] = ((v & 0x00FF00FF) << 8) | ((v & 0xFF00FF00) >> 8);
+}
+
+void op_seb(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rt = getrt(instr);
+
+    if (rd == 0) return;
+
+    uint8_t temp = (uint8_t) (state->gpr[rt] & 0xff);
+    state->gpr[rd] = sign_extend(temp);
+}
+
+void op_seh(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rt = getrt(instr);
+
+    if (rd == 0) return;
+
+    uint16_t temp = (uint16_t) (state->gpr[rt] & 0xffff);
+    state->gpr[rd] = sign_extend(temp);
+}
+
+void op_bshfl(uint32_t instr, Registers *state) {
+    uint8_t funct = getmask(instr);
+
+    MIPS_Instruction_Handler handler = bshfl_table[funct];
+
+    handler(instr, state);
+}
+
+void op_rdhwr(uint32_t instr, Registers *state) {
+    uint8_t rd = getrd(instr);
+    uint8_t rt = getrt(instr);
+
+    if (rd == 0) return;
+
+    switch (state->gpr[rd]) {
+        case 2:
+            state->gpr[rt] = state->cp0.byname.cp0r9_t.cp0r9_n.Count;
+            break;
+        case 3:
+            state->gpr[rt] = 1; // resolution of count
+            break;
+
+        case 30:
+        case 31:
+            raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+            break;
+
+        default:
+            state->gpr[rt] = 0; // resolution of count
+            break;
     }
 }
 
@@ -1041,10 +1643,20 @@ void special3_handler(uint32_t instr, Registers *state) {
 }
 
 void op_cop0_handler(uint32_t instr, Registers *state) {
-    MIPS_Instruction_Handler handler = cop0_table1[getrs(instr)]; // RS[25:21]
+    MIPS_Instruction_Handler handler;
 
-    if (CFLAG(instr) == 1)
+    /* Kernel/EXL/ERL always has CP0 access; other modes require Status.CU0. */
+    if (!STATUS_EXL(state) && !STATUS_ERL(state) &&
+        STATUS_KSU(state) != 0 && !STATUS_CU0(state)) {
+        raise_exception(state, 0, EXC_CpU, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    if (CFLAG(instr) == 1) {
         handler = cop0_table0[getfunc(instr)]; // FUNC[5:0]
+    } else {
+        handler = cop0_table1[getrs(instr)]; // RS[24:21]
+    }
 
     handler(instr, state);
 }
