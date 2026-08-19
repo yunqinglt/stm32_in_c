@@ -30,9 +30,9 @@
 #define     __OM     volatile
 #define     __IOM    volatile
 
-#define __CONCAT_INTERNAL(a, b) a##b
-#define __CONCAT(a, b) __CONCAT_INTERNAL(a, b)
-#define __reserved(n, x) uint8_t __CONCAT(__reserved_, n)[x]
+#define MIPSEL_CONCAT_INTERNAL(a, b) a##b
+#define MIPSEL_CONCAT(a, b) MIPSEL_CONCAT_INTERNAL(a, b)
+#define __reserved(n, x) uint8_t MIPSEL_CONCAT(__reserved_, n)[x]
 
 #define __BIT_CONCAT_INTERNAL(a, b) a##b
 #define __BIT_CONCAT(a, b)  __BIT_CONCAT_INTERNAL(a, b)

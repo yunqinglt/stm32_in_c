@@ -297,8 +297,20 @@ void op_srl(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rt = getrt(instr);
     uint8_t mask = getmask(instr);
+    uint8_t rotate = getrs(instr);
+    uint32_t value = state->gpr[rt];
 
-    state->gpr[rd] = state->gpr[rt] >> mask;
+    /* In Release 2, SPECIAL/SRL uses rs=0 and ROTR uses rs=1. */
+    if (rotate > 1u) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    if (rotate == 1u && mask != 0u) {
+        state->gpr[rd] = (value >> mask) | (value << (32u - mask));
+    } else {
+        state->gpr[rd] = value >> mask;
+    }
     S0_IS_0(state);
 }
 
@@ -509,7 +521,7 @@ void op_lui(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
 
-    state->gpr[rt] = (uint32_t) (imm << 16);
+    state->gpr[rt] = (uint32_t)imm << 16;
     S0_IS_0(state);
 }
 
@@ -986,8 +998,7 @@ void op_ll(uint32_t instr, Registers *state) {
         uint32_t word = read32((uint32_t) pa.value.ok);
         state->gpr[rt] = word;
         state->ll_bit = 1;
-
-        // state->ll_addr?
+        state->ll_addr = (uint32_t)pa.value.ok;
     } else {
         switch (pa.value.reason) {
             case 2:
@@ -1016,8 +1027,14 @@ void op_sc(uint32_t instr, Registers *state) {
 
     Result pa = pfn_translate(va, state, 1);
     if (TEST_RESULT(pa)) {
-        write32((uint32_t) pa.value.ok, state->gpr[rt]);
+        uint32_t address = (uint32_t)pa.value.ok;
+        uint32_t value = state->gpr[rt];
+        bool succeeded = state->ll_bit && state->ll_addr == address;
+
+        if (succeeded) write32(address, value);
+        state->gpr[rt] = succeeded ? 1u : 0u;
         state->ll_bit = 0;
+        state->ll_addr = 0;
     } else {
         switch (pa.value.reason) {
             case 2:
@@ -1064,8 +1081,22 @@ void op_srlv(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
+    uint8_t rotate = getmask(instr);
 
-    state->gpr[rd] = state->gpr[rt] >> (state->gpr[rs] & 0x1f);
+    uint32_t mask = state->gpr[rs] & 0x1fu;
+    uint32_t value = state->gpr[rt];
+
+    /* In Release 2, SPECIAL/SRLV uses sa=0 and ROTRV uses sa=1. */
+    if (rotate > 1u) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    if (rotate == 1u && mask != 0u) {
+        state->gpr[rd] = (value >> mask) | (value << (32u - mask));
+    } else {
+        state->gpr[rd] = value >> mask;
+    }
     S0_IS_0(state);
 }
 
@@ -1134,9 +1165,15 @@ void op_mult(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
-    int64_t prod = (int64_t) state->gpr[rs] * (int64_t) state->gpr[rt];
-    state->hi = (uint32_t) (prod >> 32);
-    state->lo = (uint32_t) (prod & 0xffffffff);
+    if (getrd(instr) != 0u || getmask(instr) != 0u) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    int64_t prod = (int64_t)(int32_t)state->gpr[rs] *
+                   (int64_t)(int32_t)state->gpr[rt];
+    state->hi = (uint32_t)((uint64_t)prod >> 32);
+    state->lo = (uint32_t)prod;
 }
 
 void op_div(uint32_t instr, Registers *state) {
@@ -1303,10 +1340,16 @@ void op_clo(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rd = getrd(instr);
 
-    uint32_t num = state->gpr[rs];
-    while (num != 0) {
-        num &= (num - 1);
-        count += 1;
+    /* CLZ/CLO duplicate the destination register in rt and rd. */
+    if (getrt(instr) != rd || getmask(instr) != 0u) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    uint32_t value = state->gpr[rs];
+    for (uint32_t bit = UINT32_C(0x80000000);
+         bit != 0 && (value & bit) != 0; bit >>= 1) {
+        ++count;
     }
 
     state->gpr[rd] = count;
@@ -1318,10 +1361,16 @@ void op_clz(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rd = getrd(instr);
 
-    uint32_t num = ~state->gpr[rs];
-    while (num != 0) {
-        num &= (num - 1);
-        count += 1;
+    /* CLZ/CLO duplicate the destination register in rt and rd. */
+    if (getrt(instr) != rd || getmask(instr) != 0u) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    uint32_t value = state->gpr[rs];
+    for (uint32_t bit = UINT32_C(0x80000000);
+         bit != 0 && (value & bit) == 0; bit >>= 1) {
+        ++count;
     }
 
     state->gpr[rd] = count;
@@ -1334,9 +1383,15 @@ void op_ext(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t msbd = getrd(instr);
     uint8_t lsb = getmask(instr);
+    uint32_t size = (uint32_t)msbd + 1u;
+    uint32_t mask;
 
-    if (!(TCregion(msbd, 0, 32) && TCregion(lsb, 0, 32) && TCregion(msbd + lsb, 0, 32))) return;
-    state->gpr[rt] = (state->gpr[rs] >> lsb) & ((1 << (msbd + 1)) - 1);
+    if ((uint32_t)lsb + size > 32u) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+    mask = size == 32u ? UINT32_MAX : (UINT32_C(1) << size) - 1u;
+    state->gpr[rt] = (state->gpr[rs] >> lsb) & mask;
 
     S0_IS_0(state);
 }
@@ -1346,12 +1401,18 @@ void op_ins(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t msb = getrd(instr);
     uint8_t lsb = getmask(instr);
+    uint32_t width;
+    uint32_t field_mask;
 
-    if (!(TCregion(msb, 0, 32) && TCregion(lsb, 0, 32) && TCregion(msb + lsb, 0, 32))) return;
-
-    uint32_t temp = (state->gpr[rs] & ((1 << (msb - lsb + 1)) - 1) << lsb);
-    state->gpr[rt] &= ~(((1 << (msb - lsb + 1)) - 1) << lsb);
-    state->gpr[rt] |= temp;
+    if (msb < lsb) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+    width = (uint32_t)msb - lsb + 1u;
+    field_mask = width == 32u
+        ? UINT32_MAX : ((UINT32_C(1) << width) - 1u) << lsb;
+    state->gpr[rt] = (state->gpr[rt] & ~field_mask) |
+                     ((state->gpr[rs] << lsb) & field_mask);
 
     S0_IS_0(state);
 }
@@ -1361,7 +1422,8 @@ void op_addiu(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
 
-    state->gpr[rt] = state->gpr[rs] + imm;
+    /* ADDIU sign-extends the immediate but still wraps modulo 2^32. */
+    state->gpr[rt] = state->gpr[rs] + (uint32_t)sign_extend(imm);
     S0_IS_0(state);
 }
 
@@ -1391,7 +1453,10 @@ void op_deret(uint32_t instr, Registers *state) {
 }
 
 void op_wfe(uint32_t instr, Registers *state) {
-    delta(instr, state);
+    /* A simple single-threaded model treats WAIT as an idle cycle. The main
+     * loop keeps Count and device IRQs advancing between instructions. */
+    (void)instr;
+    (void)state;
 }
 
 void op_rdpgpr(uint32_t instr, Registers *state) {
@@ -1528,8 +1593,30 @@ void op_mtc0(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
     uint8_t sel = getsel(instr);
+    uint32_t value = state->gpr[rt];
 
-    state->cp0.regs[rd][sel] = state->gpr[rt];
+    if (rd == 13 && sel == 0) {
+        /* Cause only exposes software interrupt and control bits as RW. */
+        const uint32_t writable =
+            (UINT32_C(1) << CP0_CAUSE_DC_POS) |
+            (UINT32_C(1) << CP0_CAUSE_PCI_POS) |
+            (UINT32_C(1) << CP0_CAUSE_IV_POS) |
+            (UINT32_C(1) << CP0_CAUSE_WP_POS) |
+            (UINT32_C(3) << CP0_CAUSE_IP_POS);
+        uint32_t old = state->cp0.byname.cp0r13_t.cp0r13_n.Cause;
+        state->cp0.byname.cp0r13_t.cp0r13_n.Cause =
+            (old & ~writable) | (value & writable);
+    } else {
+        state->cp0.regs[rd][sel] = value;
+    }
+
+    /* Writing Compare acknowledges the MIPS Count/Compare interrupt. */
+    if (rd == 11 && sel == 0) {
+        uint32_t cause = state->cp0.byname.cp0r13_t.cp0r13_n.Cause;
+        cause = SET_BITFIELD(cause, CP0_CAUSE_TI_POS, CP0_CAUSE_TI_LEN, 0);
+        cause = SET_BITFIELD(cause, CP0_CAUSE_IP_POS + 7, 1, 0);
+        state->cp0.byname.cp0r13_t.cp0r13_n.Cause = cause;
+    }
 }
 
 // Enable and disable interrupts
@@ -1566,10 +1653,15 @@ void op_seb(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rt = getrt(instr);
 
+    if (getrs(instr) != 0u) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
     if (rd == 0) return;
 
-    uint8_t temp = (uint8_t) (state->gpr[rt] & 0xff);
-    state->gpr[rd] = sign_extend(temp);
+    uint8_t temp = (uint8_t) (state->gpr[rt] & 0xffu);
+    state->gpr[rd] = (uint32_t)(int32_t)(int8_t)temp;
 }
 
 void op_seh(uint32_t instr, Registers *state) {
@@ -1594,9 +1686,28 @@ void op_rdhwr(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rt = getrt(instr);
 
-    if (rd == 0) return;
+    if (getrs(instr) != 0u || getmask(instr) != 0u) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
 
-    switch (state->gpr[rd]) {
+    /* Kernel mode may read implemented HWRs directly.  Other modes need the
+     * corresponding CP0 HWREna bit, as required by MIPS32 Release 2. */
+    if (!STATUS_EXL(state) && !STATUS_ERL(state) &&
+        STATUS_KSU(state) != 0u &&
+        !(state->cp0.byname.cp0r7_t.cp0r7_n.HWREna &
+          (UINT32_C(1) << rd))) {
+        raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+        return;
+    }
+
+    switch (rd) {
+        case 0:
+            state->gpr[rt] = 0; /* Single emulated CPU. */
+            break;
+        case 1:
+            state->gpr[rt] = 32; /* SYNCI step, in bytes. */
+            break;
         case 2:
             state->gpr[rt] = state->cp0.byname.cp0r9_t.cp0r9_n.Count;
             break;
@@ -1604,15 +1715,13 @@ void op_rdhwr(uint32_t instr, Registers *state) {
             state->gpr[rt] = 1; // resolution of count
             break;
 
-        case 30:
-        case 31:
-            raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
-            break;
-
         default:
-            state->gpr[rt] = 0; // resolution of count
-            break;
+            /* HWR 4..29 are reserved here; 30 and 31 are optional
+             * implementation-dependent registers which are not modeled. */
+            raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
+            return;
     }
+    S0_IS_0(state);
 }
 
 void special1_handler(uint32_t instr, Registers *state) {

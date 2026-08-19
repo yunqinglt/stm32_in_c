@@ -1,0 +1,12 @@
+# Native build trees and executables
+/build/
+/cmake-build-*/
+/mipsel-emu
+/loader
+
+# Guest and debug artifacts
+/*.dtb
+/vmlinuz
+/loader.txt
+/*.trace
+/*.log

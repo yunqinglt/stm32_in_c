@@ -1,0 +1,65 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/dts-v1/;
+
+/* The loader places the UHI DTB at physical address 0x00010000. */
+/memreserve/ 0x00010000 0x00010000;
+
+/ {
+	#address-cells = <1>;
+	#size-cells = <1>;
+	compatible = "stm32-in-c,mipsel-emu";
+	model = "MIPS32r2 little-endian emulator";
+
+	aliases {
+		serial0 = &uart0;
+	};
+
+	chosen {
+		/* Plain earlycon discovers width, shift and clock from this DTB. */
+		bootargs = "earlycon console=ttyS0,115200n8 ignore_loglevel";
+		stdout-path = "serial0:115200n8";
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "mips,mips24Kc";
+			reg = <0>;
+			clocks = <&cpu_clk>;
+		};
+	};
+
+	cpu_clk: cpu-clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <100000000>;
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x00000000 0x01000000>;
+	};
+
+	cpu_intc: interrupt-controller {
+		compatible = "mti,cpu-interrupt-controller";
+		interrupt-controller;
+		#address-cells = <0>;
+		#interrupt-cells = <1>;
+	};
+
+	uart0: serial@1f000900 {
+		compatible = "ns16550a";
+		reg = <0x1f000900 0x20>;
+		reg-io-width = <4>;
+		reg-shift = <2>;
+		clock-frequency = <14745600>;
+		current-speed = <115200>;
+		interrupt-parent = <&cpu_intc>;
+		interrupts = <4>;
+		no-loopback-test;
+		status = "okay";
+	};
+};

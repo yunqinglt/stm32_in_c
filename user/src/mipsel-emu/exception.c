@@ -1,4 +1,5 @@
 #include "exception.h"
+#include "debugger.h"
 #include "registers.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -145,12 +146,10 @@ void soft_reset_cpu(Registers *state) {
 void linux_load_reset(Registers *state) {
     reset_cpu(state);
 
-    /*
-     * The bundled vmlinuz is an ELF32 MIPS image whose entry point is
-     * 0x802b0000. a0-a3 remain zero and may be filled by a future board
-     * loader with argc/argv/environment or a device-tree pointer.
+    /* Direct kernel entry models a bootloader hand-off, not reset mode.
+     * The board loader replaces this legacy fallback PC with ELF e_entry
+     * and fills the UHI/FDT argument registers.
      */
-    /* Direct kernel entry models a bootloader hand-off, not reset mode. */
     state->cp0.byname.cp0r12_t.cp0r12_n.Status = 0;
     state->pc = MIPS_LINUX_ENTRY;
     state->next_pc = MIPS_LINUX_ENTRY + 4u;
@@ -173,6 +172,7 @@ void raise_exception(Registers *state, uint32_t exc_info,
             state->next_pc = state->pc;
             state->exception_pending = 1;
         }
+        debugger_exception(state, exc_info, exc_code, class);
         return;
     }
 
@@ -234,4 +234,5 @@ void raise_exception(Registers *state, uint32_t exc_info,
     flush_control_transfer(state);
     state->next_pc = vector;
     state->exception_pending = 1;
+    debugger_exception(state, exc_info, exc_code, class);
 }

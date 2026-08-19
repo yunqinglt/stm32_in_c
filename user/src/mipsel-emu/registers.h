@@ -90,12 +90,18 @@ typedef enum {
     HALTING,
 } cpu_state;
 
+typedef int (*vm_reset_callback_t)(Registers *state, void *opaque);
+
 typedef struct {
     cpu_state state;
     // This is struct pointer for data essential in any state
     Registers *cpu_ctx;
     uint32_t steps;
     uint64_t clock; // clock rate
+    uint64_t ticks;
+    uint64_t max_ticks; /* Zero means no execution limit. */
+    vm_reset_callback_t reset_callback;
+    void *reset_opaque;
 } vmstate_t;
 
 typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);

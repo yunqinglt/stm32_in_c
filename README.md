@@ -35,19 +35,26 @@ The repository excludes the following generated files and directories:
 - `PY_LINK_V2.12.hex`
 
 ### MIPS32EL Release 2 Emulator(/user/src/mipsel-emu)
+
+The emulator has its own native-host build because the repository root CMake
+project targets ARM bare metal. See
+[`user/src/mipsel-emu/README.md`](user/src/mipsel-emu/README.md) for the TUI,
+MMIO UART, Linux DTB/configuration, and run instructions.
+
 ```C
 // CPU: MIPS32 Little Endian Release 2 no FPU / Version 0.1
 /*
     Features: 
     [*] single pipeline
     [/] basic mips32 release 2 behavior
-    [ ] branch delay
-    [ ] virtual mmio device
-    [ ] ->   UART Console
+    [*] branch delay
+    [*] virtual mmio device
+    [*] ->   16550A UART Console
     [ ] ->   Display
     [ ] Multi-Thread Application-Specific Extension
     [ ] ->   shadow register set
-    [ ] virtual debug support
+    [*] virtual debug support
+    [*] ->   ncurses register/instruction/exception TUI
     [ ] ->   GDB
 
     [-] FPU
