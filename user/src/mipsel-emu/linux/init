@@ -1,0 +1,31 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export HOME=/root
+export TERM="${TERM:-linux}"
+export PS1='mipsel-emu # '
+
+mount -t devtmpfs devtmpfs /dev ||
+    echo "warning: cannot mount devtmpfs on /dev"
+
+mkdir -p /dev/pts /dev/shm /proc /sys /run /tmp /root
+mount -t proc proc /proc ||
+    echo "warning: cannot mount procfs"
+mount -t sysfs sysfs /sys ||
+    echo "warning: cannot mount sysfs"
+mount -t devpts devpts /dev/pts ||
+    echo "warning: cannot mount devpts"
+
+echo
+echo "mipsel-emu: userspace ready on ttyS0"
+
+# Run the console in a child so PID 1 remains alive if the user exits the
+# shell.  The child is not a process-group leader, so setsid can always create
+# a session before cttyhack resolves /dev/console to ttyS0 and claims it as the
+# controlling terminal.
+while :; do
+    /usr/bin/setsid /bin/cttyhack /bin/sh -i
+    status=$?
+    echo "mipsel-emu: shell exited with status $status; restarting"
+    sleep 1
+done

@@ -1,19 +1,49 @@
 #ifndef MIPSEL_EMU_UART16550_H
 #define MIPSEL_EMU_UART16550_H
 
+#include "config.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 /* SEAD-3 compatible UART wiring. Registers are 32-bit, low byte only. */
-#define UART16550_MMIO_BASE       0x1f000900u
+#ifndef UART16550_MMIO_BASE
+#define UART16550_MMIO_BASE       MIPSEL_EMU_UART_MMIO_BASE
+#endif
 #define UART16550_REG_SHIFT       2u
 #define UART16550_REG_STRIDE      (1u << UART16550_REG_SHIFT)
 #define UART16550_REGISTER_COUNT  8u
 #define UART16550_MMIO_SIZE       (UART16550_REGISTER_COUNT * UART16550_REG_STRIDE)
-#define UART16550_CLOCK_HZ        14745600u
-#define UART16550_IRQ_LINE        4u
+#ifndef UART16550_CLOCK_HZ
+#define UART16550_CLOCK_HZ        MIPSEL_EMU_UART_CLOCK_HZ
+#endif
+#ifndef UART16550_IRQ_LINE
+#define UART16550_IRQ_LINE        MIPSEL_EMU_UART_IRQ_LINE
+#endif
+#ifndef UART16550_RX_FIFO_SIZE
+#ifdef MIPSEL_EMU_UART_RX_FIFO_SIZE
+#define UART16550_RX_FIFO_SIZE    MIPSEL_EMU_UART_RX_FIFO_SIZE
+#else
 #define UART16550_RX_FIFO_SIZE    16u
+#endif
+#endif
+
+#ifndef UART16550_TX_FIFO_SIZE
+#ifdef MIPSEL_EMU_UART_TX_FIFO_SIZE
+#define UART16550_TX_FIFO_SIZE    MIPSEL_EMU_UART_TX_FIFO_SIZE
+#else
+#define UART16550_TX_FIFO_SIZE    16u
+#endif
+#endif
+
+#if UART16550_RX_FIFO_SIZE < 1
+#error "UART16550_RX_FIFO_SIZE must be at least one byte"
+#endif
+
+#if UART16550_TX_FIFO_SIZE < 1
+#error "UART16550_TX_FIFO_SIZE must be at least one byte"
+#endif
 
 enum uart16550_register {
     UART16550_REG_RBR_THR_DLL = 0,
@@ -61,6 +91,12 @@ typedef struct uart16550 {
     uint8_t rx_fifo[UART16550_RX_FIFO_SIZE];
     size_t rx_head;
     size_t rx_count;
+    size_t rx_reserved;
+
+    uint8_t tx_fifo[UART16550_TX_FIFO_SIZE];
+    size_t tx_head;
+    size_t tx_count;
+    size_t tx_peeked;
 
     bool thre_irq_pending;
     uart16550_tx_callback_t tx_callback;
@@ -93,6 +129,40 @@ bool uart16550_rx_push(uart16550_t *uart, uint8_t byte);
 size_t uart16550_rx_push_bytes(uart16550_t *uart,
                                const uint8_t *bytes, size_t length);
 size_t uart16550_rx_count(const uart16550_t *uart);
+
+/*
+ * Zero-copy host receive producer interface. reserve() returns the largest
+ * contiguous writable span. After filling any prefix of that span, publish it
+ * with produce(). There may be only one producer, and it must not mix this
+ * interface with rx_push() while a DMA transfer is outstanding.
+ *
+ * A zero-length reservation is normal backpressure and does not record an
+ * overrun. produce() rejects a length that was not reserved. Calling it with
+ * zero cancels the reservation. FIFO reset invalidates outstanding spans, so
+ * an actual DMA engine must be quiesced before resetting the UART.
+ *
+ * These functions form a single-producer/single-consumer protocol, but do not
+ * provide interrupt locking. Serialize completion calls with guest MMIO
+ * accesses (for example at an emulator instruction/time-slice boundary).
+ */
+size_t uart16550_rx_reserve(uart16550_t *uart, uint8_t **bytes);
+bool uart16550_rx_produce(uart16550_t *uart, size_t length);
+
+/*
+ * Zero-copy host transmit consumer interface. peek() returns the largest
+ * contiguous readable span. Once the host/DMA has copied a prefix, consume()
+ * releases it. Emptying the FIFO asserts THRE and, when enabled, its IRQ.
+ *
+ * The callback API is retained for desktop compatibility and drains this
+ * queue synchronously. Embedded users should initialize with a NULL callback
+ * and consume the spans from their USB task instead. FIFO reset invalidates
+ * an outstanding peek, and consume() with zero cancels it.
+ */
+bool uart16550_tx_can_accept(const uart16550_t *uart);
+size_t uart16550_tx_count(const uart16550_t *uart);
+size_t uart16550_tx_peek(uart16550_t *uart,
+                         const uint8_t **bytes);
+bool uart16550_tx_consume(uart16550_t *uart, size_t length);
 
 /* Pure interrupt status helpers for driving the MIPS CPU interrupt line. */
 uint8_t uart16550_iir(const uart16550_t *uart);

@@ -1,6 +1,6 @@
 #include "emu.h"
-#include "debugger.h"
 #include "instru.h"
+#include "observer.h"
 #include "op.h"
 #include "registers.h"
 #include "exception.h"
@@ -29,9 +29,6 @@
     
     [*] VPS Variable Page Sizes
 */
-
-extern vmstate_t *status;
-extern uint32_t read32(uint32_t addr);
 
 // For dispatched implementation
 void execute_instr(uint32_t instr, Registers *state) {
@@ -84,15 +81,16 @@ void cpu_step(Registers *state) {
     }
 
     instr = read32((uint32_t) pa.value.ok);
-    debugger_instruction_begin(state->pc, (uint32_t)pa.value.ok, instr,
-                               state);
+    mipsel_emu_observer_instruction_begin(state->pc,
+                                          (uint32_t)pa.value.ok, instr,
+                                          state);
     execute_instr(instr, state);
     state->gpr[0] = 0;
 
     /* A synchronous instruction exception wins over normal/branch commit. */
     if (state->exception_pending) {
         commit_pending_exception(state);
-        debugger_instruction_end(state);
+        mipsel_emu_observer_instruction_end(state);
         return;
     }
 
@@ -106,7 +104,7 @@ void cpu_step(Registers *state) {
             state->next_pc = state->target_pc;
             state->is_delay_slot = 0;
             state->is_taken = 0;
-            debugger_instruction_end(state);
+            mipsel_emu_observer_instruction_end(state);
             return;
         } else {
             state->pc += 4; // branch not taken
@@ -119,7 +117,7 @@ void cpu_step(Registers *state) {
     }
 
     state->next_pc += 4;
-    debugger_instruction_end(state);
+    mipsel_emu_observer_instruction_end(state);
 }
 
 void update_cycle(Registers *state) {
@@ -135,45 +133,19 @@ void update_cycle(Registers *state) {
     }
 }
 
-int startup(Registers *state) {
-    while (!debugger_quit_requested()) {
-        bool paused = status->state == STEPPING && status->steps == 0;
-        debugger_poll(state, status, paused);
-        if (debugger_quit_requested()) break;
+void mipsel_emu_step(Registers *state) {
+    if (!state) return;
+    cpu_step(state);
+    update_cycle(state);
+}
 
-        if (status->state == RESET) {
-            if (status->reset_callback) {
-                if (status->reset_callback(state, status->reset_opaque) != 0)
-                    return -1;
-            } else {
-                reset_cpu(state);
-            }
-            platform_reset();
-            debugger_board_reset(state);
-            status->state = debugger_tui_enabled() ? STEPPING : RUNNING;
-            status->steps = 0;
-        }
-        else if (status->state == RUNNING) {
-            unsigned int batch = debugger_tui_enabled() ? 4096u : 65536u;
-            while (batch-- && status->state == RUNNING &&
-                   !debugger_quit_requested()) {
-                cpu_step(state);
-                update_cycle(state);
-                ++status->ticks;
-                if (status->max_ticks && status->ticks >= status->max_ticks)
-                    return 0;
-            }
-        }
-        else if (status->state == STEPPING) {
-            if (status->steps != 0) {
-                cpu_step(state);
-                update_cycle(state);
-                ++status->ticks;
-                status->steps -= 1;
-                if (status->max_ticks && status->ticks >= status->max_ticks)
-                    return 0;
-            }
-        }
+uint32_t mipsel_emu_run_steps(Registers *state, uint32_t budget) {
+    uint32_t completed = 0;
+
+    if (!state) return 0;
+    while (completed < budget) {
+        mipsel_emu_step(state);
+        ++completed;
     }
-    return 0;
+    return completed;
 }

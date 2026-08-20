@@ -1,5 +1,5 @@
 #include "exception.h"
-#include "debugger.h"
+#include "observer.h"
 #include "registers.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -172,7 +172,7 @@ void raise_exception(Registers *state, uint32_t exc_info,
             state->next_pc = state->pc;
             state->exception_pending = 1;
         }
-        debugger_exception(state, exc_info, exc_code, class);
+        mipsel_emu_observer_exception(state, exc_info, exc_code, class);
         return;
     }
 
@@ -234,5 +234,5 @@ void raise_exception(Registers *state, uint32_t exc_info,
     flush_control_transfer(state);
     state->next_pc = vector;
     state->exception_pending = 1;
-    debugger_exception(state, exc_info, exc_code, class);
+    mipsel_emu_observer_exception(state, exc_info, exc_code, class);
 }

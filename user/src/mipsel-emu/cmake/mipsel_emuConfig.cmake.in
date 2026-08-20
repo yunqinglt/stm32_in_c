@@ -1,0 +1,4 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/mipsel_emuTargets.cmake")
+check_required_components(mipsel_emu)

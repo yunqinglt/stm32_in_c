@@ -56,3 +56,32 @@ Result pfn_translate(uint32_t target, Registers *state, uint8_t is_write) {
     // TLB Refill Exception
     return ERR(2);
 }
+
+bool mipsel_cp0_write(Registers *state, unsigned reg, unsigned sel,
+                      uint32_t value) {
+    if (!state || reg >= 32u || sel >= 8u) return false;
+
+    if (reg == 13u && sel == 0u) {
+        /* Cause only exposes software interrupt and control bits as RW. */
+        const uint32_t writable =
+            (UINT32_C(1) << CP0_CAUSE_DC_POS) |
+            (UINT32_C(1) << CP0_CAUSE_PCI_POS) |
+            (UINT32_C(1) << CP0_CAUSE_IV_POS) |
+            (UINT32_C(1) << CP0_CAUSE_WP_POS) |
+            (UINT32_C(3) << CP0_CAUSE_IP_POS);
+        uint32_t old = state->cp0.byname.cp0r13_t.cp0r13_n.Cause;
+        state->cp0.byname.cp0r13_t.cp0r13_n.Cause =
+            (old & ~writable) | (value & writable);
+    } else {
+        state->cp0.regs[reg][sel] = value;
+    }
+
+    /* Writing Compare acknowledges the MIPS Count/Compare interrupt. */
+    if (reg == 11u && sel == 0u) {
+        uint32_t cause = state->cp0.byname.cp0r13_t.cp0r13_n.Cause;
+        cause = SET_BITFIELD(cause, CP0_CAUSE_TI_POS, CP0_CAUSE_TI_LEN, 0);
+        cause = SET_BITFIELD(cause, CP0_CAUSE_IP_POS + 7, 1, 0);
+        state->cp0.byname.cp0r13_t.cp0r13_n.Cause = cause;
+    }
+    return true;
+}

@@ -1,7 +1,7 @@
 #include "disasm.h"
+#include "format.h"
 
 #include <stdbool.h>
-#include <stdio.h>
 
 typedef enum {
     FMT_RAW,
@@ -343,164 +343,176 @@ void mips_disassemble(uint32_t pc, uint32_t raw,
 
     switch (decoded.format) {
         case FMT_RAW:
-            (void)snprintf(text, sizeof(text), ".word 0x%08x", raw);
+            (void)mipsel_snprintf(text, sizeof(text), ".word 0x%08x", raw);
             break;
         case FMT_NONE:
-            (void)snprintf(text, sizeof(text), "%s", decoded.mnemonic);
+            (void)mipsel_snprintf(text, sizeof(text), "%s", decoded.mnemonic);
             break;
         case FMT_JUMP:
-            (void)snprintf(text, sizeof(text), "%s 0x%08x", decoded.mnemonic,
-                           jump_target(pc, raw));
+            (void)mipsel_snprintf(text, sizeof(text), "%s 0x%08x",
+                                decoded.mnemonic, jump_target(pc, raw));
             break;
         case FMT_BRANCH_RS_RT:
-            (void)snprintf(text, sizeof(text), "%s %s, %s, 0x%08x",
-                           decoded.mnemonic, gpr_names[rs], gpr_names[rt],
-                           branch_target(pc, raw));
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, 0x%08x",
+                                decoded.mnemonic, gpr_names[rs], gpr_names[rt],
+                                branch_target(pc, raw));
             break;
         case FMT_BRANCH_RS:
-            (void)snprintf(text, sizeof(text), "%s %s, 0x%08x",
-                           decoded.mnemonic, gpr_names[rs],
-                           branch_target(pc, raw));
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, 0x%08x",
+                                decoded.mnemonic, gpr_names[rs],
+                                branch_target(pc, raw));
             break;
         case FMT_RT_RS_SIGNED:
-            (void)snprintf(text, sizeof(text), "%s %s, %s, %d",
-                           decoded.mnemonic, gpr_names[rt], gpr_names[rs],
-                           immediate);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, %d",
+                                decoded.mnemonic, gpr_names[rt], gpr_names[rs],
+                                immediate);
             break;
         case FMT_RT_RS_UNSIGNED:
-            (void)snprintf(text, sizeof(text), "%s %s, %s, 0x%04x",
-                           decoded.mnemonic, gpr_names[rt], gpr_names[rs],
-                           raw & 0xffffu);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, 0x%04x",
+                                decoded.mnemonic, gpr_names[rt], gpr_names[rs],
+                                raw & 0xffffu);
             break;
         case FMT_RT_UNSIGNED:
-            (void)snprintf(text, sizeof(text), "%s %s, 0x%04x",
-                           decoded.mnemonic, gpr_names[rt], raw & 0xffffu);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, 0x%04x",
+                                decoded.mnemonic, gpr_names[rt],
+                                raw & 0xffffu);
             break;
         case FMT_MEM_GPR:
-            (void)snprintf(text, sizeof(text), "%s %s, %d(%s)",
-                           decoded.mnemonic, gpr_names[rt], immediate,
-                           gpr_names[rs]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %d(%s)",
+                                decoded.mnemonic, gpr_names[rt], immediate,
+                                gpr_names[rs]);
             break;
         case FMT_MEM_BASE:
-            (void)snprintf(text, sizeof(text), "%s %d(%s)",
-                           decoded.mnemonic, immediate, gpr_names[rs]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %d(%s)",
+                                decoded.mnemonic, immediate, gpr_names[rs]);
             break;
         case FMT_MEM_FPR:
-            (void)snprintf(text, sizeof(text), "%s $f%u, %d(%s)",
-                           decoded.mnemonic, rt, immediate, gpr_names[rs]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s $f%u, %d(%s)",
+                                decoded.mnemonic, rt, immediate,
+                                gpr_names[rs]);
             break;
         case FMT_MEM_COP:
-            (void)snprintf(text, sizeof(text), "%s $%u, %d(%s)",
-                           decoded.mnemonic, rt, immediate, gpr_names[rs]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s $%u, %d(%s)",
+                                decoded.mnemonic, rt, immediate,
+                                gpr_names[rs]);
             break;
         case FMT_CACHE:
-            (void)snprintf(text, sizeof(text), "%s 0x%x, %d(%s)",
-                           decoded.mnemonic, rt, immediate, gpr_names[rs]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s 0x%x, %d(%s)",
+                                decoded.mnemonic, rt, immediate,
+                                gpr_names[rs]);
             break;
         case FMT_RD_RT_SA:
-            (void)snprintf(text, sizeof(text), "%s %s, %s, %u",
-                           decoded.mnemonic, gpr_names[rd], gpr_names[rt], sa);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, %u",
+                                decoded.mnemonic, gpr_names[rd], gpr_names[rt],
+                                sa);
             break;
         case FMT_RD_RT_RS:
-            (void)snprintf(text, sizeof(text), "%s %s, %s, %s",
-                           decoded.mnemonic, gpr_names[rd], gpr_names[rt],
-                           gpr_names[rs]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, %s",
+                                decoded.mnemonic, gpr_names[rd], gpr_names[rt],
+                                gpr_names[rs]);
             break;
         case FMT_RS:
-            (void)snprintf(text, sizeof(text), "%s %s", decoded.mnemonic,
-                           gpr_names[rs]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s",
+                                decoded.mnemonic, gpr_names[rs]);
             break;
         case FMT_RD_RS:
-            (void)snprintf(text, sizeof(text), "%s %s, %s", decoded.mnemonic,
-                           gpr_names[rd], gpr_names[rs]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s",
+                                decoded.mnemonic, gpr_names[rd], gpr_names[rs]);
             break;
         case FMT_RD_RS_RT:
-            (void)snprintf(text, sizeof(text), "%s %s, %s, %s",
-                           decoded.mnemonic, gpr_names[rd], gpr_names[rs],
-                           gpr_names[rt]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, %s",
+                                decoded.mnemonic, gpr_names[rd], gpr_names[rs],
+                                gpr_names[rt]);
             break;
         case FMT_RS_RT:
-            (void)snprintf(text, sizeof(text), "%s %s, %s", decoded.mnemonic,
-                           gpr_names[rs], gpr_names[rt]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s",
+                                decoded.mnemonic, gpr_names[rs], gpr_names[rt]);
             break;
         case FMT_TRAP_RS_RT:
             code = (raw >> 6) & 0x3ffu;
             if (code == 0u) {
-                (void)snprintf(text, sizeof(text), "%s %s, %s",
-                               decoded.mnemonic, gpr_names[rs], gpr_names[rt]);
+                (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s",
+                                    decoded.mnemonic, gpr_names[rs],
+                                    gpr_names[rt]);
             } else {
-                (void)snprintf(text, sizeof(text), "%s %s, %s, 0x%x",
-                               decoded.mnemonic, gpr_names[rs], gpr_names[rt],
-                               code);
+                (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, 0x%x",
+                                    decoded.mnemonic, gpr_names[rs],
+                                    gpr_names[rt], code);
             }
             break;
         case FMT_CODE20:
             code = (raw >> 6) & 0xfffffu;
             if (code == 0u) {
-                (void)snprintf(text, sizeof(text), "%s", decoded.mnemonic);
+                (void)mipsel_snprintf(text, sizeof(text), "%s",
+                                    decoded.mnemonic);
             } else {
-                (void)snprintf(text, sizeof(text), "%s 0x%x",
-                               decoded.mnemonic, code);
+                (void)mipsel_snprintf(text, sizeof(text), "%s 0x%x",
+                                    decoded.mnemonic, code);
             }
             break;
         case FMT_SYNC:
             if (sa == 0u) {
-                (void)snprintf(text, sizeof(text), "%s", decoded.mnemonic);
+                (void)mipsel_snprintf(text, sizeof(text), "%s",
+                                    decoded.mnemonic);
             } else {
-                (void)snprintf(text, sizeof(text), "%s 0x%x",
-                               decoded.mnemonic, sa);
+                (void)mipsel_snprintf(text, sizeof(text), "%s 0x%x",
+                                    decoded.mnemonic, sa);
             }
             break;
         case FMT_RD:
-            (void)snprintf(text, sizeof(text), "%s %s", decoded.mnemonic,
-                           gpr_names[rd]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s",
+                                decoded.mnemonic, gpr_names[rd]);
             break;
         case FMT_TRAP_RS_IMM:
-            (void)snprintf(text, sizeof(text), "%s %s, %d", decoded.mnemonic,
-                           gpr_names[rs], immediate);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %d",
+                                decoded.mnemonic, gpr_names[rs], immediate);
             break;
         case FMT_EXT:
-            (void)snprintf(text, sizeof(text), "%s %s, %s, %u, %u",
-                           decoded.mnemonic, gpr_names[rt], gpr_names[rs], sa,
-                           rd + 1u);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, %u, %u",
+                                decoded.mnemonic, gpr_names[rt], gpr_names[rs],
+                                sa, rd + 1u);
             break;
         case FMT_INS:
-            (void)snprintf(text, sizeof(text), "%s %s, %s, %u, %u",
-                           decoded.mnemonic, gpr_names[rt], gpr_names[rs], sa,
-                           rd - sa + 1u);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s, %u, %u",
+                                decoded.mnemonic, gpr_names[rt], gpr_names[rs],
+                                sa, rd - sa + 1u);
             break;
         case FMT_RD_RT:
-            (void)snprintf(text, sizeof(text), "%s %s, %s", decoded.mnemonic,
-                           gpr_names[rd], gpr_names[rt]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s",
+                                decoded.mnemonic, gpr_names[rd], gpr_names[rt]);
             break;
         case FMT_RDHWR:
-            (void)snprintf(text, sizeof(text), "%s %s, $%u",
-                           decoded.mnemonic, gpr_names[rt], rd);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, $%u",
+                                decoded.mnemonic, gpr_names[rt], rd);
             break;
         case FMT_CP0_MOVE:
-            (void)snprintf(text, sizeof(text), "%s %s, $%u, %u",
-                           decoded.mnemonic, gpr_names[rt], rd, raw & 7u);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, $%u, %u",
+                                decoded.mnemonic, gpr_names[rt], rd,
+                                raw & 7u);
             break;
         case FMT_PGPR:
-            (void)snprintf(text, sizeof(text), "%s %s, %s",
-                           decoded.mnemonic, gpr_names[rt], gpr_names[rd]);
+            (void)mipsel_snprintf(text, sizeof(text), "%s %s, %s",
+                                decoded.mnemonic, gpr_names[rt], gpr_names[rd]);
             break;
         case FMT_DI_EI:
             if (rt == 0u) {
-                (void)snprintf(text, sizeof(text), "%s", decoded.mnemonic);
+                (void)mipsel_snprintf(text, sizeof(text), "%s",
+                                    decoded.mnemonic);
             } else {
-                (void)snprintf(text, sizeof(text), "%s %s", decoded.mnemonic,
-                               gpr_names[rt]);
+                (void)mipsel_snprintf(text, sizeof(text), "%s %s",
+                                    decoded.mnemonic, gpr_names[rt]);
             }
             break;
     }
 
     if (decoded.kind == MIPS_DECODE_RESERVED) {
-        (void)snprintf(buf, buf_size, "%s # reserved instruction", text);
+        (void)mipsel_snprintf(buf, buf_size, "%s # reserved instruction",
+                              text);
     } else if (decoded.kind == MIPS_DECODE_COPROCESSOR_UNUSABLE) {
-        (void)snprintf(buf, buf_size, "%s # coprocessor %u unusable", text,
-                       decoded.coprocessor);
+        (void)mipsel_snprintf(buf, buf_size,
+                              "%s # coprocessor %u unusable", text,
+                              decoded.coprocessor);
     } else {
-        (void)snprintf(buf, buf_size, "%s", text);
+        (void)mipsel_snprintf(buf, buf_size, "%s", text);
     }
 }

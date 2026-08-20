@@ -20,6 +20,7 @@ int main(void) {
 
     pool = calloc(1, PLATFORM_MEMORY_SIZE);
     CHECK(pool != NULL);
+    CHECK(platform_memory_bind(pool, PLATFORM_MEMORY_SIZE));
     status = &vm;
     reset_cpu(&state);
     platform_init(NULL, NULL);

@@ -23,9 +23,13 @@ static void capture_tx(void *opaque, uint8_t byte) {
 
 int main(void) {
     Registers state = {0};
+    const uint8_t *tx_bytes;
+    uint8_t *rx_bytes;
+    size_t span;
 
     pool = calloc(1, PLATFORM_MEMORY_SIZE);
     CHECK(pool != NULL);
+    CHECK(platform_memory_bind(pool, PLATFORM_MEMORY_SIZE));
     platform_init(capture_tx, NULL);
 
     write32(0x100u, 0x44332211u);
@@ -85,6 +89,30 @@ int main(void) {
     platform_reset();
     CHECK(read32(UART16550_MMIO_BASE +
                  (UART16550_REG_IIR_FCR << UART16550_REG_SHIFT)) == 0x01u);
+
+    /* Embedded USB/DMA mode uses spans instead of a synchronous callback. */
+    platform_init(NULL, NULL);
+    write32(UART16550_MMIO_BASE +
+            (UART16550_REG_IIR_FCR << UART16550_REG_SHIFT),
+            UART16550_FCR_ENABLE);
+    write32(UART16550_MMIO_BASE, '1');
+    write32(UART16550_MMIO_BASE, '2');
+    CHECK(platform_uart_tx_count() == 2u);
+    span = platform_uart_tx_peek(&tx_bytes);
+    CHECK(span == 2u && tx_bytes[0] == '1' && tx_bytes[1] == '2');
+    CHECK(platform_uart_tx_consume(1));
+    CHECK(platform_uart_tx_count() == 1u);
+    span = platform_uart_tx_peek(&tx_bytes);
+    CHECK(span == 1u && tx_bytes[0] == '2');
+    CHECK(platform_uart_tx_consume(1));
+
+    span = platform_uart_rx_reserve(&rx_bytes);
+    CHECK(span >= 2u && rx_bytes != NULL);
+    rx_bytes[0] = 'x';
+    rx_bytes[1] = 'y';
+    CHECK(platform_uart_rx_produce(2));
+    CHECK(read32(UART16550_MMIO_BASE) == 'x');
+    CHECK(read32(UART16550_MMIO_BASE) == 'y');
 
     free(pool);
     return 0;

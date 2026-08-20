@@ -18,6 +18,9 @@
 		/* Plain earlycon discovers width, shift and clock from this DTB. */
 		bootargs = "earlycon console=ttyS0,115200n8 ignore_loglevel";
 		stdout-path = "serial0:115200n8";
+		/* Fixed-width placeholders patched by the portable image loader. */
+		linux,initrd-start = <0>;
+		linux,initrd-end = <0>;
 	};
 
 	cpus {

@@ -1,5 +1,10 @@
+#include "config.h"
 #include "debugger.h"
+#if MIPSEL_EMU_ENABLE_CONSOLE
+#include "console.h"
+#endif
 #include "disasm.h"
+#include "observer.h"
 #include "platform.h"
 
 #include <ctype.h>
@@ -22,6 +27,7 @@
 #define TRACE_CAPACITY       512u
 #define EXCEPTION_CAPACITY   128u
 #define UART_LINE_CAPACITY   256u
+#define MONITOR_LINE_CAPACITY 256u
 #define DEBUG_LINE_LENGTH    192u
 #define UART_LINE_LENGTH     160u
 #define UART_INPUT_INITIAL_CAPACITY 1024u
@@ -44,6 +50,9 @@ typedef struct {
     bool tui;
     bool in_instruction;
     bool uart_focus;
+#if MIPSEL_EMU_ENABLE_CONSOLE
+    bool monitor_focus;
+#endif
     bool force_redraw;
     bool quit;
     bool stdin_closed;
@@ -52,6 +61,9 @@ typedef struct {
     unsigned int refresh_hz;
     unsigned int active_page;
     unsigned int trace_scroll;
+#if MIPSEL_EMU_ENABLE_CONSOLE
+    unsigned int monitor_scroll;
+#endif
     uint64_t sequence;
     uint64_t last_draw_ns;
     uint32_t instruction_pc;
@@ -86,10 +98,37 @@ typedef struct {
     size_t uart_input_capacity;
     size_t uart_input_head;
     size_t uart_input_count;
+#if MIPSEL_EMU_ENABLE_CONSOLE
+    mipsel_console_t monitor;
+    char monitor_lines[MONITOR_LINE_CAPACITY][DEBUG_LINE_LENGTH];
+    size_t monitor_head;
+    size_t monitor_count;
+    char monitor_current[DEBUG_LINE_LENGTH];
+    size_t monitor_current_length;
+#endif
 } DebuggerState;
 
 static DebuggerState debugger;
 static volatile sig_atomic_t signal_quit;
+
+static void observer_instruction_begin(void *opaque, uint32_t pc,
+                                       uint32_t pa, uint32_t word,
+                                       const Registers *state) {
+    (void)opaque;
+    debugger_instruction_begin(pc, pa, word, state);
+}
+
+static void observer_instruction_end(void *opaque, const Registers *state) {
+    (void)opaque;
+    debugger_instruction_end(state);
+}
+
+static void observer_exception(void *opaque, const Registers *state,
+                               uint32_t exc_info, uint8_t exc_code,
+                               VectorClass vector_class) {
+    (void)opaque;
+    debugger_exception(state, exc_info, exc_code, vector_class);
+}
 static const int handled_signals[HANDLED_SIGNAL_COUNT] = {
     SIGINT, SIGTERM, SIGPIPE,
 };
@@ -166,6 +205,69 @@ static void ring_add(char lines[][DEBUG_LINE_LENGTH], size_t capacity,
     *head = (*head + 1u) % capacity;
     if (*count < capacity) ++*count;
 }
+
+#if MIPSEL_EMU_ENABLE_CONSOLE
+static bool monitor_target_halted(void *opaque) {
+    const vmstate_t *vm = opaque;
+    return vm && vm->state == STEPPING && vm->steps == 0;
+}
+
+static bool monitor_bus_read(void *opaque, uint32_t pa, unsigned width,
+                             uint32_t *value) {
+    (void)opaque;
+    return platform_bus_read(pa, width, value);
+}
+
+static bool monitor_bus_write(void *opaque, uint32_t pa, unsigned width,
+                              uint32_t value) {
+    (void)opaque;
+    return platform_bus_write(pa, width, value);
+}
+
+static void monitor_commit_line(void) {
+    debugger.monitor_current[debugger.monitor_current_length] = '\0';
+    ring_add(debugger.monitor_lines, MONITOR_LINE_CAPACITY,
+             &debugger.monitor_head, &debugger.monitor_count,
+             debugger.monitor_current);
+    debugger.monitor_current_length = 0;
+    debugger.monitor_current[0] = '\0';
+}
+
+static void monitor_output(void *opaque, const char *bytes, size_t length) {
+    (void)opaque;
+
+    for (size_t index = 0; index < length; ++index) {
+        unsigned char byte = (unsigned char)bytes[index];
+        if (byte == '\r') continue;
+        if (byte == '\n') {
+            monitor_commit_line();
+            continue;
+        }
+        if (debugger.monitor_current_length >= DEBUG_LINE_LENGTH - 1u)
+            monitor_commit_line();
+        debugger.monitor_current[debugger.monitor_current_length++] =
+            (char)((byte >= 0x20u && byte <= 0x7eu) || byte == '\t'
+                       ? byte : '.');
+        debugger.monitor_current[debugger.monitor_current_length] = '\0';
+    }
+    debugger.monitor_scroll = 0;
+    debugger.force_redraw = true;
+}
+
+#ifdef MIPSEL_EMU_HAVE_CURSES
+static void monitor_record_command(void) {
+    char line[DEBUG_LINE_LENGTH];
+
+    if (mipsel_console_input_length(&debugger.monitor) == 0u) return;
+    if (debugger.monitor_current_length != 0u) monitor_commit_line();
+    (void)snprintf(line, sizeof(line), "mipsel-emu> %s",
+                   mipsel_console_input(&debugger.monitor));
+    ring_add(debugger.monitor_lines, MONITOR_LINE_CAPACITY,
+             &debugger.monitor_head, &debugger.monitor_count, line);
+    debugger.monitor_scroll = 0;
+}
+#endif
+#endif
 
 static void trace_add(const char *format, ...) {
     char line[DEBUG_LINE_LENGTH];
@@ -390,6 +492,23 @@ int debugger_init(const DebuggerConfig *config, Registers *state,
 
     snapshot_registers(&debugger.before, state);
 
+#if MIPSEL_EMU_ENABLE_CONSOLE
+    if (!mipsel_console_init(&debugger.monitor,
+                             &(mipsel_console_config_t) {
+                                 .registers = state,
+                                 .halted = monitor_target_halted,
+                                 .bus_read = monitor_bus_read,
+                                 .bus_write = monitor_bus_write,
+                                 .target_opaque = vm,
+                                 .output = monitor_output,
+                             })) {
+        fprintf(stderr, "cannot initialize target monitor\n");
+        debugger_shutdown();
+        return -1;
+    }
+    monitor_output(NULL, "Monitor ready; type 'help' for commands.\n", 41u);
+#endif
+
     if (config && config->enable_tui) {
 #ifdef MIPSEL_EMU_HAVE_CURSES
         if (!isatty(STDIN_FILENO) || !isatty(STDOUT_FILENO)) {
@@ -459,11 +578,18 @@ int debugger_init(const DebuggerConfig *config, Registers *state,
 
     if (debugger.capture_events)
         trace_add("# mipsel-emu trace: pc physical raw disassembly changes");
+    mipsel_emu_observer_set(&(mipsel_emu_observer_t) {
+        .instruction_begin = observer_instruction_begin,
+        .instruction_end = observer_instruction_end,
+        .exception = observer_exception,
+    });
     return 0;
 }
 
 void debugger_shutdown(void) {
     if (!debugger.initialized) return;
+
+    mipsel_emu_observer_set(NULL);
 
 #ifdef MIPSEL_EMU_HAVE_CURSES
     if (debugger.curses_screen) {
@@ -599,10 +725,16 @@ void debugger_board_reset(const Registers *state) {
     debugger.uart_input_head = 0;
     debugger.uart_input_count = 0;
     debugger.headless_escape = false;
+    debugger.uart_focus = false;
     debugger.in_instruction = false;
     debugger.pending_instruction_exception = false;
     debugger.changed_gpr = 0;
     snapshot_registers(&debugger.before, state);
+#if MIPSEL_EMU_ENABLE_CONSOLE
+    debugger.monitor_focus = false;
+    mipsel_console_reset(&debugger.monitor);
+    monitor_output(NULL, "# target reset\n", 15u);
+#endif
     if (debugger.capture_events) {
         trace_add("%010" PRIu64 " # board reset -> PC=%08" PRIx32,
                   ++debugger.sequence, state->pc);
@@ -691,6 +823,94 @@ static void draw_uart(int y, int x, int height, int width) {
     }
 }
 
+#if MIPSEL_EMU_ENABLE_CONSOLE
+static bool monitor_window_usable(void) {
+    int rows, columns;
+
+    getmaxyx(stdscr, rows, columns);
+    return rows >= 6 && columns >= 4;
+}
+
+static size_t monitor_visible_line_count(void) {
+    int rows, columns;
+
+    getmaxyx(stdscr, rows, columns);
+    (void)columns;
+    return rows > 5 ? (size_t)(rows - 5) : 0u;
+}
+
+static void format_monitor_prompt(char *prompt, size_t prompt_size,
+                                  int inner_width) {
+    static const char prefix[] = "mipsel-emu> ";
+    const char *input = mipsel_console_input(&debugger.monitor);
+    size_t input_length = mipsel_console_input_length(&debugger.monitor);
+    size_t prefix_length = strlen(prefix);
+    size_t available;
+
+    if (!prompt || prompt_size == 0u) return;
+    prompt[0] = '\0';
+    if (inner_width <= 0) return;
+    if (input_length == 0u) {
+        (void)snprintf(prompt, prompt_size, "%s", prefix);
+        return;
+    }
+    if ((size_t)inner_width <= prefix_length) {
+        size_t available = (size_t)inner_width;
+        if (available == 1u) {
+            (void)snprintf(prompt, prompt_size, "<");
+        } else {
+            size_t shown = available - 1u;
+            const char *tail = input + (input_length > shown
+                                             ? input_length - shown : 0u);
+            (void)snprintf(prompt, prompt_size, "<%s", tail);
+        }
+        return;
+    }
+
+    available = (size_t)inner_width - prefix_length;
+    if (input_length <= available) {
+        (void)snprintf(prompt, prompt_size, "%s%s", prefix, input);
+    } else if (available == 1u) {
+        (void)snprintf(prompt, prompt_size, "%s<", prefix);
+    } else {
+        const char *tail = input + input_length - (available - 1u);
+        (void)snprintf(prompt, prompt_size, "%s<%s", prefix, tail);
+    }
+}
+
+static void draw_monitor(int y, int x, int height, int width,
+                         bool target_halted) {
+    char prompt[MIPSEL_EMU_CONSOLE_LINE_SIZE + 16u];
+    int input_row;
+    int cursor_column;
+
+    if (height < 4 || width < 4) return;
+    draw_box(y, x, height, width,
+             target_halted
+                 ? "Monitor [PAUSED] - Esc/F3 close, PgUp/PgDn scroll"
+                 : "Monitor [TARGET RUNNING] - Esc/F3 close",
+             COLOR_PAIR(2));
+    draw_ring(debugger.monitor_lines, MONITOR_LINE_CAPACITY,
+              debugger.monitor_head, debugger.monitor_count,
+              y, x, height - 1, width, debugger.monitor_scroll, 0);
+    if (target_halted) {
+        format_monitor_prompt(prompt, sizeof(prompt), width - 2);
+    } else {
+        (void)snprintf(prompt, sizeof(prompt),
+                       "target running; monitor input is locked");
+    }
+    input_row = y + height - 2;
+    put_clipped(input_row, x + 1, width - 2, prompt,
+                COLOR_PAIR(2) | A_BOLD);
+    cursor_column = x + 1 + (int)strlen(prompt);
+    if (cursor_column >= x + width - 1) cursor_column = x + width - 2;
+    if (target_halted && cursor_column >= x + 1) {
+        (void)curs_set(1);
+        (void)move(input_row, cursor_column);
+    }
+}
+#endif
+
 static const char *cpu_state_name(const vmstate_t *vm) {
     if (vm->state == RUNNING) return "RUNNING";
     if (vm->state == RESET) return "RESET";
@@ -756,16 +976,36 @@ static void draw_full_tui(const Registers *state, const vmstate_t *vm) {
 
     getmaxyx(stdscr, rows, columns);
     erase();
+    (void)curs_set(0);
     snprintf(header, sizeof(header),
              " mipsel-emu  %-8s  ticks=%" PRIu64
              "  PC=%08" PRIx32 "%s",
              cpu_state_name(vm), vm->ticks, state->pc,
-             debugger.uart_focus ? "  [UART INPUT: Ctrl-] to leave]" : "");
+             debugger.uart_focus ? "  [UART INPUT: Ctrl-] to leave]" :
+#if MIPSEL_EMU_ENABLE_CONSOLE
+             debugger.monitor_focus
+                 ? (vm && vm->state == STEPPING && vm->steps == 0
+                        ? "  [MONITOR INPUT: Esc/F3 to leave]"
+                        : "  [MONITOR LOCKED: Esc/F3 to leave]") :
+#endif
+             "");
     put_clipped(0, 0, columns, header, COLOR_PAIR(1) | A_BOLD);
     put_clipped(1, 0, columns,
                 " Space run/pause  s step  n +100  r reset  F2 UART  "
+#if MIPSEL_EMU_ENABLE_CONSOLE
+                "F3/: Monitor  "
+#endif
                 "Up/Down trace  Tab page  q quit",
                 A_DIM);
+
+#if MIPSEL_EMU_ENABLE_CONSOLE
+    if (debugger.monitor_focus) {
+        draw_monitor(top_y, 0, rows - top_y, columns,
+                     monitor_target_halted((void *)vm));
+        refresh();
+        return;
+    }
+#endif
 
     if (rows < 30 || columns < 100) {
         const char *titles[] = {"Registers", "Instruction trace",
@@ -855,7 +1095,98 @@ static void clear_active_page(void) {
     }
 }
 
-static bool handle_key(int key, vmstate_t *vm) {
+#if MIPSEL_EMU_ENABLE_CONSOLE
+static void handle_monitor_result(mipsel_console_result_t result,
+                                  const Registers *state) {
+    if (result == MIPSEL_CONSOLE_STATE_CHANGED) {
+        debugger.changed_gpr = 0;
+        snapshot_registers(&debugger.before, state);
+    }
+    if (result != MIPSEL_CONSOLE_NO_COMMAND)
+        debugger.monitor_scroll = 0;
+}
+#endif
+
+static bool handle_key(int key, Registers *state, vmstate_t *vm) {
+#if !MIPSEL_EMU_ENABLE_CONSOLE
+    (void)state;
+#endif
+#if MIPSEL_EMU_ENABLE_CONSOLE
+    if (debugger.monitor_focus) {
+        uint8_t byte;
+        mipsel_console_result_t result;
+
+        if (!monitor_target_halted(vm)) {
+            mipsel_console_cancel_input(&debugger.monitor);
+            if (key == 27 || key == KEY_F(3)) {
+                debugger.monitor_focus = false;
+            } else {
+                /* Keep focus quarantined until the user explicitly leaves. */
+                (void)flushinp();
+                beep();
+            }
+            debugger.force_redraw = true;
+            return false;
+        }
+        if (!monitor_window_usable()) {
+            mipsel_console_cancel_input(&debugger.monitor);
+            if (key == 27 || key == KEY_F(3)) {
+                debugger.monitor_focus = false;
+            } else {
+                /* Do not accept blind input while the monitor is hidden. */
+                (void)flushinp();
+                beep();
+            }
+            debugger.force_redraw = true;
+            return false;
+        }
+        if (key == 27 || key == KEY_F(3)) {
+            debugger.monitor_focus = false;
+            mipsel_console_cancel_input(&debugger.monitor);
+        } else if (key == KEY_PPAGE || key == KEY_UP) {
+            unsigned amount = key == KEY_PPAGE ? 8u : 1u;
+            size_t visible = monitor_visible_line_count();
+            size_t maximum = debugger.monitor_count > visible
+                                 ? debugger.monitor_count - visible : 0u;
+            size_t next = (size_t)debugger.monitor_scroll + amount;
+            debugger.monitor_scroll = (unsigned int)(next > maximum
+                                                       ? maximum : next);
+        } else if (key == KEY_NPAGE || key == KEY_DOWN) {
+            unsigned amount = key == KEY_NPAGE ? 8u : 1u;
+            debugger.monitor_scroll = debugger.monitor_scroll > amount
+                                          ? debugger.monitor_scroll - amount
+                                          : 0;
+        } else if (key == KEY_BACKSPACE || key == 0x7f || key == '\b') {
+            byte = 0x7f;
+            result = mipsel_console_feed(&debugger.monitor, &byte, 1);
+            handle_monitor_result(result, state);
+        } else if (key == KEY_ENTER || key == '\n' || key == '\r') {
+            monitor_record_command();
+            byte = '\n';
+            result = mipsel_console_feed(&debugger.monitor, &byte, 1);
+            handle_monitor_result(result, state);
+        } else if (key == KEY_RESIZE) {
+            size_t visible = monitor_visible_line_count();
+            size_t maximum = debugger.monitor_count > visible
+                                 ? debugger.monitor_count - visible : 0u;
+            if ((size_t)debugger.monitor_scroll > maximum)
+                debugger.monitor_scroll = (unsigned int)maximum;
+        } else if (key == '\t') {
+            byte = ' ';
+            result = mipsel_console_feed(&debugger.monitor, &byte, 1);
+            handle_monitor_result(result, state);
+        } else if (key == 0x15 || (key >= 0x20 && key <= 0x7e)) {
+            byte = (uint8_t)key;
+            result = mipsel_console_feed(&debugger.monitor, &byte, 1);
+            handle_monitor_result(result, state);
+        } else {
+            beep();
+        }
+        debugger.force_redraw = true;
+        return true;
+    }
+#endif
+
     if (debugger.uart_focus) {
         if (key == 29 || key == KEY_F(2)) {
             debugger.uart_focus = false;
@@ -878,11 +1209,11 @@ static bool handle_key(int key, vmstate_t *vm) {
             debugger.quit = true;
             break;
         case ' ': case 'g': case 'G':
-            if (vm->state == RUNNING) {
+            if (vm->state == STEPPING && vm->steps == 0) {
+                vm->state = RUNNING;
+            } else {
                 vm->state = STEPPING;
                 vm->steps = 0;
-            } else {
-                vm->state = RUNNING;
             }
             break;
         case 's': case 'S':
@@ -904,7 +1235,22 @@ static bool handle_key(int key, vmstate_t *vm) {
             break;
         case KEY_F(2):
             debugger.uart_focus = true;
+#if MIPSEL_EMU_ENABLE_CONSOLE
+            debugger.monitor_focus = false;
+#endif
             break;
+#if MIPSEL_EMU_ENABLE_CONSOLE
+        case KEY_F(3): case ':':
+            if (monitor_target_halted(vm) && monitor_window_usable()) {
+                debugger.uart_focus = false;
+                debugger.monitor_focus = true;
+                debugger.monitor_scroll = 0;
+                mipsel_console_cancel_input(&debugger.monitor);
+            } else {
+                beep();
+            }
+            break;
+#endif
         case KEY_UP:
             if (debugger.trace_scroll + 1u < debugger.trace_count)
                 ++debugger.trace_scroll;
@@ -938,13 +1284,18 @@ void debugger_poll(Registers *state, vmstate_t *vm, bool wait_for_input) {
         uint64_t interval = UINT64_C(1000000000) / debugger.refresh_hz;
         int key;
 
+#if MIPSEL_EMU_ENABLE_CONSOLE
+        if (debugger.monitor_focus && !monitor_target_halted(vm))
+            mipsel_console_cancel_input(&debugger.monitor);
+#endif
+
         timeout(wait_for_input ? 100 : 0);
         key = getch();
         if (key != ERR) {
-            bool accepted = handle_key(key, vm);
+            bool accepted = handle_key(key, state, vm);
             timeout(0);
             while (accepted && (key = getch()) != ERR)
-                accepted = handle_key(key, vm);
+                accepted = handle_key(key, state, vm);
         }
 
         now = monotonic_ns();

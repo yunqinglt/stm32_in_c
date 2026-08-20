@@ -5,7 +5,6 @@
 #include "platform.h"
 #include "registers.h"
 #include <stdint.h>
-#include <sys/types.h>
 
 extern MIPS_Instruction_Handler regimm_table[];
 extern MIPS_Instruction_Handler special1_table[];
@@ -1430,7 +1429,7 @@ void op_addiu(uint32_t instr, Registers *state) {
 void op_multu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
-    uint64_t tmp = state->gpr[rs] * state->gpr[rt];
+    uint64_t tmp = (uint64_t) state->gpr[rs] * (uint64_t) state->gpr[rt];
 
     state->hi = (uint32_t) (tmp >> 32);
     state->lo = (uint32_t) (tmp & 0xffffffff);
@@ -1595,28 +1594,7 @@ void op_mtc0(uint32_t instr, Registers *state) {
     uint8_t sel = getsel(instr);
     uint32_t value = state->gpr[rt];
 
-    if (rd == 13 && sel == 0) {
-        /* Cause only exposes software interrupt and control bits as RW. */
-        const uint32_t writable =
-            (UINT32_C(1) << CP0_CAUSE_DC_POS) |
-            (UINT32_C(1) << CP0_CAUSE_PCI_POS) |
-            (UINT32_C(1) << CP0_CAUSE_IV_POS) |
-            (UINT32_C(1) << CP0_CAUSE_WP_POS) |
-            (UINT32_C(3) << CP0_CAUSE_IP_POS);
-        uint32_t old = state->cp0.byname.cp0r13_t.cp0r13_n.Cause;
-        state->cp0.byname.cp0r13_t.cp0r13_n.Cause =
-            (old & ~writable) | (value & writable);
-    } else {
-        state->cp0.regs[rd][sel] = value;
-    }
-
-    /* Writing Compare acknowledges the MIPS Count/Compare interrupt. */
-    if (rd == 11 && sel == 0) {
-        uint32_t cause = state->cp0.byname.cp0r13_t.cp0r13_n.Cause;
-        cause = SET_BITFIELD(cause, CP0_CAUSE_TI_POS, CP0_CAUSE_TI_LEN, 0);
-        cause = SET_BITFIELD(cause, CP0_CAUSE_IP_POS + 7, 1, 0);
-        state->cp0.byname.cp0r13_t.cp0r13_n.Cause = cause;
-    }
+    (void)mipsel_cp0_write(state, rd, sel, value);
 }
 
 // Enable and disable interrupts

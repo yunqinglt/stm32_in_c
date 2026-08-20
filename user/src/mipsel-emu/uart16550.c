@@ -1,7 +1,5 @@
 #include "uart16550.h"
 
-#include <string.h>
-
 #define UART16550_IIR_MODEM_STATUS 0x00u
 #define UART16550_IIR_THR_EMPTY    0x02u
 #define UART16550_IIR_RX_AVAILABLE 0x04u
@@ -29,6 +27,8 @@
 #define UART16550_MSR_READY \
     (UART16550_MSR_CTS | UART16550_MSR_DSR | UART16550_MSR_DCD)
 
+static void drain_tx_callback(uart16550_t *uart);
+
 static bool access_width_supported(unsigned width) {
     return width == 1u || width == 2u || width == 4u;
 }
@@ -47,6 +47,13 @@ bool uart16550_mmio_contains(uint32_t address, unsigned width) {
 static void clear_rx_fifo(uart16550_t *uart) {
     uart->rx_head = 0;
     uart->rx_count = 0;
+    uart->rx_reserved = 0;
+}
+
+static void clear_tx_fifo(uart16550_t *uart) {
+    uart->tx_head = 0;
+    uart->tx_count = 0;
+    uart->tx_peeked = 0;
 }
 
 void uart16550_reset(uart16550_t *uart) {
@@ -63,6 +70,7 @@ void uart16550_reset(uart16550_t *uart) {
     uart->scr = 0;
     uart->line_status_errors = 0;
     clear_rx_fifo(uart);
+    clear_tx_fifo(uart);
 
     /* The transmitter is idle at reset, but its interrupt is masked. */
     uart->thre_irq_pending = true;
@@ -75,7 +83,6 @@ void uart16550_init(uart16550_t *uart,
         return;
     }
 
-    memset(uart, 0, sizeof(*uart));
     uart->tx_callback = tx_callback;
     uart->tx_opaque = tx_opaque;
     uart16550_reset(uart);
@@ -90,13 +97,17 @@ void uart16550_set_tx_callback(uart16550_t *uart,
 
     uart->tx_callback = tx_callback;
     uart->tx_opaque = tx_opaque;
+    drain_tx_callback(uart);
 }
 
 static uint8_t line_status(const uart16550_t *uart) {
-    uint8_t status = UART16550_LSR_THR_EMPTY | UART16550_LSR_TX_EMPTY;
+    uint8_t status = 0;
 
     if (uart->rx_count != 0) {
         status |= UART16550_LSR_DATA_READY;
+    }
+    if (uart->tx_count == 0) {
+        status |= UART16550_LSR_THR_EMPTY | UART16550_LSR_TX_EMPTY;
     }
 
     return status | uart->line_status_errors;
@@ -171,6 +182,92 @@ static uint8_t pop_rx(uart16550_t *uart) {
     return byte;
 }
 
+static size_t tx_capacity(const uart16550_t *uart) {
+    return (uart->fcr & UART16550_FCR_ENABLE) ?
+        UART16550_TX_FIFO_SIZE : 1u;
+}
+
+bool uart16550_tx_can_accept(const uart16550_t *uart) {
+    return uart && uart->tx_count < tx_capacity(uart);
+}
+
+size_t uart16550_tx_count(const uart16550_t *uart) {
+    return uart ? uart->tx_count : 0;
+}
+
+size_t uart16550_tx_peek(uart16550_t *uart,
+                         const uint8_t **bytes) {
+    size_t contiguous;
+
+    if (!bytes) {
+        return 0;
+    }
+    *bytes = NULL;
+    if (!uart || uart->tx_count == 0) {
+        return 0;
+    }
+
+    *bytes = &uart->tx_fifo[uart->tx_head];
+    if (uart->tx_peeked != 0) {
+        return uart->tx_peeked;
+    }
+
+    contiguous = UART16550_TX_FIFO_SIZE - uart->tx_head;
+    uart->tx_peeked = uart->tx_count < contiguous ?
+        uart->tx_count : contiguous;
+    return uart->tx_peeked;
+}
+
+bool uart16550_tx_consume(uart16550_t *uart, size_t length) {
+    if (!uart || length > uart->tx_peeked) {
+        return false;
+    }
+    if (length == 0) {
+        uart->tx_peeked = 0;
+        return true;
+    }
+
+    uart->tx_head = (uart->tx_head + length) % UART16550_TX_FIFO_SIZE;
+    uart->tx_count -= length;
+    uart->tx_peeked = 0;
+    if (uart->tx_count == 0) {
+        uart->thre_irq_pending = true;
+    }
+    return true;
+}
+
+static void drain_tx_callback(uart16550_t *uart) {
+    while (uart->tx_callback && uart->tx_count != 0) {
+        const uint8_t *bytes;
+        uint8_t byte;
+
+        if (uart16550_tx_peek(uart, &bytes) == 0) {
+            return;
+        }
+        byte = bytes[0];
+
+        /* Release before invoking user code so a reentrant observer sees the
+         * byte as transmitted and cannot consume it a second time. */
+        (void) uart16550_tx_consume(uart, 1);
+        uart->tx_callback(uart->tx_opaque, byte);
+    }
+}
+
+static bool push_tx(uart16550_t *uart, uint8_t byte) {
+    size_t tail;
+
+    if (!uart16550_tx_can_accept(uart)) {
+        return false;
+    }
+
+    tail = (uart->tx_head + uart->tx_count) % UART16550_TX_FIFO_SIZE;
+    uart->tx_fifo[tail] = byte;
+    ++uart->tx_count;
+    uart->thre_irq_pending = false;
+    drain_tx_callback(uart);
+    return true;
+}
+
 static uint8_t read_register(uart16550_t *uart, unsigned reg) {
     uint8_t value;
 
@@ -227,7 +324,9 @@ static void write_fcr(uart16550_t *uart, uint8_t value) {
         uart->line_status_errors = 0;
     }
 
-    if (value & UART16550_FCR_CLEAR_TX) {
+    if (fifo_was_enabled != fifo_is_enabled ||
+        (value & UART16550_FCR_CLEAR_TX)) {
+        clear_tx_fifo(uart);
         uart->thre_irq_pending = true;
     }
 
@@ -245,12 +344,9 @@ static void write_register(uart16550_t *uart, unsigned reg, uint8_t value) {
                 return;
             }
 
-            /* Host transmission completes synchronously. */
-            uart->thre_irq_pending = false;
-            if (uart->tx_callback) {
-                uart->tx_callback(uart->tx_opaque, value);
-            }
-            uart->thre_irq_pending = true;
+            /* A full FIFO is backpressure: software that observes THRE will
+             * wait until the host consumer has released the queued bytes. */
+            (void) push_tx(uart, value);
             return;
 
         case UART16550_REG_IER_DLM:
@@ -262,7 +358,8 @@ static void write_register(uart16550_t *uart, unsigned reg, uint8_t value) {
             old_ier = uart->ier;
             uart->ier = value & 0x0fu;
             if (!(old_ier & UART16550_IER_THR_EMPTY) &&
-                (uart->ier & UART16550_IER_THR_EMPTY)) {
+                (uart->ier & UART16550_IER_THR_EMPTY) &&
+                uart->tx_count == 0) {
                 uart->thre_irq_pending = true;
             }
             return;
@@ -330,27 +427,78 @@ bool uart16550_rx_can_accept(const uart16550_t *uart) {
     size_t capacity;
 
     if (!uart) return false;
+    if (uart->rx_reserved != 0) return false;
     capacity = (uart->fcr & UART16550_FCR_ENABLE) ?
         UART16550_RX_FIFO_SIZE : 1u;
     return uart->rx_count < capacity;
 }
 
-bool uart16550_rx_push(uart16550_t *uart, uint8_t byte) {
+size_t uart16550_rx_reserve(uart16550_t *uart, uint8_t **bytes) {
+    size_t capacity;
+    size_t available;
     size_t tail;
+    size_t contiguous;
+
+    if (!bytes) {
+        return 0;
+    }
+    *bytes = NULL;
+    if (!uart) {
+        return 0;
+    }
+    if (uart->rx_reserved != 0) {
+        return 0;
+    }
+
+    capacity = (uart->fcr & UART16550_FCR_ENABLE) ?
+        UART16550_RX_FIFO_SIZE : 1u;
+    available = capacity - uart->rx_count;
+    if (available == 0) {
+        return 0;
+    }
+
+    tail = (uart->rx_head + uart->rx_count) % UART16550_RX_FIFO_SIZE;
+    contiguous = UART16550_RX_FIFO_SIZE - tail;
+    if (contiguous > available) {
+        contiguous = available;
+    }
+    *bytes = &uart->rx_fifo[tail];
+    uart->rx_reserved = contiguous;
+    return contiguous;
+}
+
+bool uart16550_rx_produce(uart16550_t *uart, size_t length) {
+    if (!uart) {
+        return false;
+    }
+    if (length == 0) {
+        uart->rx_reserved = 0;
+        return true;
+    }
+
+    if (length > uart->rx_reserved) {
+        return false;
+    }
+
+    uart->rx_count += length;
+    uart->rx_reserved = 0;
+    return true;
+}
+
+bool uart16550_rx_push(uart16550_t *uart, uint8_t byte) {
+    uint8_t *destination;
 
     if (!uart) {
         return false;
     }
 
-    if (!uart16550_rx_can_accept(uart)) {
+    if (uart16550_rx_reserve(uart, &destination) == 0) {
         uart->line_status_errors |= UART16550_LSR_OVERRUN;
         return false;
     }
 
-    tail = (uart->rx_head + uart->rx_count) % UART16550_RX_FIFO_SIZE;
-    uart->rx_fifo[tail] = byte;
-    ++uart->rx_count;
-    return true;
+    *destination = byte;
+    return uart16550_rx_produce(uart, 1);
 }
 
 size_t uart16550_rx_push_bytes(uart16550_t *uart,

@@ -120,6 +120,19 @@ int main(void) {
     CHECK(executes_as_ri(special(3, 4, 1, 0, 0x18)));
     CHECK(executes_as_ri(special(3, 4, 0, 1, 0x18)));
 
+    state.gpr[3] = UINT32_MAX;
+    state.gpr[4] = UINT32_MAX;
+    execute_instr(special(3, 4, 0, 0, 0x19), &state);
+    CHECK(state.hi == UINT32_C(0xfffffffe));
+    CHECK(state.lo == UINT32_C(0x00000001));
+
+    /* Reciprocal multiply used by the kernel's decimal formatting path. */
+    state.gpr[3] = 101u;
+    state.gpr[4] = UINT32_C(0x028f5c29);
+    execute_instr(special(3, 4, 0, 0, 0x19), &state);
+    CHECK(state.hi == UINT32_C(0x00000001));
+    CHECK(state.lo == UINT32_C(0x028f5c2d));
+
     state.gpr[3] = UINT32_C(0xf0e1d2c3);
     execute_instr(special3(3, 2, 7, 8, 0x00), &state);
     CHECK(state.gpr[2] == UINT32_C(0xd2));
@@ -153,6 +166,7 @@ int main(void) {
 
     pool = calloc(1, PLATFORM_MEMORY_SIZE);
     CHECK(pool != NULL);
+    CHECK(platform_memory_bind(pool, PLATFORM_MEMORY_SIZE));
     platform_init(NULL, NULL);
     write32(0x100u, UINT32_C(0x11223344));
     state.gpr[4] = UINT32_C(0x80000100);
