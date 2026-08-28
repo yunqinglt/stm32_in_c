@@ -1,0 +1,1092 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/yunjincu/文档/stm32_in_c/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+ACR	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^    __IO uint32_t ACR[1];$/;"	m	struct:__anona5e3630f0108	typeref:typename:__IO uint32_t[1]
+ADC123_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define ADC123_Base /;"	d
+ADC1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define ADC1_Base /;"	d
+ADC1_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define ADC1_Base /;"	d
+ADC2_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define ADC2_Base /;"	d
+ADC2_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define ADC2_Base /;"	d
+ADC3_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define ADC3_Base /;"	d
+ADC3_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define ADC3_Base /;"	d
+ADC_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define ADC_Base /;"	d
+ADDR	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t ADDR    			  ;\/\/0X00;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+AES_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define AES_Base /;"	d
+AFRH	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t AFRH[1];$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+AFRL	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t AFRL[1];$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+AFSR	user/src/cortex_m4/scb.h	/^    __IO uint32_t AFSR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+AHBENR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t AHBENR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+AHBRSTR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t AHBRSTR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+AIRCR	user/src/cortex_m0/scb.h	/^    __IO uint32_t AIRCR[1];$/;"	m	struct:__anonc2b53c780108	typeref:typename:__IO uint32_t[1]
+AIRCR	user/src/cortex_m4/scb.h	/^    __IO uint32_t AIRCR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+APB1ENR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t APB1ENR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+APB1RSTR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t APB1RSTR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+APB2ENR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t APB2ENR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+APB2RSTR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t APB2RSTR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+AR	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^    __IO uint32_t AR[1];$/;"	m	struct:__anona5e3630f0108	typeref:typename:__IO uint32_t[1]
+BD	user/src/mipsel-emu/registers.h	/^#define BD(/;"	d
+BDCR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t BDCR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+BEV	user/src/mipsel-emu/registers.h	/^#define BEV(/;"	d
+BFAR	user/src/cortex_m4/scb.h	/^    __IO uint32_t BFAR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+BKPSRAM_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define BKPSRAM_Base /;"	d
+BKP_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define BKP_Base /;"	d
+BKP_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define BKP_Base /;"	d
+BRR	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t BRR[1];$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+BSRR	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t BSRR[1]; \/\/ Bit set-reset Register$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+BadVAddr	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r8[8];  struct { r32 BadVAddr; r32 _pad8[7]; } cp0r8_n; } cp0r8_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25150a::__anon52d50a251608	typeref:typename:r32
+CALIB	user/src/cortex_m0/systick.h	/^    __IM uint32_t CALIB[1];$/;"	m	struct:__anon6948582a0108	typeref:typename:__IM uint32_t[1]
+CALIB	user/src/cortex_m4/systick.h	/^    __IM uint32_t CALIB[1];$/;"	m	struct:__anon7ebb2d2e0108	typeref:typename:__IM uint32_t[1]
+CAN1_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define CAN1_Base /;"	d
+CAN2P0_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define CAN2P0_Base /;"	d
+CAN2_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define CAN2_Base /;"	d
+CANFD_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define CANFD_Base /;"	d
+CANMEM_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define CANMEM_Base /;"	d
+CAN_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define CAN_Base /;"	d
+CAN_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define CAN_Base /;"	d
+CCR	user/src/cortex_m0/scb.h	/^    __IM uint32_t CCR[1];$/;"	m	struct:__anonc2b53c780108	typeref:typename:__IM uint32_t[1]
+CCR	user/src/cortex_m4/scb.h	/^    __IM uint32_t CCR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IM uint32_t[1]
+CDMMBase	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a::__anon52d50a252408	typeref:typename:r32
+CE	user/src/mipsel-emu/registers.h	/^#define CE(/;"	d
+CEC_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define CEC_Base /;"	d
+CFGR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t CFGR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+CFGR2	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t CFGR2[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+CFGR3	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t CFGR3[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+CFG_ENABLE_DEBUG_LOG	user/inc/config.h	/^    #define CFG_ENABLE_DEBUG_LOG /;"	d
+CFG_ENABLE_FPU	user/inc/config.h	/^    #define CFG_ENABLE_FPU /;"	d
+CFG_ENABLE_FULL_TLB	user/inc/config.h	/^    #define CFG_ENABLE_FULL_TLB /;"	d
+CFG_ENABLE_GDB_STUB	user/inc/config.h	/^    #define CFG_ENABLE_GDB_STUB /;"	d
+CFSR	user/src/cortex_m4/scb.h	/^    __IO uint32_t CFSR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+CIR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t CIR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+COMP_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define COMP_Base /;"	d
+CORDIC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define CORDIC_Base /;"	d
+CORTEX_M0	user/src/cortex_m0/nvic.h	/^#define CORTEX_M0$/;"	d
+CPACR	user/src/cortex_m4/usefpu.h	/^    __IO uint32_t CPACR[1];$/;"	m	struct:__anona70a74fc0108	typeref:typename:__IO uint32_t[1]
+CPUID	user/src/cortex_m0/scb.h	/^    __IM uint32_t CPUID[1];$/;"	m	struct:__anonc2b53c780108	typeref:typename:__IM uint32_t[1]
+CPUID	user/src/cortex_m4/scb.h	/^    __IM uint32_t CPUID[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IM uint32_t[1]
+CR	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^    __IO uint32_t CR[1];$/;"	m	struct:__anona5e3630f0108	typeref:typename:__IO uint32_t[1]
+CR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t CR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+CR	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __IO uint32_t CR;$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__IO uint32_t
+CR2	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t CR2[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+CRC_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define CRC_Base /;"	d
+CRC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define CRC_Base /;"	d
+CRC_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define CRC_Base /;"	d
+CRS_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define CRS_BASE /;"	d
+CRS_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define CRS_Base /;"	d
+CRYP_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define CRYP_Base /;"	d
+CSR	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^    __IO uint32_t CSR[1];$/;"	m	struct:__anon2a9710b90108	typeref:typename:__IO uint32_t[1]
+CSR	user/src/cortex_m0/systick.h	/^    __IO uint32_t CSR[1];$/;"	m	struct:__anon6948582a0108	typeref:typename:__IO uint32_t[1]
+CSR	user/src/cortex_m4/systick.h	/^    __IO uint32_t CSR[1];$/;"	m	struct:__anon7ebb2d2e0108	typeref:typename:__IO uint32_t[1]
+CTC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define CTC_Base /;"	d
+CTC_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define CTC_Base /;"	d
+CU30	user/src/mipsel-emu/registers.h	/^#define CU30(/;"	d
+CVR	user/src/cortex_m0/systick.h	/^    __IO uint32_t CVR[1];$/;"	m	struct:__anon6948582a0108	typeref:typename:__IO uint32_t[1]
+CVR	user/src/cortex_m4/systick.h	/^    __IO uint32_t CVR[1];$/;"	m	struct:__anon7ebb2d2e0108	typeref:typename:__IO uint32_t[1]
+CacheErr	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r27[8]; struct { r32 CacheErr[4]; r32 _pad27[4]; } cp0r27_n; } cp0r27/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253b0a::__anon52d50a253c08	typeref:typename:r32[4]
+Cause	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r13[8]; struct { r32 Cause; r32 _pad13[7]; } cp0r13_n; } cp0r13_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251f0a::__anon52d50a252008	typeref:typename:r32
+Compare	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r11[8]; struct { r32 Compare; r32 _pad11[7]; } cp0r11_n; } cp0r11_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251b0a::__anon52d50a251c08	typeref:typename:r32
+Config	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a::__anon52d50a252608	typeref:typename:r32
+Config1	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a::__anon52d50a252608	typeref:typename:r32
+Config2	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a::__anon52d50a252608	typeref:typename:r32
+Config3	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a::__anon52d50a252608	typeref:typename:r32
+Config4	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a::__anon52d50a252608	typeref:typename:r32
+Config5	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a::__anon52d50a252608	typeref:typename:r32
+Context	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r4[8];  struct { r32 Context; r32 ContextConfig; r32 _pad4[6]; } cp0r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250d0a::__anon52d50a250e08	typeref:typename:r32
+ContextConfig	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r4[8];  struct { r32 Context; r32 ContextConfig; r32 _pad4[6]; } cp0r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250d0a::__anon52d50a250e08	typeref:typename:r32
+Count	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r9[8];  struct { r32 Count; r32 _pad9[7]; } cp0r9_n; } cp0r9_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25170a::__anon52d50a251808	typeref:typename:r32
+DAC_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define DAC_Base /;"	d
+DAC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define DAC_Base /;"	d
+DAC_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define DAC_Base /;"	d
+DBGMCU_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define DBGMCU_Base /;"	d
+DC	user/src/mipsel-emu/registers.h	/^#define DC(/;"	d
+DCMI_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define DCMI_Base /;"	d
+DEPC	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r24[8]; struct { r32 DEPC; r32 _pad24[7]; } cp0r24_n; } cp0r24_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25350a::__anon52d50a253608	typeref:typename:r32
+DESAVE	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r31[8]; struct { r32 DESAVE; r32 _pad31[7]; } cp0r31_n; } cp0r31_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25430a::__anon52d50a254408	typeref:typename:r32
+DMA1_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define DMA1_Base /;"	d
+DMA1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define DMA1_Base /;"	d
+DMA1_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define DMA1_Base /;"	d
+DMA1_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define DMA1_Base /;"	d
+DMA2D_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define DMA2D_Base /;"	d
+DMA2_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define DMA2_Base /;"	d
+DMA2_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define DMA2_Base /;"	d
+DMA2_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define DMA2_Base /;"	d
+DMA2_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define DMA2_Base /;"	d
+DataHi	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r29[8]; struct { r32 TagHi; r32 DataHi; r32 _pad29[6]; } cp0r29_n; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253f0a::__anon52d50a254008	typeref:typename:r32
+DataLo	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r28[8]; struct { r32 TagLo; r32 DataLo; r32 _pad28[6]; } cp0r28_n; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253d0a::__anon52d50a253e08	typeref:typename:r32
+Debug	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a::__anon52d50a253408	typeref:typename:r32
+Debug2	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a::__anon52d50a253408	typeref:typename:r32
+Default_Handler	user/src/cortex_m0/startup.c	/^__WEAK void Default_Handler(void) {$/;"	f	typeref:typename:__WEAK void
+Default_Handler	user/src/cortex_m4/startup.c	/^__WEAK void Default_Handler(void) {$/;"	f	typeref:typename:__WEAK void
+EBase	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a::__anon52d50a252408	typeref:typename:r32
+EMU_TARGET_MODE	user/inc/config.h	/^#define EMU_TARGET_MODE /;"	d
+EP0CSR	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __IO uint32_t EP0CSR;$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__IO uint32_t
+EP0_COUNT	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t EP0_COUNT			;\/\/0X11; \/\/EP_COUNT0$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+EP0_CSR	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t EP0_CSR   		  ;\/\/0X10;\/\/EP_CSR$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+EPC	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r14[8]; struct { r32 EPC; r32 _pad14[7]; } cp0r14_n; } cp0r14_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25210a::__anon52d50a252208	typeref:typename:r32
+ERL	user/src/mipsel-emu/registers.h	/^#define ERL(/;"	d
+ESMC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define ESMC_Base /;"	d
+ESMC_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define ESMC_Base /;"	d
+ETHMAC_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define ETHMAC_Base /;"	d
+ETH_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define ETH_Base /;"	d
+EXC_AdEL	user/src/mipsel-emu/instru.h	/^#define EXC_AdEL /;"	d
+EXC_AdES	user/src/mipsel-emu/instru.h	/^#define EXC_AdES /;"	d
+EXC_BP	user/src/mipsel-emu/instru.h	/^#define EXC_BP /;"	d
+EXC_C2E	user/src/mipsel-emu/instru.h	/^#define EXC_C2E /;"	d
+EXC_CAH	user/src/mipsel-emu/instru.h	/^#define EXC_CAH /;"	d
+EXC_CpU	user/src/mipsel-emu/instru.h	/^#define EXC_CpU /;"	d
+EXC_DBE	user/src/mipsel-emu/instru.h	/^#define EXC_DBE /;"	d
+EXC_DSP	user/src/mipsel-emu/instru.h	/^#define EXC_DSP /;"	d
+EXC_FPE	user/src/mipsel-emu/instru.h	/^#define EXC_FPE /;"	d
+EXC_IBE	user/src/mipsel-emu/instru.h	/^#define EXC_IBE /;"	d
+EXC_INT	user/src/mipsel-emu/instru.h	/^#define EXC_INT /;"	d
+EXC_MCheck	user/src/mipsel-emu/instru.h	/^#define EXC_MCheck /;"	d
+EXC_MOD	user/src/mipsel-emu/instru.h	/^#define EXC_MOD /;"	d
+EXC_Ov	user/src/mipsel-emu/instru.h	/^#define EXC_Ov /;"	d
+EXC_RI	user/src/mipsel-emu/instru.h	/^#define EXC_RI /;"	d
+EXC_SC	user/src/mipsel-emu/instru.h	/^#define EXC_SC /;"	d
+EXC_THR	user/src/mipsel-emu/instru.h	/^#define EXC_THR /;"	d
+EXC_TLBL	user/src/mipsel-emu/instru.h	/^#define EXC_TLBL /;"	d
+EXC_TLBS	user/src/mipsel-emu/instru.h	/^#define EXC_TLBS /;"	d
+EXC_Tr	user/src/mipsel-emu/instru.h	/^#define EXC_Tr /;"	d
+EXC_WATCH	user/src/mipsel-emu/instru.h	/^#define EXC_WATCH /;"	d
+EXL	user/src/mipsel-emu/registers.h	/^#define EXL(/;"	d
+EXTI_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define EXTI_Base /;"	d
+EXTI_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define EXTI_Base /;"	d
+EXTI_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define EXTI_Base /;"	d
+EXTI_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define EXTI_Base /;"	d
+EntryHi	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r10[8]; struct { r32 EntryHi; r32 _pad10[7]; } cp0r10_n; } cp0r10_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25190a::__anon52d50a251a08	typeref:typename:r32
+EntryLo0	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08	typeref:typename:r32
+EntryLo1	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r3[8];  struct { r32 EntryLo1; r32 _pad3[7]; } cp0r3_n; } cp0r3_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250b0a::__anon52d50a250c08	typeref:typename:r32
+ErrCtl	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r26[8]; struct { r32 ErrCtl; r32 _pad26[7]; } cp0r26_n; } cp0r26_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25390a::__anon52d50a253a08	typeref:typename:r32
+ErrorEPC	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r30[8]; struct { r32 ErrorEPC; r32 _pad30[7]; } cp0r30_n; } cp0r30_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25410a::__anon52d50a254208	typeref:typename:r32
+FDCAN1_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define FDCAN1_BASE /;"	d
+FDCAN2_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define FDCAN2_BASE /;"	d
+FDCAN3_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define FDCAN3_BASE /;"	d
+FDCANM_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define FDCANM_BASE /;"	d
+FIFODATA	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __IO uint32_t FIFODATA[8];$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__IO uint32_t[8]
+FIFO_EP0	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t FIFO_EP0 			;\/\/0X20;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+FIFO_EP1	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t FIFO_EP1 			;\/\/0X24; $/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+FIFO_EP2	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t FIFO_EP2 			;\/\/0X28;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+FIFO_EP3	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t FIFO_EP3 			;\/\/0X2C;    $/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+FIFO_EP4	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t FIFO_EP4 			;\/\/0X30;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+FIFO_EP5	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t FIFO_EP5 			;\/\/0X34; $/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+FIFO_EP6	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t FIFO_EP6 			;\/\/0X38;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+FIFO_EP7	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t FIFO_EP7 			;\/\/0X3C;    $/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+FLASH_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define FLASH_Base /;"	d
+FLASH_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define FLASH_Base /;"	d
+FMC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define FMC_Base /;"	d
+FMC_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define FMC_Base /;"	d
+FPACR	user/src/cortex_m4/usefpu.h	/^    __IO uint32_t FPACR[1];$/;"	m	struct:__anona70a74fc0208	typeref:typename:__IO uint32_t[1]
+FPCCR	user/src/cortex_m4/usefpu.h	/^    __IO uint32_t FPCCR[1];$/;"	m	struct:__anona70a74fc0208	typeref:typename:__IO uint32_t[1]
+FPDSCR	user/src/cortex_m4/usefpu.h	/^    __IO uint32_t FPDSCR[1];$/;"	m	struct:__anona70a74fc0208	typeref:typename:__IO uint32_t[1]
+FR	user/src/mipsel-emu/registers.h	/^#define FR(/;"	d
+FRAME	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint16_t FRAME         ;\/\/0X0C-0X0D;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint16_t
+FRAME	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __IO uint32_t FRAME;$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__IO uint32_t
+FSMC_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define FSMC_BASE /;"	d
+FSMC_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define FSMC_Base /;"	d
+GET_CPU_MODE	user/src/mipsel-emu/registers.h	/^#define GET_CPU_MODE(/;"	d
+GPIOA	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIOA /;"	d
+GPIOA_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define GPIOA_Base /;"	d
+GPIOA_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define GPIOA_Base /;"	d
+GPIOA_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define GPIOA_Base /;"	d
+GPIOA_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOA_Base /;"	d
+GPIOB	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIOB /;"	d
+GPIOB_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define GPIOB_Base /;"	d
+GPIOB_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define GPIOB_Base /;"	d
+GPIOB_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define GPIOB_Base /;"	d
+GPIOB_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOB_Base /;"	d
+GPIOC	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIOC /;"	d
+GPIOC_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define GPIOC_Base /;"	d
+GPIOC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define GPIOC_Base /;"	d
+GPIOC_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define GPIOC_Base /;"	d
+GPIOC_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOC_Base /;"	d
+GPIOD	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIOD /;"	d
+GPIOD_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define GPIOD_Base /;"	d
+GPIOD_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define GPIOD_Base /;"	d
+GPIOD_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define GPIOD_Base /;"	d
+GPIOD_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOD_Base /;"	d
+GPIOE	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIOE /;"	d
+GPIOE_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define GPIOE_Base /;"	d
+GPIOE_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define GPIOE_Base /;"	d
+GPIOE_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define GPIOE_Base /;"	d
+GPIOE_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOE_Base /;"	d
+GPIOF	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIOF /;"	d
+GPIOF_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define GPIOF_Base /;"	d
+GPIOF_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define GPIOF_Base /;"	d
+GPIOF_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOF_Base /;"	d
+GPIOG_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOG_Base /;"	d
+GPIOH_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOH_Base /;"	d
+GPIOI_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOI_Base /;"	d
+GPIOJ_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOJ_Base /;"	d
+GPIOK_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define GPIOK_Base /;"	d
+GPIO_AF0	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_AF0 /;"	d
+GPIO_AF1	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_AF1 /;"	d
+GPIO_AF2	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_AF2 /;"	d
+GPIO_AF3	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_AF3 /;"	d
+GPIO_AF4	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_AF4 /;"	d
+GPIO_AF5	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_AF5 /;"	d
+GPIO_AF6	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_AF6 /;"	d
+GPIO_AF7	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_AF7 /;"	d
+GPIO_OUTPUT_NOPULL	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_OUTPUT_NOPULL /;"	d
+GPIO_OUTPUT_ODR	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_OUTPUT_ODR /;"	d
+GPIO_OUTPUT_PLDN	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_OUTPUT_PLDN /;"	d
+GPIO_OUTPUT_PLUP	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_OUTPUT_PLUP /;"	d
+GPIO_OUTPUT_PP	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_OUTPUT_PP /;"	d
+GPIO_PORT_MODE_AF	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_PORT_MODE_AF /;"	d
+GPIO_PORT_MODE_ANALOG	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_PORT_MODE_ANALOG /;"	d
+GPIO_PORT_MODE_INPUT	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_PORT_MODE_INPUT /;"	d
+GPIO_PORT_MODE_OUTPUT	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_PORT_MODE_OUTPUT /;"	d
+GPIO_SPEED_HIGH	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_SPEED_HIGH /;"	d
+GPIO_SPEED_LOW	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_SPEED_LOW /;"	d
+GPIO_SPEED_MEDIUM	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define GPIO_SPEED_MEDIUM /;"	d
+HALTING	user/src/mipsel-emu/registers.h	/^    HALTING,$/;"	e	enum:__anon52d50a250103
+HASH_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define HASH_Base /;"	d
+HFSR	user/src/cortex_m4/scb.h	/^    __IO uint32_t HFSR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+HWREna	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r7[8];  struct { r32 HWREna; r32 _pad7[7]; } cp0r7_n; } cp0r7_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25130a::__anon52d50a251408	typeref:typename:r32
+HardFault_Handler	user/src/cortex_m0/STM32F042C6T6/handler.h	/^__REWRITE void HardFault_Handler(void) {$/;"	f	typeref:typename:__REWRITE void
+I2C1_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define I2C1_BASE /;"	d
+I2C1_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define I2C1_Base /;"	d
+I2C1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define I2C1_Base /;"	d
+I2C1_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define I2C1_Base /;"	d
+I2C1_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define I2C1_Base /;"	d
+I2C2_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define I2C2_BASE /;"	d
+I2C2_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define I2C2_Base /;"	d
+I2C2_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define I2C2_Base /;"	d
+I2C2_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define I2C2_Base /;"	d
+I2C2_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define I2C2_Base /;"	d
+I2C3_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define I2C3_BASE /;"	d
+I2C3_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define I2C3_Base /;"	d
+I2C4_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define I2C4_BASE /;"	d
+I2C4_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define I2C4_Base /;"	d
+I2S2ext_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define I2S2ext_Base /;"	d
+I2S3ext_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define I2S3ext_Base /;"	d
+ICER	user/src/cortex_m0/nvic.h	/^    __IOM uint32_t ICER[1];        \/\/ ICER     NVIC+0x80$/;"	m	struct:__anon0f0f82f00108	typeref:typename:__IOM uint32_t[1]
+ICPR	user/src/cortex_m0/nvic.h	/^    __IOM uint32_t ICPR[1];        \/\/ ICPR     NVIC+0x280$/;"	m	struct:__anon0f0f82f00108	typeref:typename:__IOM uint32_t[1]
+ICSR	user/src/cortex_m0/scb.h	/^    __IO uint32_t ICSR[1];$/;"	m	struct:__anonc2b53c780108	typeref:typename:__IO uint32_t[1]
+ICSR	user/src/cortex_m4/scb.h	/^    __IO uint32_t ICSR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+IDR	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t IDR[1];$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+IE	user/src/mipsel-emu/registers.h	/^#define IE(/;"	d
+IM	user/src/mipsel-emu/registers.h	/^#define IM(/;"	d
+INDEX	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t INDEX    			;\/\/0X0E;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+INEPxCSR	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __IO uint32_t INEPxCSR;$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__IO uint32_t
+INIT_RANDOM	user/src/mipsel-emu/registers.h	/^#define INIT_RANDOM /;"	d
+INIT_STATUS	user/src/mipsel-emu/registers.h	/^#define INIT_STATUS /;"	d
+INTR	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __O  uint32_t INTR; \/\/ Interrupt$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__O uint32_t
+INTRE	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __IO uint32_t INTRE; \/\/ Interrupt Enable$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__IO uint32_t
+INT_IN1	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t INT_IN1  			;\/\/0X06;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+INT_IN1E	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t INT_IN1E 			;\/\/0X0A;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+INT_OUT1	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t INT_OUT1 			;\/\/0X05;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+INT_OUT1E	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t INT_OUT1E			;\/\/0X09;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+INT_USB	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t INT_USB  			;\/\/0X04;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+INT_USBE	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t INT_USBE 			;\/\/0X08;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+IN_CSR1	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t IN_CSR1   			;\/\/0X15;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+IN_CSR2	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t IN_CSR2   			;\/\/0X14;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+IPR	user/src/cortex_m0/nvic.h	/^    __IOM uint8_t IPR[32];         \/\/ IPR0-7$/;"	m	struct:__anon0f0f82f00108	typeref:typename:__IOM uint8_t[32]
+IRQ2_n	user/src/cortex_m0/scb.h	/^} IRQ2_n;$/;"	t	typeref:enum:__anonc2b53c780203
+IRQ2_n	user/src/cortex_m4/scb.h	/^} IRQ2_n;$/;"	t	typeref:enum:__anonf69e2f7c0203
+ISER	user/src/cortex_m0/nvic.h	/^    __IOM uint32_t ISER[1];        \/\/ ISER     NVIC+0$/;"	m	struct:__anon0f0f82f00108	typeref:typename:__IOM uint32_t[1]
+ISPR	user/src/cortex_m0/nvic.h	/^    __IOM uint32_t ISPR[1];        \/\/ ISPR     NVIC+0x200$/;"	m	struct:__anon0f0f82f00108	typeref:typename:__IOM uint32_t[1]
+IWDG_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define IWDG_BASE /;"	d
+IWDG_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define IWDG_Base /;"	d
+IWDG_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define IWDG_Base /;"	d
+IWDG_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define IWDG_Base /;"	d
+IWDG_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define IWDG_Base /;"	d
+Index	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a::__anon52d50a250608	typeref:typename:r32
+IntCtl	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a::__anon52d50a251e08	typeref:typename:r32
+KEYR	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^    __IO uint32_t KEYR[1];$/;"	m	struct:__anona5e3630f0108	typeref:typename:__IO uint32_t[1]
+KSU	user/src/mipsel-emu/registers.h	/^#define KSU(/;"	d
+KX	user/src/mipsel-emu/registers.h	/^#define KX(/;"	d
+LCDC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define LCDC_Base /;"	d
+LCDTFT_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define LCDTFT_Base /;"	d
+LCKR	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t LCKR[1];$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+LLAddr	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r17[8]; struct { r32 LLAddr; r32 _pad17[7]; } cp0r17_n; } cp0r17_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25270a::__anon52d50a252808	typeref:typename:r32
+LPTIM1_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define LPTIM1_BASE /;"	d
+LPTIM1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define LPTIM1_Base /;"	d
+LPUART1_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define LPUART1_BASE /;"	d
+LPUART1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define LPUART1_Base /;"	d
+LoopCopyDataInit	user/src/cortex_m0/startup.c	/^__STATIC_FORCEINLINE void LoopCopyDataInit(uint32_t *src, uint32_t *dest, uint32_t *data) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+LoopCopyDataInit	user/src/cortex_m4/startup.c	/^__STATIC_FORCEINLINE void LoopCopyDataInit(uint32_t *src, uint32_t *dest, uint32_t *data) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+LoopFillZerobss	user/src/cortex_m0/startup.c	/^__STATIC_FORCEINLINE void LoopFillZerobss(uint32_t *start, uint32_t *end) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+LoopFillZerobss	user/src/cortex_m4/startup.c	/^__STATIC_FORCEINLINE void LoopFillZerobss(uint32_t *start, uint32_t *end) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+M0_PERH	user/src/cortex_m0/memory.h	/^#define M0_PERH /;"	d
+M4_PERH	user/src/cortex_m4/memory.h	/^#define M4_PERH /;"	d
+MAX_PKT_IN	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t MAX_PKT_IN   	;\/\/0X16;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+MAX_PKT_OUT	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t MAX_PKT_OUT  	;\/\/0X1A;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+MIPS_Instruction_Handler	user/src/mipsel-emu/registers.h	/^typedef void (*MIPS_Instruction_Handler) (uint32_t instr, Registers *state);$/;"	t	typeref:typename:void (*)(uint32_t instr,Registers * state)
+MMFAR	user/src/cortex_m4/scb.h	/^    __IO uint32_t MMFAR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+MODER	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t MODER[1];$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+MVPConf0	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a::__anon52d50a250608	typeref:typename:r32
+MVPConf1	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a::__anon52d50a250608	typeref:typename:r32
+MVPControl	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a::__anon52d50a250608	typeref:typename:r32
+MX	user/src/mipsel-emu/registers.h	/^#define MX(/;"	d
+My_SVC_Handler	user/src/main.c	/^void My_SVC_Handler(void) {$/;"	f	typeref:typename:void
+NMI	user/src/mipsel-emu/registers.h	/^#define NMI(/;"	d
+NMI_Handler	user/src/cortex_m0/STM32F042C6T6/handler.h	/^__REWRITE void NMI_Handler(void) {$/;"	f	typeref:typename:__REWRITE void
+OBR	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^    __IO uint32_t OBR[1];$/;"	m	struct:__anona5e3630f0108	typeref:typename:__IO uint32_t[1]
+ODR	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t ODR[1]; \/\/ Output data register$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+OPA_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define OPA_Base /;"	d
+OPTKEYR	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^    __IO uint32_t OPTKEYR[1];$/;"	m	struct:__anona5e3630f0108	typeref:typename:__IO uint32_t[1]
+OSPEEDR	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t OSPEEDR[1]; \/\/ Output Speed Register$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+OTYPER	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t OTYPER[1];$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+OUTCOUNT	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __O  uint32_t OUTCOUNT;$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__O uint32_t
+OUTEPxCSR	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^    __IO uint32_t OUTEPxCSR;$/;"	m	struct:__anond2ad4cc10108	typeref:typename:__IO uint32_t
+OUT_COUNT	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint16_t OUT_COUNT 		;\/\/0X1C-0X1D;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint16_t
+OUT_CSR1	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t OUT_CSR1  			;\/\/0X19;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+OUT_CSR2	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t OUT_CSR2  			;\/\/0X18;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+OV_exception	user/src/mipsel-emu/instru.c	/^void OV_exception(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+PCI	user/src/mipsel-emu/registers.h	/^#define PCI(/;"	d
+POWER	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t POWER    			;\/\/0X01;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t
+PRID_OPT	user/src/mipsel-emu/registers.h	/^#define PRID_OPT /;"	d
+PRId	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a::__anon52d50a252408	typeref:typename:r32
+PUPDR	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^    __IO uint32_t PUPDR[1];$/;"	m	struct:__anonce3841540108	typeref:typename:__IO uint32_t[1]
+PWR_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define PWR_BASE /;"	d
+PWR_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define PWR_Base /;"	d
+PWR_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define PWR_Base /;"	d
+PWR_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define PWR_Base /;"	d
+PWR_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define PWR_Base /;"	d
+PageGrain	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r5[8];  struct { r32 PageMask; r32 PageGrain; r32 _pad5[6]; } cp0r5_n/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250f0a::__anon52d50a251008	typeref:typename:r32
+PageMask	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r5[8];  struct { r32 PageMask; r32 PageGrain; r32 _pad5[6]; } cp0r5_n/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250f0a::__anon52d50a251008	typeref:typename:r32
+PerfCnt	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r25[8]; struct { r32 PerfCnt[8]; } cp0r25_n; } cp0r25_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25370a::__anon52d50a253808	typeref:typename:r32[8]
+QSPI_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define QSPI_BASE /;"	d
+RCC	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^#define RCC /;"	d
+RCC_AHB1ENR	user/src/main.c	/^#define RCC_AHB1ENR /;"	d	file:
+RCC_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define RCC_Base /;"	d
+RCC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define RCC_Base /;"	d
+RCC_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define RCC_Base /;"	d
+RE	user/src/mipsel-emu/registers.h	/^#define RE(/;"	d
+RESET	user/src/mipsel-emu/registers.h	/^    RESET,$/;"	e	enum:__anon52d50a250103
+REV0	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV0[2]			  ;\/\/0X02~03;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[2]
+REV1	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV1[1]			  ;\/\/0X07;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[1]
+REV10	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV10[3]			  ;\/\/0X29~2B;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[3]
+REV11	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV11[3]			  ;\/\/0X2D~2F;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[3]
+REV12	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV12[3]			  ;\/\/0X31~33;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[3]
+REV13	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV13[3]			  ;\/\/0X25~37;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[3]
+REV14	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV14[3]			  ;\/\/0X39~3B;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[3]
+REV2	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV2[1]			  ;\/\/0X0B;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[1]
+REV3	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV3[1]			  ;\/\/0X0F;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[1]
+REV4	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV4[2]			  ;\/\/0X12-0X13;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[2]
+REV5	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV5[1]			  ;\/\/0X17$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[1]
+REV6	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV6[1]			  ;\/\/0X1B$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[1]
+REV7	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV7[2]			  ;\/\/0X1E~1F;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[2]
+REV8	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV8[3]			  ;\/\/0X21~23;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[3]
+REV9	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^	__IO uint8_t REV9[3]			  ;\/\/0X25~27;$/;"	m	struct:__anond2ad4cc10208	typeref:typename:__IO uint8_t[3]
+RI_exception	user/src/mipsel-emu/instru.c	/^void RI_exception(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+RNG_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define RNG_Base /;"	d
+RNG_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define RNG_Base /;"	d
+RP	user/src/mipsel-emu/registers.h	/^#define RP(/;"	d
+RTCBKP_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define RTCBKP_BASE /;"	d
+RTCBKP_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define RTCBKP_Base /;"	d
+RTC_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define RTC_Base /;"	d
+RTC_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define RTC_Base /;"	d
+RTC_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define RTC_Base /;"	d
+RUNNING	user/src/mipsel-emu/registers.h	/^    RUNNING,$/;"	e	enum:__anon52d50a250103
+RVR	user/src/cortex_m0/systick.h	/^    __IO uint32_t RVR[1];$/;"	m	struct:__anon6948582a0108	typeref:typename:__IO uint32_t[1]
+RVR	user/src/cortex_m4/systick.h	/^    __IO uint32_t RVR[1];$/;"	m	struct:__anon7ebb2d2e0108	typeref:typename:__IO uint32_t[1]
+Random	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808	typeref:typename:r32
+Registers	user/src/mipsel-emu/registers.h	/^} Registers;$/;"	t	typeref:struct:Registers_t
+Registers_t	user/src/mipsel-emu/registers.h	/^typedef struct Registers_t {$/;"	s
+Reset_Handler	user/src/cortex_m0/startup.c	/^__WEAK __NAKED void Reset_Handler(void) {$/;"	f	typeref:typename:__WEAK __NAKED void
+Reset_Handler	user/src/cortex_m4/startup.c	/^__WEAK __NAKED void Reset_Handler(void) {$/;"	f	typeref:typename:__WEAK __NAKED void
+Reset_exception	user/src/mipsel-emu/instru.c	/^void Reset_exception(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+S0_IS_0	user/src/mipsel-emu/op.h	/^#define S0_IS_0(/;"	d
+SAI1_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SAI1_Base /;"	d
+SCR	user/src/cortex_m0/scb.h	/^    __IO uint32_t SCR[1];$/;"	m	struct:__anonc2b53c780108	typeref:typename:__IO uint32_t[1]
+SCR	user/src/cortex_m4/scb.h	/^    __IO uint32_t SCR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+SC_exception	user/src/mipsel-emu/instru.c	/^void SC_exception(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+SDIO_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define SDIO_Base /;"	d
+SDIO_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define SDIO_Base /;"	d
+SDIO_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SDIO_Base /;"	d
+SHCSR	user/src/cortex_m4/scb.h	/^    __IO uint32_t SHCSR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+SHPR	user/src/cortex_m0/scb.h	/^    __IO uint8_t SHPR[8];$/;"	m	struct:__anonc2b53c780108	typeref:typename:__IO uint8_t[8]
+SHPR	user/src/cortex_m4/scb.h	/^    __IO uint8_t SHPR[12];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint8_t[12]
+SPI1I2S1_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define SPI1I2S1_Base /;"	d
+SPI1I2S1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define SPI1I2S1_Base /;"	d
+SPI1_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define SPI1_Base /;"	d
+SPI1_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SPI1_Base /;"	d
+SPI2I2S2_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define SPI2I2S2_BASE /;"	d
+SPI2I2S2_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define SPI2I2S2_Base /;"	d
+SPI2I2S2_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define SPI2I2S2_Base /;"	d
+SPI2I2S2_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SPI2I2S2_Base /;"	d
+SPI2_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define SPI2_Base /;"	d
+SPI3I2S3_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define SPI3I2S3_BASE /;"	d
+SPI3I2S3_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define SPI3I2S3_Base /;"	d
+SPI3I2S3_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define SPI3I2S3_Base /;"	d
+SPI3I2S3_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SPI3I2S3_Base /;"	d
+SPI4_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SPI4_Base /;"	d
+SPI5_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SPI5_Base /;"	d
+SPI6_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SPI6_Base /;"	d
+SR	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^    __IO uint32_t SR[1];$/;"	m	struct:__anona5e3630f0108	typeref:typename:__IO uint32_t[1]
+SR	user/src/mipsel-emu/registers.h	/^#define SR(/;"	d
+SRSConf0	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a::__anon52d50a251208	typeref:typename:r32
+SRSConf1	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a::__anon52d50a251208	typeref:typename:r32
+SRSConf2	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a::__anon52d50a251208	typeref:typename:r32
+SRSConf3	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a::__anon52d50a251208	typeref:typename:r32
+SRSConf4	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a::__anon52d50a251208	typeref:typename:r32
+SRSCtl	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a::__anon52d50a251e08	typeref:typename:r32
+SRSMap	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a::__anon52d50a251e08	typeref:typename:r32
+STEPPING	user/src/mipsel-emu/registers.h	/^    STEPPING,$/;"	e	enum:__anon52d50a250103
+SX	user/src/mipsel-emu/registers.h	/^#define SX(/;"	d
+SYSCFG_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define SYSCFG_Base /;"	d
+SYSCFG_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define SYSCFG_Base /;"	d
+SYSCFG_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define SYSCFG_Base /;"	d
+SYSCFG_COMP_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define SYSCFG_COMP_Base /;"	d
+Status	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a::__anon52d50a251e08	typeref:typename:r32
+SystemInit	user/src/cortex_m0/startup.h	/^__USED __STATIC_FORCEINLINE void SystemInit(void) {$/;"	f	typeref:typename:__USED __STATIC_FORCEINLINE void
+SystemInit	user/src/cortex_m4/startup.h	/^__USED __STATIC_FORCEINLINE void SystemInit(void) {$/;"	f	typeref:typename:__USED __STATIC_FORCEINLINE void
+TAMP_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define TAMP_BASE /;"	d
+TCBind	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08	typeref:typename:r32
+TCContext	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08	typeref:typename:r32
+TCHalt	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08	typeref:typename:r32
+TCRestart	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08	typeref:typename:r32
+TCSchFBack	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08	typeref:typename:r32
+TCSchedule	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08	typeref:typename:r32
+TCStatus	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08	typeref:typename:r32
+TI	user/src/mipsel-emu/registers.h	/^#define TI(/;"	d
+TIM10_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM10_Base /;"	d
+TIM10_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM10_Base /;"	d
+TIM10_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM10_Base /;"	d
+TIM11_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM11_Base /;"	d
+TIM11_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM11_Base /;"	d
+TIM11_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM11_Base /;"	d
+TIM12_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM12_Base /;"	d
+TIM12_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM12_Base /;"	d
+TIM12_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM12_Base /;"	d
+TIM13_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM13_Base /;"	d
+TIM13_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM13_Base /;"	d
+TIM13_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM13_Base /;"	d
+TIM14_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM14_Base /;"	d
+TIM14_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM14_Base /;"	d
+TIM14_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM14_Base /;"	d
+TIM14_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM14_Base /;"	d
+TIM15_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM15_Base /;"	d
+TIM15_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM15_Base /;"	d
+TIM16_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM16_Base /;"	d
+TIM16_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM16_Base /;"	d
+TIM17_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM17_Base /;"	d
+TIM17_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM17_Base /;"	d
+TIM18_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM18_Base /;"	d
+TIM19_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM19_Base /;"	d
+TIM1_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM1_Base /;"	d
+TIM1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM1_Base /;"	d
+TIM1_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM1_Base /;"	d
+TIM1_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM1_Base /;"	d
+TIM2_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define TIM2_BASE /;"	d
+TIM2_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM2_Base /;"	d
+TIM2_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM2_Base /;"	d
+TIM2_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM2_Base /;"	d
+TIM2_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM2_Base /;"	d
+TIM3_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define TIM3_BASE /;"	d
+TIM3_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM3_Base /;"	d
+TIM3_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM3_Base /;"	d
+TIM3_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM3_Base /;"	d
+TIM3_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM3_Base /;"	d
+TIM4_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define TIM4_BASE /;"	d
+TIM4_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM4_Base /;"	d
+TIM4_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM4_Base /;"	d
+TIM4_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM4_Base /;"	d
+TIM5_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define TIM5_BASE /;"	d
+TIM5_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM5_Base /;"	d
+TIM5_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM5_Base /;"	d
+TIM5_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM5_Base /;"	d
+TIM6_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define TIM6_BASE /;"	d
+TIM6_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM6_Base /;"	d
+TIM6_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM6_Base /;"	d
+TIM6_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM6_Base /;"	d
+TIM6_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM6_Base /;"	d
+TIM7_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define TIM7_BASE /;"	d
+TIM7_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TIM7_Base /;"	d
+TIM7_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM7_Base /;"	d
+TIM7_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM7_Base /;"	d
+TIM7_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM7_Base /;"	d
+TIM8_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM8_Base /;"	d
+TIM8_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM8_Base /;"	d
+TIM8_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM8_Base /;"	d
+TIM9_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define TIM9_Base /;"	d
+TIM9_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define TIM9_Base /;"	d
+TIM9_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define TIM9_Base /;"	d
+TS	user/src/mipsel-emu/registers.h	/^#define TS(/;"	d
+TSC_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define TSC_Base /;"	d
+TagHi	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r29[8]; struct { r32 TagHi; r32 DataHi; r32 _pad29[6]; } cp0r29_n; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253f0a::__anon52d50a254008	typeref:typename:r32
+TagLo	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r28[8]; struct { r32 TagLo; r32 DataLo; r32 _pad28[6]; } cp0r28_n; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253d0a::__anon52d50a253e08	typeref:typename:r32
+TraceBPC	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a::__anon52d50a253408	typeref:typename:r32
+TraceControl	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a::__anon52d50a253408	typeref:typename:r32
+TraceControl2	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a::__anon52d50a253408	typeref:typename:r32
+UART1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define UART1_Base /;"	d
+UART2_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define UART2_Base /;"	d
+UART3_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define UART3_Base /;"	d
+UART4_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define UART4_BASE /;"	d
+UART4_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define UART4_Base /;"	d
+UART5_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define UART5_BASE /;"	d
+UART5_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define UART5_Base /;"	d
+UART7_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define UART7_Base /;"	d
+UART8_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define UART8_Base /;"	d
+UCPD1_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define UCPD1_BASE /;"	d
+USART1_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USART1_Base /;"	d
+USART1_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define USART1_Base /;"	d
+USART1_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define USART1_Base /;"	d
+USART1_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define USART1_Base /;"	d
+USART2_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define USART2_BASE /;"	d
+USART2_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USART2_Base /;"	d
+USART2_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define USART2_Base /;"	d
+USART2_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define USART2_Base /;"	d
+USART2_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define USART2_Base /;"	d
+USART3_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define USART3_BASE /;"	d
+USART3_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USART3_Base /;"	d
+USART3_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define USART3_Base /;"	d
+USART3_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define USART3_Base /;"	d
+USART3_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define USART3_Base /;"	d
+USART4_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USART4_Base /;"	d
+USART4_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define USART4_Base /;"	d
+USART5_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USART5_Base /;"	d
+USART5_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define USART5_Base /;"	d
+USART6_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USART6_Base /;"	d
+USART6_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define USART6_Base /;"	d
+USART7_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USART7_Base /;"	d
+USART8_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USART8_Base /;"	d
+USB1OTG_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define USB1OTG_Base /;"	d
+USB2OTG_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define USB2OTG_Base /;"	d
+USBCAN_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USBCAN_Base /;"	d
+USBDCAN_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define USBDCAN_Base /;"	d
+USBD_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define USBD_Base /;"	d
+USBFS_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define USBFS_BASE /;"	d
+USBOTGFS1_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define USBOTGFS1_Base /;"	d
+USBOTGFS2_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define USBOTGFS2_Base /;"	d
+USBSRAM_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define USBSRAM_BASE /;"	d
+USB_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define USB_Base /;"	d
+USB_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define USB_Base /;"	d
+UX	user/src/mipsel-emu/registers.h	/^#define UX(/;"	d
+UserTraceData	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a::__anon52d50a253408	typeref:typename:r32
+VPEConf0	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808	typeref:typename:r32
+VPEConf1	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808	typeref:typename:r32
+VPEControl	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808	typeref:typename:r32
+VPEOpt	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808	typeref:typename:r32
+VPEScheBack	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808	typeref:typename:r32
+VPESchedule	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808	typeref:typename:r32
+VTOR	user/src/cortex_m4/scb.h	/^    __IO uint32_t VTOR[1];$/;"	m	struct:__anonf69e2f7c0108	typeref:typename:__IO uint32_t[1]
+WRPR	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^    __IO uint32_t WRPR[1];$/;"	m	struct:__anona5e3630f0108	typeref:typename:__IO uint32_t[1]
+WWDG_BASE	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define WWDG_BASE /;"	d
+WWDG_Base	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define WWDG_Base /;"	d
+WWDG_Base	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define WWDG_Base /;"	d
+WWDG_Base	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define WWDG_Base /;"	d
+WWDG_Base	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define WWDG_Base /;"	d
+WatchHi	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r19[8]; struct { r32 WatchHi[8]; } cp0r19_n; } cp0r19_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252b0a::__anon52d50a252c08	typeref:typename:r32[8]
+WatchLo	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r18[8]; struct { r32 WatchLo[8]; } cp0r18_n; } cp0r18_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25290a::__anon52d50a252a08	typeref:typename:r32[8]
+Wired	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a::__anon52d50a251208	typeref:typename:r32
+XContext	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r20[8]; struct { r32 XContext; r32 _pad20[7]; } cp0r20_n; } cp0r20_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252d0a::__anon52d50a252e08	typeref:typename:r32
+YQMask	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808	typeref:typename:r32
+_AHB1	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define _AHB1 /;"	d
+_AHB1	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define _AHB1 /;"	d
+_AHB1	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define _AHB1 /;"	d
+_AHB1	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define _AHB1 /;"	d
+_AHB1	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define _AHB1 /;"	d
+_AHB2	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define _AHB2 /;"	d
+_AHB2	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define _AHB2 /;"	d
+_AHB2	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define _AHB2 /;"	d
+_AHB2	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define _AHB2 /;"	d
+_AHB2	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define _AHB2 /;"	d
+_AHB3	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define _AHB3 /;"	d
+_AHB3	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define _AHB3 /;"	d
+_AHB3	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define _AHB3 /;"	d
+_APB	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define _APB /;"	d
+_APB1	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define _APB1 /;"	d
+_APB1	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define _APB1 /;"	d
+_APB1	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define _APB1 /;"	d
+_APB1	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define _APB1 /;"	d
+_APB2	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define _APB2 /;"	d
+_APB2	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define _APB2 /;"	d
+_APB2	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define _APB2 /;"	d
+_APB2	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define _APB2 /;"	d
+_CONFIG_H	user/inc/config.h	/^#define _CONFIG_H$/;"	d
+_FLASH_H	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^#define _FLASH_H$/;"	d
+_FPU	user/src/cortex_m4/memory.h	/^#define _FPU /;"	d
+_FPUACL	user/src/cortex_m4/memory.h	/^#define _FPUACL /;"	d
+_GPIO_REGISTER_H	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^#define _GPIO_REGISTER_H$/;"	d
+_HANDLER_H	user/src/cortex_m0/STM32F042C6T6/handler.h	/^#define _HANDLER_H$/;"	d
+_INSTRU_H	user/src/mipsel-emu/instru.h	/^#define _INSTRU_H$/;"	d
+_MAIN_H	user/inc/main.h	/^#define _MAIN_H$/;"	d
+_MEMORY_H	user/src/cortex_m0/memory.h	/^#define _MEMORY_H$/;"	d
+_MEMORY_H	user/src/cortex_m4/memory.h	/^#define _MEMORY_H$/;"	d
+_MPU	user/src/cortex_m4/memory.h	/^#define _MPU /;"	d
+_NVIC	user/src/cortex_m0/memory.h	/^#define _NVIC /;"	d
+_NVIC	user/src/cortex_m4/memory.h	/^#define _NVIC /;"	d
+_NVIC_H	user/src/cortex_m0/nvic.h	/^#define _NVIC_H$/;"	d
+_OP_H	user/src/mipsel-emu/op.h	/^#define _OP_H$/;"	d
+_PY32E407_MEMORY_H	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define _PY32E407_MEMORY_H$/;"	d
+_PY32E407_MEMORY_H	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define _PY32E407_MEMORY_H$/;"	d
+_PY32_PERH	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define _PY32_PERH /;"	d
+_PY32_PERH	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define _PY32_PERH /;"	d
+_RCC	user/src/main.c	/^#define _RCC /;"	d	file:
+_RCC_H	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^#define _RCC_H$/;"	d
+_REGISTER_H	user/src/mipsel-emu/registers.h	/^#define _REGISTER_H$/;"	d
+_SC	user/src/cortex_m0/memory.h	/^#define _SC /;"	d
+_SC	user/src/cortex_m4/memory.h	/^#define _SC /;"	d
+_SCB_H	user/src/cortex_m0/scb.h	/^#define _SCB_H$/;"	d
+_SCB_H	user/src/cortex_m4/scb.h	/^#define _SCB_H$/;"	d
+_STARTUP_H	user/src/cortex_m0/startup.h	/^#define _STARTUP_H$/;"	d
+_STARTUP_H	user/src/cortex_m4/startup.h	/^#define _STARTUP_H$/;"	d
+_STM32F0405_MEMORY_H	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define _STM32F0405_MEMORY_H$/;"	d
+_STM32F042_MEMORY_H	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define _STM32F042_MEMORY_H$/;"	d
+_STM32G474VET6_MEMORY_H	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define _STM32G474VET6_MEMORY_H$/;"	d
+_STM32_PERH	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define _STM32_PERH /;"	d
+_STM32_PERHA	user/src/cortex_m0/STM32F042C6T6/stm32f042_memory.h	/^#define _STM32_PERHA$/;"	d
+_STM32_PERHA	user/src/cortex_m4/PY32E407V1ET7/py32e407_memory.h	/^#define _STM32_PERHA$/;"	d
+_STM32_PERHA	user/src/cortex_m4/PY32F403V1DT6/py32f403_memory.h	/^#define _STM32_PERHA$/;"	d
+_STM32_PERHA	user/src/cortex_m4/STM32F405RGT6/stm32f405_memory.h	/^#define _STM32_PERHA /;"	d
+_STM32_PERHA	user/src/cortex_m4/STM32G474VET6/stm32g474_memory.h	/^#define _STM32_PERHA /;"	d
+_SYSTICK_H	user/src/cortex_m0/systick.h	/^#define _SYSTICK_H$/;"	d
+_SYSTICK_H	user/src/cortex_m4/systick.h	/^#define _SYSTICK_H$/;"	d
+_SysTick	user/src/cortex_m0/memory.h	/^#define _SysTick /;"	d
+_SysTick	user/src/cortex_m4/memory.h	/^#define _SysTick /;"	d
+_USEFPU_H	user/src/cortex_m4/usefpu.h	/^#define _USEFPU_H$/;"	d
+__ALIAS	user/inc/compiler.h	/^#define __ALIAS(/;"	d
+__ALIGN_4	user/inc/compiler.h	/^#define __ALIGN_4 /;"	d
+__ALIGN_8	user/inc/compiler.h	/^#define __ALIGN_8 /;"	d
+__BIT_CONCAT	user/inc/compiler.h	/^#define __BIT_CONCAT(/;"	d
+__BIT_CONCAT_INTERNAL	user/inc/compiler.h	/^#define __BIT_CONCAT_INTERNAL(/;"	d
+__CONCAT	user/inc/compiler.h	/^#define __CONCAT(/;"	d
+__CONCAT_INTERNAL	user/inc/compiler.h	/^#define __CONCAT_INTERNAL(/;"	d
+__IM	user/inc/compiler.h	/^#define     __IM /;"	d
+__INLINE	user/inc/compiler.h	/^#define __INLINE /;"	d
+__IO	user/inc/compiler.h	/^#define     __IO /;"	d
+__IOM	user/inc/compiler.h	/^#define     __IOM /;"	d
+__NAKED	user/inc/compiler.h	/^#define __NAKED /;"	d
+__O	user/inc/compiler.h	/^#define     __O /;"	d
+__OM	user/inc/compiler.h	/^#define     __OM /;"	d
+__PACKED	user/inc/compiler.h	/^#define __PACKED /;"	d
+__REWRITE	user/inc/compiler.h	/^#define __REWRITE /;"	d
+__STATIC	user/inc/compiler.h	/^#define __STATIC /;"	d
+__STATIC_FORCEINLINE	user/inc/compiler.h	/^#define __STATIC_FORCEINLINE /;"	d
+__STATIC_INLINE	user/inc/compiler.h	/^#define __STATIC_INLINE /;"	d
+__USED	user/inc/compiler.h	/^#define __USED /;"	d
+__WARNING	user/inc/compiler.h	/^#define __WARNING(/;"	d
+__WEAK	user/inc/compiler.h	/^#define __WEAK /;"	d
+__anon0f0f82f00108	user/src/cortex_m0/nvic.h	/^typedef struct {$/;"	s
+__anon2a9710b90108	user/src/cortex_m0/STM32F042C6T6/ahb/rcc.h	/^typedef struct {$/;"	s
+__anon52d50a250103	user/src/mipsel-emu/registers.h	/^typedef enum {$/;"	g
+__anon52d50a250208	user/src/mipsel-emu/registers.h	/^typedef struct {$/;"	s
+__anon52d50a25030a	user/src/mipsel-emu/registers.h	/^    union {$/;"	u	struct:Registers_t
+__anon52d50a250408	user/src/mipsel-emu/registers.h	/^        struct {$/;"	s	union:Registers_t::__anon52d50a25030a
+__anon52d50a25050a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a250608	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a
+__anon52d50a25070a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a250808	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a
+__anon52d50a25090a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a250a08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a
+__anon52d50a250b0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r3[8];  struct { r32 EntryLo1; r32 _pad3[7]; } cp0r3_n; } cp0r3_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a250c08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r3[8];  struct { r32 EntryLo1; r32 _pad3[7]; } cp0r3_n; } cp0r3_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250b0a
+__anon52d50a250d0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r4[8];  struct { r32 Context; r32 ContextConfig; r32 _pad4[6]; } cp0r/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a250e08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r4[8];  struct { r32 Context; r32 ContextConfig; r32 _pad4[6]; } cp0r/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250d0a
+__anon52d50a250f0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r5[8];  struct { r32 PageMask; r32 PageGrain; r32 _pad5[6]; } cp0r5_n/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a251008	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r5[8];  struct { r32 PageMask; r32 PageGrain; r32 _pad5[6]; } cp0r5_n/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250f0a
+__anon52d50a25110a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a251208	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a
+__anon52d50a25130a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r7[8];  struct { r32 HWREna; r32 _pad7[7]; } cp0r7_n; } cp0r7_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a251408	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r7[8];  struct { r32 HWREna; r32 _pad7[7]; } cp0r7_n; } cp0r7_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25130a
+__anon52d50a25150a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r8[8];  struct { r32 BadVAddr; r32 _pad8[7]; } cp0r8_n; } cp0r8_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a251608	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r8[8];  struct { r32 BadVAddr; r32 _pad8[7]; } cp0r8_n; } cp0r8_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25150a
+__anon52d50a25170a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r9[8];  struct { r32 Count; r32 _pad9[7]; } cp0r9_n; } cp0r9_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a251808	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r9[8];  struct { r32 Count; r32 _pad9[7]; } cp0r9_n; } cp0r9_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25170a
+__anon52d50a25190a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r10[8]; struct { r32 EntryHi; r32 _pad10[7]; } cp0r10_n; } cp0r10_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a251a08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r10[8]; struct { r32 EntryHi; r32 _pad10[7]; } cp0r10_n; } cp0r10_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25190a
+__anon52d50a251b0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r11[8]; struct { r32 Compare; r32 _pad11[7]; } cp0r11_n; } cp0r11_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a251c08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r11[8]; struct { r32 Compare; r32 _pad11[7]; } cp0r11_n; } cp0r11_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251b0a
+__anon52d50a251d0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a251e08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a
+__anon52d50a251f0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r13[8]; struct { r32 Cause; r32 _pad13[7]; } cp0r13_n; } cp0r13_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a252008	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r13[8]; struct { r32 Cause; r32 _pad13[7]; } cp0r13_n; } cp0r13_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251f0a
+__anon52d50a25210a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r14[8]; struct { r32 EPC; r32 _pad14[7]; } cp0r14_n; } cp0r14_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a252208	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r14[8]; struct { r32 EPC; r32 _pad14[7]; } cp0r14_n; } cp0r14_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25210a
+__anon52d50a25230a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a252408	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a
+__anon52d50a25250a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a252608	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a
+__anon52d50a25270a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r17[8]; struct { r32 LLAddr; r32 _pad17[7]; } cp0r17_n; } cp0r17_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a252808	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r17[8]; struct { r32 LLAddr; r32 _pad17[7]; } cp0r17_n; } cp0r17_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25270a
+__anon52d50a25290a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r18[8]; struct { r32 WatchLo[8]; } cp0r18_n; } cp0r18_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a252a08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r18[8]; struct { r32 WatchLo[8]; } cp0r18_n; } cp0r18_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25290a
+__anon52d50a252b0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r19[8]; struct { r32 WatchHi[8]; } cp0r19_n; } cp0r19_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a252c08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r19[8]; struct { r32 WatchHi[8]; } cp0r19_n; } cp0r19_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252b0a
+__anon52d50a252d0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r20[8]; struct { r32 XContext; r32 _pad20[7]; } cp0r20_n; } cp0r20_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a252e08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r20[8]; struct { r32 XContext; r32 _pad20[7]; } cp0r20_n; } cp0r20_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252d0a
+__anon52d50a252f0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r21[8]; struct { r32 _pad21[8]; } cp0r21_n; } cp0r21_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a253008	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r21[8]; struct { r32 _pad21[8]; } cp0r21_n; } cp0r21_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252f0a
+__anon52d50a25310a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r22[8]; struct { r32 _pad22[8]; } cp0r22_n; } cp0r22_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a253208	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r22[8]; struct { r32 _pad22[8]; } cp0r22_n; } cp0r22_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25310a
+__anon52d50a25330a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a253408	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a
+__anon52d50a25350a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r24[8]; struct { r32 DEPC; r32 _pad24[7]; } cp0r24_n; } cp0r24_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a253608	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r24[8]; struct { r32 DEPC; r32 _pad24[7]; } cp0r24_n; } cp0r24_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25350a
+__anon52d50a25370a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r25[8]; struct { r32 PerfCnt[8]; } cp0r25_n; } cp0r25_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a253808	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r25[8]; struct { r32 PerfCnt[8]; } cp0r25_n; } cp0r25_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25370a
+__anon52d50a25390a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r26[8]; struct { r32 ErrCtl; r32 _pad26[7]; } cp0r26_n; } cp0r26_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a253a08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r26[8]; struct { r32 ErrCtl; r32 _pad26[7]; } cp0r26_n; } cp0r26_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25390a
+__anon52d50a253b0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r27[8]; struct { r32 CacheErr[4]; r32 _pad27[4]; } cp0r27_n; } cp0r27/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a253c08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r27[8]; struct { r32 CacheErr[4]; r32 _pad27[4]; } cp0r27_n; } cp0r27/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253b0a
+__anon52d50a253d0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r28[8]; struct { r32 TagLo; r32 DataLo; r32 _pad28[6]; } cp0r28_n; } /;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a253e08	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r28[8]; struct { r32 TagLo; r32 DataLo; r32 _pad28[6]; } cp0r28_n; } /;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253d0a
+__anon52d50a253f0a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r29[8]; struct { r32 TagHi; r32 DataHi; r32 _pad29[6]; } cp0r29_n; } /;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a254008	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r29[8]; struct { r32 TagHi; r32 DataHi; r32 _pad29[6]; } cp0r29_n; } /;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253f0a
+__anon52d50a25410a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r30[8]; struct { r32 ErrorEPC; r32 _pad30[7]; } cp0r30_n; } cp0r30_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a254208	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r30[8]; struct { r32 ErrorEPC; r32 _pad30[7]; } cp0r30_n; } cp0r30_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25410a
+__anon52d50a25430a	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r31[8]; struct { r32 DESAVE; r32 _pad31[7]; } cp0r31_n; } cp0r31_t;$/;"	u	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+__anon52d50a254408	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r31[8]; struct { r32 DESAVE; r32 _pad31[7]; } cp0r31_n; } cp0r31_t;$/;"	s	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25430a
+__anon52d50a254508	user/src/mipsel-emu/registers.h	/^    struct {$/;"	s	struct:Registers_t
+__anon6948582a0108	user/src/cortex_m0/systick.h	/^typedef struct {$/;"	s
+__anon7ebb2d2e0108	user/src/cortex_m4/systick.h	/^typedef struct {$/;"	s
+__anona5e3630f0108	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^typedef struct {$/;"	s
+__anona70a74fc0108	user/src/cortex_m4/usefpu.h	/^typedef struct {$/;"	s
+__anona70a74fc0208	user/src/cortex_m4/usefpu.h	/^typedef struct {$/;"	s
+__anonc2b53c780108	user/src/cortex_m0/scb.h	/^typedef struct {$/;"	s
+__anonc2b53c780203	user/src/cortex_m0/scb.h	/^typedef enum {$/;"	g
+__anonce3841540108	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^typedef struct {$/;"	s
+__anond2ad4cc10108	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^typedef struct {$/;"	s
+__anond2ad4cc10208	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^typedef struct {$/;"	s
+__anonf69e2f7c0108	user/src/cortex_m4/scb.h	/^typedef struct {$/;"	s
+__anonf69e2f7c0203	user/src/cortex_m4/scb.h	/^typedef enum {$/;"	g
+__clear_event_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __clear_event_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__clear_event_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __clear_event_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__clear_irq_enabled	user/src/cortex_m0/nvic.h	/^__STATIC_FORCEINLINE void __clear_irq_enabled(uint32_t irqn) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__clear_pendsv_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __clear_pendsv_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__clear_pendsv_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __clear_pendsv_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__clear_systick_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __clear_systick_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__clear_systick_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __clear_systick_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__counter_flag	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE uint32_t __counter_flag(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__counter_flag	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE uint32_t __counter_flag(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__cpuid_imper	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE const uint8_t __cpuid_imper(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE const uint8_t
+__cpuid_imper	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE const uint8_t __cpuid_imper(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE const uint8_t
+__cpuid_partn	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE const uint16_t __cpuid_partn(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE const uint16_t
+__cpuid_partn	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE const uint16_t __cpuid_partn(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE const uint16_t
+__cpuid_varcst	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE const uint8_t __cpuid_varcst(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE const uint8_t
+__cpuid_varcst	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE const uint8_t __cpuid_varcst(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE const uint8_t
+__current_reload	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE uint32_t __current_reload(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__current_reload	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE uint32_t __current_reload(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__deep_sleep	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __deep_sleep(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__deep_sleep	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __deep_sleep(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__flash_disable_prefetch_buffer	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^__STATIC_FORCEINLINE void __flash_disable_prefetch_buffer(uint32_t bit) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__flash_enable_prefetch_buffer	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^__STATIC_FORCEINLINE void __flash_enable_prefetch_buffer(uint32_t bit) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__flash_get_latency	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^__STATIC_FORCEINLINE uint32_t __flash_get_latency(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__flash_get_prefetch_buffer	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^__STATIC_FORCEINLINE uint32_t __flash_get_prefetch_buffer(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__flash_set_latency	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^__STATIC_FORCEINLINE void __flash_set_latency(uint32_t latency) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__get_ccr	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE uint32_t __get_ccr(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__get_ccr	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE uint32_t __get_ccr(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__get_current_handling	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE uint8_t __get_current_handling(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint8_t
+__get_current_handling	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE uint8_t __get_current_handling(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint8_t
+__get_current_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE uint8_t __get_current_pending(void) {$/;"	f
+__get_current_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE uint8_t __get_current_pending(void) {$/;"	f
+__get_enabled_irq	user/src/cortex_m0/nvic.h	/^__STATIC_FORCEINLINE uint32_t __get_enabled_irq(uint32_t irqn) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__get_irq2_state	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE uint32_t __get_irq2_state(IRQ2_n irqn) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__get_irq2_state	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE uint32_t __get_irq2_state(IRQ2_n irqn) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__get_irq_priority	user/src/cortex_m0/nvic.h	/^__STATIC_FORCEINLINE uint8_t __get_irq_priority(uint32_t irqn) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint8_t
+__get_pending_irq	user/src/cortex_m0/nvic.h	/^__STATIC_FORCEINLINE uint32_t __get_pending_irq(uint32_t irqn) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__get_tenms	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE uint32_t __get_tenms(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__get_tenms	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE uint32_t __get_tenms(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_input_value	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_input_value(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_lckr_state	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_lckr_state(gpio_t *GPIO) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_output_mode	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_output_mode(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_output_pull	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_output_pull(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_output_speed	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_output_speed(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_output_value	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_output_value(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_pin_afh	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_pin_afh(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_pin_afl	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_pin_afl(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_pin_locked	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_pin_locked(gpio_t *GPIO) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_get_port_mode	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE uint32_t __gpio_get_port_mode(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__gpio_reset_output_value	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_reset_output_value(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_resetall_output_value	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_resetall_output_value(gpio_t *GPIO, uint32_t pinx_mask) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_set_output_mode	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_set_output_mode(gpio_t *GPIO, uint32_t mode, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_set_output_pull	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_set_output_pull(gpio_t *GPIO, uint32_t mode, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_set_output_speed	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_set_output_speed(gpio_t *GPIO, uint32_t speed, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_set_output_value	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_set_output_value(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_set_pin_afh	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_set_pin_afh(gpio_t *GPIO, uint32_t af, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_set_pin_afl	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_set_pin_afl(gpio_t *GPIO, uint32_t af, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_set_pin_lock	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_set_pin_lock(gpio_t *GPIO, uint32_t pinmask) {$/;"	f
+__gpio_set_port_mode	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_set_port_mode(gpio_t *GPIO, uint32_t mode, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_setall_output_value	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_setall_output_value(gpio_t *GPIO, uint32_t pinx_mask) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__gpio_write_brr	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^__STATIC_FORCEINLINE void __gpio_write_brr(gpio_t *GPIO, uint32_t pinx) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__is_global_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE uint32_t __is_global_pending(void) {$/;"	f
+__is_global_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE uint32_t __is_global_pending(void) {$/;"	f
+__is_nmi_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE uint32_t __is_nmi_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_nmi_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE uint32_t __is_nmi_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_pendsv_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE uint32_t __is_pendsv_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_pendsv_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE uint32_t __is_pendsv_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_ref_clock	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE uint32_t __is_ref_clock(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_ref_clock	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE uint32_t __is_ref_clock(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_systick_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE uint32_t __is_systick_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_systick_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE uint32_t __is_systick_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_tenms_exact	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE uint32_t __is_tenms_exact(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__is_tenms_exact	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE uint32_t __is_tenms_exact(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE uint32_t
+__not_sleep_on_exit	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __not_sleep_on_exit(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__not_sleep_on_exit	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __not_sleep_on_exit(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__pending_an_irq	user/src/cortex_m0/nvic.h	/^__STATIC_FORCEINLINE void __pending_an_irq(uint32_t irqn) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__reserved	user/inc/compiler.h	/^#define __reserved(/;"	d
+__reserved_bit	user/inc/compiler.h	/^#define __reserved_bit(/;"	d
+__select_pcs_clock	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE void __select_pcs_clock(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__select_pcs_clock	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE void __select_pcs_clock(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__select_ref_clock	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE void __select_ref_clock(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__select_ref_clock	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE void __select_ref_clock(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__set_big_endian	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __set_big_endian(void) {$/;"	f
+__set_big_endian	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __set_big_endian(void) {$/;"	f
+__set_event_pending	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __set_event_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__set_event_pending	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __set_event_pending(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__set_irq2_state	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __set_irq2_state(IRQ2_n irqn, uint8_t pri) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__set_irq2_state	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __set_irq2_state(IRQ2_n irqn, uint8_t pri) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__set_irq_enabled	user/src/cortex_m0/nvic.h	/^__STATIC_FORCEINLINE void __set_irq_enabled(uint32_t irqn) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__set_irq_priority	user/src/cortex_m0/nvic.h	/^__STATIC_FORCEINLINE void __set_irq_priority(uint32_t irqn, uint8_t prior) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__set_little_endian	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __set_little_endian(void) {$/;"	f
+__set_little_endian	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __set_little_endian(void) {$/;"	f
+__set_reload	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE void __set_reload(uint32_t vpt) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__set_reload	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE void __set_reload(uint32_t vpt) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__sleep	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __sleep(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__sleep	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __sleep(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__sleep_on_exit	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __sleep_on_exit(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__sleep_on_exit	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __sleep_on_exit(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__system_reset	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __system_reset(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__system_reset	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __system_reset(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__systick_disable	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE void __systick_disable(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__systick_disable	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE void __systick_disable(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__systick_enable	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE void __systick_enable(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__systick_enable	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE void __systick_enable(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__systick_expt_disable	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE void __systick_expt_disable(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__systick_expt_disable	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE void __systick_expt_disable(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__systick_expt_enable	user/src/cortex_m0/systick.h	/^__STATIC_FORCEINLINE void __systick_expt_enable(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__systick_expt_enable	user/src/cortex_m4/systick.h	/^__STATIC_FORCEINLINE void __systick_expt_enable(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__trigger_nmi	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __trigger_nmi(void) {$/;"	f
+__trigger_nmi	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __trigger_nmi(void) {$/;"	f
+__trigger_pendsv	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __trigger_pendsv(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__trigger_pendsv	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __trigger_pendsv(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__trigger_systick	user/src/cortex_m0/scb.h	/^__STATIC_FORCEINLINE void __trigger_systick(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+__trigger_systick	user/src/cortex_m4/scb.h	/^__STATIC_FORCEINLINE void __trigger_systick(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+_pad0	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a::__anon52d50a250608	typeref:typename:r32[4]
+_pad10	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r10[8]; struct { r32 EntryHi; r32 _pad10[7]; } cp0r10_n; } cp0r10_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25190a::__anon52d50a251a08	typeref:typename:r32[7]
+_pad11	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r11[8]; struct { r32 Compare; r32 _pad11[7]; } cp0r11_n; } cp0r11_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251b0a::__anon52d50a251c08	typeref:typename:r32[7]
+_pad12	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a::__anon52d50a251e08	typeref:typename:r32[4]
+_pad13	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r13[8]; struct { r32 Cause; r32 _pad13[7]; } cp0r13_n; } cp0r13_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251f0a::__anon52d50a252008	typeref:typename:r32[7]
+_pad14	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r14[8]; struct { r32 EPC; r32 _pad14[7]; } cp0r14_n; } cp0r14_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25210a::__anon52d50a252208	typeref:typename:r32[7]
+_pad15	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a::__anon52d50a252408	typeref:typename:r32[5]
+_pad16	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a::__anon52d50a252608	typeref:typename:r32[2]
+_pad17	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r17[8]; struct { r32 LLAddr; r32 _pad17[7]; } cp0r17_n; } cp0r17_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25270a::__anon52d50a252808	typeref:typename:r32[7]
+_pad20	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r20[8]; struct { r32 XContext; r32 _pad20[7]; } cp0r20_n; } cp0r20_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252d0a::__anon52d50a252e08	typeref:typename:r32[7]
+_pad21	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r21[8]; struct { r32 _pad21[8]; } cp0r21_n; } cp0r21_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252f0a::__anon52d50a253008	typeref:typename:r32[8]
+_pad22	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r22[8]; struct { r32 _pad22[8]; } cp0r22_n; } cp0r22_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25310a::__anon52d50a253208	typeref:typename:r32[8]
+_pad23	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a::__anon52d50a253408	typeref:typename:r32[2]
+_pad24	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r24[8]; struct { r32 DEPC; r32 _pad24[7]; } cp0r24_n; } cp0r24_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25350a::__anon52d50a253608	typeref:typename:r32[7]
+_pad26	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r26[8]; struct { r32 ErrCtl; r32 _pad26[7]; } cp0r26_n; } cp0r26_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25390a::__anon52d50a253a08	typeref:typename:r32[7]
+_pad27	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r27[8]; struct { r32 CacheErr[4]; r32 _pad27[4]; } cp0r27_n; } cp0r27/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253b0a::__anon52d50a253c08	typeref:typename:r32[4]
+_pad28	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r28[8]; struct { r32 TagLo; r32 DataLo; r32 _pad28[6]; } cp0r28_n; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253d0a::__anon52d50a253e08	typeref:typename:r32[6]
+_pad29	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r29[8]; struct { r32 TagHi; r32 DataHi; r32 _pad29[6]; } cp0r29_n; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253f0a::__anon52d50a254008	typeref:typename:r32[6]
+_pad3	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r3[8];  struct { r32 EntryLo1; r32 _pad3[7]; } cp0r3_n; } cp0r3_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250b0a::__anon52d50a250c08	typeref:typename:r32[7]
+_pad30	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r30[8]; struct { r32 ErrorEPC; r32 _pad30[7]; } cp0r30_n; } cp0r30_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25410a::__anon52d50a254208	typeref:typename:r32[7]
+_pad31	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r31[8]; struct { r32 DESAVE; r32 _pad31[7]; } cp0r31_n; } cp0r31_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25430a::__anon52d50a254408	typeref:typename:r32[7]
+_pad4	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r4[8];  struct { r32 Context; r32 ContextConfig; r32 _pad4[6]; } cp0r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250d0a::__anon52d50a250e08	typeref:typename:r32[6]
+_pad5	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r5[8];  struct { r32 PageMask; r32 PageGrain; r32 _pad5[6]; } cp0r5_n/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250f0a::__anon52d50a251008	typeref:typename:r32[6]
+_pad6	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a::__anon52d50a251208	typeref:typename:r32[2]
+_pad7	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r7[8];  struct { r32 HWREna; r32 _pad7[7]; } cp0r7_n; } cp0r7_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25130a::__anon52d50a251408	typeref:typename:r32[7]
+_pad8	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r8[8];  struct { r32 BadVAddr; r32 _pad8[7]; } cp0r8_n; } cp0r8_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25150a::__anon52d50a251608	typeref:typename:r32[7]
+_pad9	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r9[8];  struct { r32 Count; r32 _pad9[7]; } cp0r9_n; } cp0r9_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25170a::__anon52d50a251808	typeref:typename:r32[7]
+_vector_to_ram	user/inc/main.h	/^__STATIC_FORCEINLINE void _vector_to_ram(void) {$/;"	f	typeref:typename:__STATIC_FORCEINLINE void
+afsr	user/src/cortex_m4/scb.h	/^#define afsr /;"	d
+aircr	user/src/cortex_m0/scb.h	/^#define aircr /;"	d
+aircr	user/src/cortex_m4/scb.h	/^#define aircr /;"	d
+bfar	user/src/cortex_m4/scb.h	/^#define bfar /;"	d
+byname	user/src/mipsel-emu/registers.h	/^        } byname;$/;"	m	union:Registers_t::__anon52d50a25030a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408
+calib	user/src/cortex_m0/systick.h	/^#define calib /;"	d
+calib	user/src/cortex_m4/systick.h	/^#define calib /;"	d
+ccr	user/src/cortex_m0/scb.h	/^#define ccr /;"	d
+ccr	user/src/cortex_m4/scb.h	/^#define ccr /;"	d
+cfsr	user/src/cortex_m4/scb.h	/^#define cfsr /;"	d
+clock	user/src/mipsel-emu/registers.h	/^    uint64_t clock; \/\/ clock rate$/;"	m	struct:__anon52d50a250208	typeref:typename:uint64_t
+cop0_table0	user/src/mipsel-emu/instru.h	/^MIPS_Instruction_Handler cop0_table0[64] {$/;"	v	typeref:typename:MIPS_Instruction_Handler[64]
+cop0_table1	user/src/mipsel-emu/instru.h	/^MIPS_Instruction_Handler cop0_table1[16] {$/;"	v	typeref:typename:MIPS_Instruction_Handler[16]
+cp0	user/src/mipsel-emu/registers.h	/^    } cp0;$/;"	m	struct:Registers_t	typeref:union:Registers_t::__anon52d50a25030a
+cp0r0	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a	typeref:typename:r32[8]
+cp0r0_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a::__anon52d50a250608
+cp0r0_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r0[8];  struct { r32 Index; r32 MVPControl; r32 MVPConf0; r32 MVPConf/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25050a
+cp0r1	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a	typeref:typename:r32[8]
+cp0r10	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r10[8]; struct { r32 EntryHi; r32 _pad10[7]; } cp0r10_n; } cp0r10_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25190a	typeref:typename:r32[8]
+cp0r10_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r10[8]; struct { r32 EntryHi; r32 _pad10[7]; } cp0r10_n; } cp0r10_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25190a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25190a::__anon52d50a251a08
+cp0r10_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r10[8]; struct { r32 EntryHi; r32 _pad10[7]; } cp0r10_n; } cp0r10_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25190a
+cp0r11	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r11[8]; struct { r32 Compare; r32 _pad11[7]; } cp0r11_n; } cp0r11_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251b0a	typeref:typename:r32[8]
+cp0r11_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r11[8]; struct { r32 Compare; r32 _pad11[7]; } cp0r11_n; } cp0r11_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251b0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251b0a::__anon52d50a251c08
+cp0r11_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r11[8]; struct { r32 Compare; r32 _pad11[7]; } cp0r11_n; } cp0r11_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251b0a
+cp0r12	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a	typeref:typename:r32[8]
+cp0r12_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a::__anon52d50a251e08
+cp0r12_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r12[8]; struct { r32 Status; r32 IntCtl; r32 SRSCtl; r32 SRSMap; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251d0a
+cp0r13	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r13[8]; struct { r32 Cause; r32 _pad13[7]; } cp0r13_n; } cp0r13_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251f0a	typeref:typename:r32[8]
+cp0r13_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r13[8]; struct { r32 Cause; r32 _pad13[7]; } cp0r13_n; } cp0r13_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251f0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251f0a::__anon52d50a252008
+cp0r13_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r13[8]; struct { r32 Cause; r32 _pad13[7]; } cp0r13_n; } cp0r13_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a251f0a
+cp0r14	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r14[8]; struct { r32 EPC; r32 _pad14[7]; } cp0r14_n; } cp0r14_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25210a	typeref:typename:r32[8]
+cp0r14_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r14[8]; struct { r32 EPC; r32 _pad14[7]; } cp0r14_n; } cp0r14_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25210a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25210a::__anon52d50a252208
+cp0r14_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r14[8]; struct { r32 EPC; r32 _pad14[7]; } cp0r14_n; } cp0r14_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25210a
+cp0r15	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a	typeref:typename:r32[8]
+cp0r15_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a::__anon52d50a252408
+cp0r15_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r15[8]; struct { r32 PRId; r32 EBase; r32 CDMMBase; r32 _pad15[5]; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25230a
+cp0r16	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a	typeref:typename:r32[8]
+cp0r16_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a::__anon52d50a252608
+cp0r16_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r16[8]; struct { r32 Config; r32 Config1; r32 Config2; r32 Config3; r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25250a
+cp0r17	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r17[8]; struct { r32 LLAddr; r32 _pad17[7]; } cp0r17_n; } cp0r17_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25270a	typeref:typename:r32[8]
+cp0r17_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r17[8]; struct { r32 LLAddr; r32 _pad17[7]; } cp0r17_n; } cp0r17_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25270a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25270a::__anon52d50a252808
+cp0r17_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r17[8]; struct { r32 LLAddr; r32 _pad17[7]; } cp0r17_n; } cp0r17_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25270a
+cp0r18	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r18[8]; struct { r32 WatchLo[8]; } cp0r18_n; } cp0r18_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25290a	typeref:typename:r32[8]
+cp0r18_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r18[8]; struct { r32 WatchLo[8]; } cp0r18_n; } cp0r18_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25290a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25290a::__anon52d50a252a08
+cp0r18_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r18[8]; struct { r32 WatchLo[8]; } cp0r18_n; } cp0r18_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25290a
+cp0r19	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r19[8]; struct { r32 WatchHi[8]; } cp0r19_n; } cp0r19_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252b0a	typeref:typename:r32[8]
+cp0r19_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r19[8]; struct { r32 WatchHi[8]; } cp0r19_n; } cp0r19_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252b0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252b0a::__anon52d50a252c08
+cp0r19_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r19[8]; struct { r32 WatchHi[8]; } cp0r19_n; } cp0r19_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252b0a
+cp0r1_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a::__anon52d50a250808
+cp0r1_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r1[8];  struct { r32 Random; r32 VPEControl; r32 VPEConf0; r32 VPECon/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25070a
+cp0r2	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a	typeref:typename:r32[8]
+cp0r20	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r20[8]; struct { r32 XContext; r32 _pad20[7]; } cp0r20_n; } cp0r20_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252d0a	typeref:typename:r32[8]
+cp0r20_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r20[8]; struct { r32 XContext; r32 _pad20[7]; } cp0r20_n; } cp0r20_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252d0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252d0a::__anon52d50a252e08
+cp0r20_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r20[8]; struct { r32 XContext; r32 _pad20[7]; } cp0r20_n; } cp0r20_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252d0a
+cp0r21	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r21[8]; struct { r32 _pad21[8]; } cp0r21_n; } cp0r21_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252f0a	typeref:typename:r32[8]
+cp0r21_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r21[8]; struct { r32 _pad21[8]; } cp0r21_n; } cp0r21_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252f0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252f0a::__anon52d50a253008
+cp0r21_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r21[8]; struct { r32 _pad21[8]; } cp0r21_n; } cp0r21_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a252f0a
+cp0r22	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r22[8]; struct { r32 _pad22[8]; } cp0r22_n; } cp0r22_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25310a	typeref:typename:r32[8]
+cp0r22_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r22[8]; struct { r32 _pad22[8]; } cp0r22_n; } cp0r22_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25310a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25310a::__anon52d50a253208
+cp0r22_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r22[8]; struct { r32 _pad22[8]; } cp0r22_n; } cp0r22_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25310a
+cp0r23	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a	typeref:typename:r32[8]
+cp0r23_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a::__anon52d50a253408
+cp0r23_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r23[8]; struct { r32 Debug; r32 TraceControl; r32 TraceControl2; r32 /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25330a
+cp0r24	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r24[8]; struct { r32 DEPC; r32 _pad24[7]; } cp0r24_n; } cp0r24_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25350a	typeref:typename:r32[8]
+cp0r24_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r24[8]; struct { r32 DEPC; r32 _pad24[7]; } cp0r24_n; } cp0r24_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25350a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25350a::__anon52d50a253608
+cp0r24_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r24[8]; struct { r32 DEPC; r32 _pad24[7]; } cp0r24_n; } cp0r24_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25350a
+cp0r25	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r25[8]; struct { r32 PerfCnt[8]; } cp0r25_n; } cp0r25_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25370a	typeref:typename:r32[8]
+cp0r25_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r25[8]; struct { r32 PerfCnt[8]; } cp0r25_n; } cp0r25_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25370a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25370a::__anon52d50a253808
+cp0r25_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r25[8]; struct { r32 PerfCnt[8]; } cp0r25_n; } cp0r25_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25370a
+cp0r26	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r26[8]; struct { r32 ErrCtl; r32 _pad26[7]; } cp0r26_n; } cp0r26_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25390a	typeref:typename:r32[8]
+cp0r26_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r26[8]; struct { r32 ErrCtl; r32 _pad26[7]; } cp0r26_n; } cp0r26_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25390a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25390a::__anon52d50a253a08
+cp0r26_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r26[8]; struct { r32 ErrCtl; r32 _pad26[7]; } cp0r26_n; } cp0r26_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25390a
+cp0r27	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r27[8]; struct { r32 CacheErr[4]; r32 _pad27[4]; } cp0r27_n; } cp0r27/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253b0a	typeref:typename:r32[8]
+cp0r27_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r27[8]; struct { r32 CacheErr[4]; r32 _pad27[4]; } cp0r27_n; } cp0r27/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253b0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253b0a::__anon52d50a253c08
+cp0r27_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r27[8]; struct { r32 CacheErr[4]; r32 _pad27[4]; } cp0r27_n; } cp0r27/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253b0a
+cp0r28	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r28[8]; struct { r32 TagLo; r32 DataLo; r32 _pad28[6]; } cp0r28_n; } /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253d0a	typeref:typename:r32[8]
+cp0r28_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r28[8]; struct { r32 TagLo; r32 DataLo; r32 _pad28[6]; } cp0r28_n; } /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253d0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253d0a::__anon52d50a253e08
+cp0r28_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r28[8]; struct { r32 TagLo; r32 DataLo; r32 _pad28[6]; } cp0r28_n; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253d0a
+cp0r29	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r29[8]; struct { r32 TagHi; r32 DataHi; r32 _pad29[6]; } cp0r29_n; } /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253f0a	typeref:typename:r32[8]
+cp0r29_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r29[8]; struct { r32 TagHi; r32 DataHi; r32 _pad29[6]; } cp0r29_n; } /;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253f0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253f0a::__anon52d50a254008
+cp0r29_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r29[8]; struct { r32 TagHi; r32 DataHi; r32 _pad29[6]; } cp0r29_n; } /;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a253f0a
+cp0r2_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a::__anon52d50a250a08
+cp0r2_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r2[8];  struct { r32 EntryLo0; r32 TCStatus; r32 TCBind; r32 TCRestar/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25090a
+cp0r3	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r3[8];  struct { r32 EntryLo1; r32 _pad3[7]; } cp0r3_n; } cp0r3_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250b0a	typeref:typename:r32[8]
+cp0r30	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r30[8]; struct { r32 ErrorEPC; r32 _pad30[7]; } cp0r30_n; } cp0r30_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25410a	typeref:typename:r32[8]
+cp0r30_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r30[8]; struct { r32 ErrorEPC; r32 _pad30[7]; } cp0r30_n; } cp0r30_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25410a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25410a::__anon52d50a254208
+cp0r30_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r30[8]; struct { r32 ErrorEPC; r32 _pad30[7]; } cp0r30_n; } cp0r30_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25410a
+cp0r31	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r31[8]; struct { r32 DESAVE; r32 _pad31[7]; } cp0r31_n; } cp0r31_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25430a	typeref:typename:r32[8]
+cp0r31_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r31[8]; struct { r32 DESAVE; r32 _pad31[7]; } cp0r31_n; } cp0r31_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25430a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25430a::__anon52d50a254408
+cp0r31_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r31[8]; struct { r32 DESAVE; r32 _pad31[7]; } cp0r31_n; } cp0r31_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25430a
+cp0r3_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r3[8];  struct { r32 EntryLo1; r32 _pad3[7]; } cp0r3_n; } cp0r3_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250b0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250b0a::__anon52d50a250c08
+cp0r3_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r3[8];  struct { r32 EntryLo1; r32 _pad3[7]; } cp0r3_n; } cp0r3_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250b0a
+cp0r4	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r4[8];  struct { r32 Context; r32 ContextConfig; r32 _pad4[6]; } cp0r/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250d0a	typeref:typename:r32[8]
+cp0r4_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r4[8];  struct { r32 Context; r32 ContextConfig; r32 _pad4[6]; } cp0r/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250d0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250d0a::__anon52d50a250e08
+cp0r4_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r4[8];  struct { r32 Context; r32 ContextConfig; r32 _pad4[6]; } cp0r/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250d0a
+cp0r5	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r5[8];  struct { r32 PageMask; r32 PageGrain; r32 _pad5[6]; } cp0r5_n/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250f0a	typeref:typename:r32[8]
+cp0r5_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r5[8];  struct { r32 PageMask; r32 PageGrain; r32 _pad5[6]; } cp0r5_n/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250f0a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250f0a::__anon52d50a251008
+cp0r5_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r5[8];  struct { r32 PageMask; r32 PageGrain; r32 _pad5[6]; } cp0r5_n/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a250f0a
+cp0r6	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a	typeref:typename:r32[8]
+cp0r6_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a::__anon52d50a251208
+cp0r6_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r6[8];  struct { r32 Wired; r32 SRSConf0; r32 SRSConf1; r32 SRSConf2;/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25110a
+cp0r7	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r7[8];  struct { r32 HWREna; r32 _pad7[7]; } cp0r7_n; } cp0r7_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25130a	typeref:typename:r32[8]
+cp0r7_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r7[8];  struct { r32 HWREna; r32 _pad7[7]; } cp0r7_n; } cp0r7_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25130a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25130a::__anon52d50a251408
+cp0r7_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r7[8];  struct { r32 HWREna; r32 _pad7[7]; } cp0r7_n; } cp0r7_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25130a
+cp0r8	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r8[8];  struct { r32 BadVAddr; r32 _pad8[7]; } cp0r8_n; } cp0r8_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25150a	typeref:typename:r32[8]
+cp0r8_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r8[8];  struct { r32 BadVAddr; r32 _pad8[7]; } cp0r8_n; } cp0r8_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25150a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25150a::__anon52d50a251608
+cp0r8_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r8[8];  struct { r32 BadVAddr; r32 _pad8[7]; } cp0r8_n; } cp0r8_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25150a
+cp0r9	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r9[8];  struct { r32 Count; r32 _pad9[7]; } cp0r9_n; } cp0r9_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25170a	typeref:typename:r32[8]
+cp0r9_n	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r9[8];  struct { r32 Count; r32 _pad9[7]; } cp0r9_n; } cp0r9_t;$/;"	m	union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25170a	typeref:struct:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25170a::__anon52d50a251808
+cp0r9_t	user/src/mipsel-emu/registers.h	/^            union { r32 cp0r9[8];  struct { r32 Count; r32 _pad9[7]; } cp0r9_n; } cp0r9_t;$/;"	m	struct:Registers_t::__anon52d50a25030a::__anon52d50a250408	typeref:union:Registers_t::__anon52d50a25030a::__anon52d50a250408::__anon52d50a25170a
+cpu_ctx	user/src/mipsel-emu/registers.h	/^    Registers *cpu_ctx;$/;"	m	struct:__anon52d50a250208	typeref:typename:Registers *
+cpu_state	user/src/mipsel-emu/registers.h	/^} cpu_state;$/;"	t	typeref:enum:__anon52d50a250103
+cpuid	user/src/cortex_m0/scb.h	/^#define cpuid /;"	d
+cpuid	user/src/cortex_m4/scb.h	/^#define cpuid /;"	d
+csr	user/src/cortex_m0/systick.h	/^#define csr /;"	d
+csr	user/src/cortex_m4/systick.h	/^#define csr /;"	d
+cvr	user/src/cortex_m0/systick.h	/^#define cvr /;"	d
+cvr	user/src/cortex_m4/systick.h	/^#define cvr /;"	d
+entryhi	user/src/mipsel-emu/registers.h	/^        uint32_t entryhi;$/;"	m	struct:Registers_t::__anon52d50a254508	typeref:typename:uint32_t
+entrylo0	user/src/mipsel-emu/registers.h	/^        uint32_t entrylo0;$/;"	m	struct:Registers_t::__anon52d50a254508	typeref:typename:uint32_t
+entrylo1	user/src/mipsel-emu/registers.h	/^        uint32_t entrylo1;$/;"	m	struct:Registers_t::__anon52d50a254508	typeref:typename:uint32_t
+flash	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^#define flash /;"	d
+flash_t	user/src/cortex_m0/STM32F042C6T6/ahb/flash.h	/^} __PACKED flash_t;$/;"	t	typeref:struct:__anona5e3630f0108 __PACKED
+fpu	user/src/cortex_m4/usefpu.h	/^#define fpu /;"	d
+fpu_t	user/src/cortex_m4/usefpu.h	/^} __PACKED fpu_t;$/;"	t	typeref:struct:__anona70a74fc0208 __PACKED
+fpuacl	user/src/cortex_m4/usefpu.h	/^#define fpuacl /;"	d
+fpuacl_t	user/src/cortex_m4/usefpu.h	/^} fpuacl_t;$/;"	t	typeref:struct:__anona70a74fc0108
+g_pfnVectors	user/src/cortex_m0/startup.c	/^const uint32_t g_pfnVectors[] = {$/;"	v	typeref:typename:__USED __ALIGN_4 const uint32_t[]
+g_pfnVectors	user/src/cortex_m4/startup.c	/^const uint32_t g_pfnVectors[] = {$/;"	v	typeref:typename:__USED __ALIGN_4 const uint32_t[]
+getfunc	user/src/mipsel-emu/op.h	/^#define getfunc(/;"	d
+getimm	user/src/mipsel-emu/op.h	/^#define getimm(/;"	d
+getmask	user/src/mipsel-emu/op.h	/^#define getmask(/;"	d
+getop	user/src/mipsel-emu/op.h	/^#define getop(/;"	d
+getrd	user/src/mipsel-emu/op.h	/^#define getrd(/;"	d
+getrs	user/src/mipsel-emu/op.h	/^#define getrs(/;"	d
+getrt	user/src/mipsel-emu/op.h	/^#define getrt(/;"	d
+gettar	user/src/mipsel-emu/op.h	/^#define gettar(/;"	d
+gpio_t	user/src/cortex_m0/STM32F042C6T6/ahb/gpio_register.h	/^} __PACKED gpio_t;$/;"	t	typeref:struct:__anonce3841540108 __PACKED
+gpr	user/src/mipsel-emu/registers.h	/^    r32 gpr[32];$/;"	m	struct:Registers_t	typeref:typename:r32[32]
+hi	user/src/mipsel-emu/registers.h	/^    uint32_t hi;$/;"	m	struct:Registers_t	typeref:typename:uint32_t
+icer	user/src/cortex_m0/nvic.h	/^#define icer /;"	d
+icpr	user/src/cortex_m0/nvic.h	/^#define icpr /;"	d
+icsr	user/src/cortex_m0/scb.h	/^#define icsr /;"	d
+icsr	user/src/cortex_m4/scb.h	/^#define icsr /;"	d
+iser	user/src/cortex_m0/nvic.h	/^#define iser /;"	d
+ispr	user/src/cortex_m0/nvic.h	/^#define ispr /;"	d
+isr_hit	user/src/main.c	/^volatile uint32_t isr_hit = 0;$/;"	v	typeref:typename:volatile uint32_t
+lo	user/src/mipsel-emu/registers.h	/^    uint32_t lo;$/;"	m	struct:Registers_t	typeref:typename:uint32_t
+main	user/src/main.c	/^int main(void) {$/;"	f	typeref:typename:int
+mmfar	user/src/cortex_m4/scb.h	/^#define mmfar /;"	d
+nvic	user/src/cortex_m0/nvic.h	/^#define nvic /;"	d
+nvic_t	user/src/cortex_m0/nvic.h	/^} __PACKED nvic_t;$/;"	t	typeref:struct:__anon0f0f82f00108 __PACKED
+op_addiu	user/src/mipsel-emu/op.c	/^void op_addiu(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+op_addu	user/src/mipsel-emu/op.c	/^void op_addu(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+op_move_from_hi	user/src/mipsel-emu/op.c	/^void op_move_from_hi(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+op_move_from_lo	user/src/mipsel-emu/op.c	/^void op_move_from_lo(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+op_multu	user/src/mipsel-emu/op.c	/^void op_multu(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+op_srl	user/src/mipsel-emu/op.c	/^void op_srl(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+op_subu	user/src/mipsel-emu/op.c	/^void op_subu(uint32_t instr, Registers *state) {$/;"	f	typeref:typename:void
+op_table	user/src/mipsel-emu/instru.h	/^MIPS_Instruction_Handler op_table[64] = {$/;"	v	typeref:typename:MIPS_Instruction_Handler[64]
+pc	user/src/mipsel-emu/registers.h	/^    r32 pc;$/;"	m	struct:Registers_t	typeref:typename:r32
+pendsv	user/src/cortex_m0/scb.h	/^    pendsv = 6,$/;"	e	enum:__anonc2b53c780203
+pendsv	user/src/cortex_m4/scb.h	/^    pendsv = 6,$/;"	e	enum:__anonf69e2f7c0203
+pmask	user/src/mipsel-emu/registers.h	/^        uint32_t pmask;$/;"	m	struct:Registers_t::__anon52d50a254508	typeref:typename:uint32_t
+pri	user/src/cortex_m0/nvic.h	/^#define pri(/;"	d
+r32	user/src/mipsel-emu/registers.h	/^#define r32 /;"	d
+ram_vector_table	user/inc/main.h	/^uint32_t ram_vector_table[86];$/;"	v	typeref:typename:__USED uint32_t[86]
+regs	user/src/mipsel-emu/registers.h	/^        r32 regs[32][8];$/;"	m	union:Registers_t::__anon52d50a25030a	typeref:typename:r32[32][8]
+reserved	user/src/cortex_m0/scb.h	/^    reserved = 0,$/;"	e	enum:__anonc2b53c780203
+reserved	user/src/cortex_m4/scb.h	/^    reserved = 0,$/;"	e	enum:__anonf69e2f7c0203
+rvr	user/src/cortex_m0/systick.h	/^#define rvr /;"	d
+rvr	user/src/cortex_m4/systick.h	/^#define rvr /;"	d
+scb	user/src/cortex_m0/scb.h	/^} __PACKED scb;$/;"	t	typeref:struct:__anonc2b53c780108 __PACKED
+scb	user/src/cortex_m4/scb.h	/^#define scb /;"	d
+scb_t	user/src/cortex_m0/scb.h	/^#define scb_t /;"	d
+scb_t	user/src/cortex_m4/scb.h	/^} scb_t;$/;"	t	typeref:struct:__anonf69e2f7c0108
+scr	user/src/cortex_m0/scb.h	/^#define scr /;"	d
+scr	user/src/cortex_m4/scb.h	/^#define scr /;"	d
+shcsr	user/src/cortex_m4/scb.h	/^#define shcsr /;"	d
+shpr	user/src/cortex_m0/scb.h	/^#define shpr(/;"	d
+shpr	user/src/cortex_m4/scb.h	/^#define shpr(/;"	d
+special1_table	user/src/mipsel-emu/instru.h	/^MIPS_Instruction_Handler special1_table[64] = {$/;"	v	typeref:typename:MIPS_Instruction_Handler[64]
+startup	user/src/mipsel-emu/emu.c	/^void startup(Registers *state) {$/;"	f	typeref:typename:void
+state	user/src/mipsel-emu/registers.h	/^    cpu_state state;$/;"	m	struct:__anon52d50a250208	typeref:typename:cpu_state
+steps	user/src/mipsel-emu/registers.h	/^    uint32_t steps;$/;"	m	struct:__anon52d50a250208	typeref:typename:uint32_t
+svcall	user/src/cortex_m0/scb.h	/^    svcall = 3,$/;"	e	enum:__anonc2b53c780203
+svcall	user/src/cortex_m4/scb.h	/^    svcall = 3,$/;"	e	enum:__anonf69e2f7c0203
+systick	user/src/cortex_m0/scb.h	/^    systick = 7,$/;"	e	enum:__anonc2b53c780203
+systick	user/src/cortex_m0/systick.h	/^#define systick /;"	d
+systick	user/src/cortex_m4/scb.h	/^    systick = 7,$/;"	e	enum:__anonf69e2f7c0203
+systick	user/src/cortex_m4/systick.h	/^#define systick /;"	d
+systick_t	user/src/cortex_m0/systick.h	/^} systick_t;$/;"	t	typeref:struct:__anon6948582a0108
+systick_t	user/src/cortex_m4/systick.h	/^} systick_t;$/;"	t	typeref:struct:__anon7ebb2d2e0108
+target_handler	user/src/mipsel-emu/instru.c	/^MIPS_Instruction_Handler target_handler(MIPS_Instruction_Handler *table, uint8_t Index) {$/;"	f	typeref:typename:MIPS_Instruction_Handler
+tlb	user/src/mipsel-emu/registers.h	/^    } tlb[64];$/;"	m	struct:Registers_t	typeref:struct:Registers_t::__anon52d50a254508[64]
+usb_reg_t	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^} usb_reg_t;$/;"	t	typeref:struct:__anond2ad4cc10208
+usbd	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^#define usbd /;"	d
+usbd_t	user/src/cortex_m4/PY32F403V1DT6/usbd.h	/^} __PACKED usbd_t;$/;"	t	typeref:struct:__anond2ad4cc10108 __PACKED
+vmstate_t	user/src/mipsel-emu/registers.h	/^} vmstate_t;$/;"	t	typeref:struct:__anon52d50a250208
+vtor	user/src/cortex_m4/scb.h	/^#define vtor /;"	d
