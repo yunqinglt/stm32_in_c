@@ -65,6 +65,7 @@ typedef struct Registers_t {
 
     uint8_t is_delay_slot;
     uint8_t is_taken;
+    uint8_t cp0_count_divider;
     uint32_t target_pc;
     uint8_t bds; // current instruction is in a branch delay slot
     uint8_t exception_pending; // next_pc contains an exception vector

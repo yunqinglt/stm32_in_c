@@ -31,6 +31,13 @@ typedef struct {
     platform_memory_fill_fn fill;
 } platform_memory_ops_t;
 
+typedef struct {
+    uint32_t x;
+    uint32_t y;
+    uint32_t width;
+    uint32_t height;
+} platform_framebuffer_rect_t;
+
 bool platform_memory_configure(const platform_memory_ops_t *ops,
                                void *opaque, uint32_t size);
 bool platform_memory_bind(uint8_t *bytes, uint32_t size);
@@ -38,6 +45,16 @@ uint32_t platform_memory_size(void);
 bool platform_memory_read(uint32_t pa, void *dst, size_t len);
 bool platform_memory_write(uint32_t pa, const void *src, size_t len);
 bool platform_memory_fill(uint32_t pa, uint8_t value, size_t len);
+
+/* RGB565 little-endian framebuffer exposed through the guest MMIO bus. */
+bool platform_framebuffer_bind(uint8_t *bytes, uint32_t size);
+uint8_t *platform_framebuffer_data(void);
+uint32_t platform_framebuffer_size(void);
+uint32_t platform_framebuffer_width(void);
+uint32_t platform_framebuffer_height(void);
+uint32_t platform_framebuffer_stride_bytes(void);
+bool platform_framebuffer_dirty(platform_framebuffer_rect_t *rect);
+void platform_framebuffer_clear_dirty(void);
 
 void platform_init(uart16550_tx_callback_t uart_tx, void *opaque);
 void platform_reset(void);

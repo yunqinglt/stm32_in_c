@@ -6,6 +6,10 @@
 #include "platform.h"
 #include "registers.h"
 #include "runloop.h"
+#if MIPSEL_EMU_ENABLE_SDL
+#include "player_conf.h"
+#include "platform/sdl/sdl_display.h"
+#endif
 
 #include <errno.h>
 #include <getopt.h>
@@ -30,6 +34,7 @@ typedef struct {
     const char *trace_path;
     bool tui;
     bool run_immediately;
+    bool sdl;
     uint64_t max_steps;
 } ProgramOptions;
 
@@ -55,6 +60,7 @@ static void usage(FILE *stream, const char *program) {
             "  -i, --initramfs FILE  external initramfs copied near top of RAM\n"
             "  -t, --tui             enable the ncurses debugger (starts paused)\n"
             "  -r, --run             start running immediately in TUI mode\n"
+            "      --sdl             show the guest framebuffer in an SDL window\n"
             "      --trace FILE      write every instruction/exception ('-' is stderr)\n"
             "      --max-steps N     stop after N CPU ticks (0 means unlimited)\n"
             "  -h, --help            show this help\n"
@@ -79,13 +85,14 @@ static bool parse_u64(const char *text, uint64_t *value) {
 }
 
 static int parse_options(int argc, char **argv, ProgramOptions *options) {
-    enum { OPT_TRACE = 1000, OPT_MAX_STEPS };
+    enum { OPT_TRACE = 1000, OPT_MAX_STEPS, OPT_SDL };
     static const struct option long_options[] = {
         {"kernel", required_argument, NULL, 'k'},
         {"dtb", required_argument, NULL, 'd'},
         {"initramfs", required_argument, NULL, 'i'},
         {"tui", no_argument, NULL, 't'},
         {"run", no_argument, NULL, 'r'},
+        {"sdl", no_argument, NULL, OPT_SDL},
         {"trace", required_argument, NULL, OPT_TRACE},
         {"max-steps", required_argument, NULL, OPT_MAX_STEPS},
         {"help", no_argument, NULL, 'h'},
@@ -105,6 +112,7 @@ static int parse_options(int argc, char **argv, ProgramOptions *options) {
             case 'i': options->initramfs_path = optarg; break;
             case 't': options->tui = true; break;
             case 'r': options->run_immediately = true; break;
+            case OPT_SDL: options->sdl = true; break;
             case OPT_TRACE: options->trace_path = optarg; break;
             case OPT_MAX_STEPS:
                 if (!parse_u64(optarg, &options->max_steps)) {
@@ -132,8 +140,35 @@ static int parse_options(int argc, char **argv, ProgramOptions *options) {
         return -1;
     }
 #endif
+#if !MIPSEL_EMU_ENABLE_SDL
+    if (options->sdl) {
+        fprintf(stderr, "this build has SDL output disabled\n");
+        return -1;
+    }
+#endif
     return 0;
 }
+
+#if MIPSEL_EMU_ENABLE_SDL
+static void service_sdl(void *opaque) {
+    SdlDisplay *display = opaque;
+    platform_framebuffer_rect_t dirty;
+    SdlDisplayEvent event;
+
+    while ((event = sdl_display_poll_event(display)) !=
+           SDL_DISPLAY_EVENT_NONE) {
+        if (event == SDL_DISPLAY_EVENT_QUIT) debugger_request_quit();
+    }
+    if (platform_framebuffer_dirty(&dirty)) {
+        sdl_display_mark_dirty(display, (UiRect){
+            (int)dirty.x, (int)dirty.y,
+            (int)dirty.width, (int)dirty.height,
+        });
+        platform_framebuffer_clear_dirty();
+    }
+    (void)sdl_display_present(display);
+}
+#endif
 
 static long file_length(FILE *file) {
     long current = ftell(file);
@@ -354,6 +389,9 @@ int main(int argc, char **argv) {
     bool debugger_started = false;
     int option_result;
     int result = EXIT_FAILURE;
+#if MIPSEL_EMU_ENABLE_SDL
+    SdlDisplay *display = NULL;
+#endif
 
     option_result = parse_options(argc, argv, &options);
     if (option_result != 0)
@@ -394,12 +432,27 @@ int main(int argc, char **argv) {
     };
     fprintf(stderr,
             "starting MIPS32EL at PC=%08" PRIx32
-            ", RAM=%u MiB, UART=0x%08x\n",
+            ", RAM=%u MiB, CPU=%u MHz, CP0 Count=%u MHz, UART=0x%08x\n",
             state->pc, platform_memory_size() / (1024u * 1024u),
+            MIPSEL_EMU_CPU_CLOCK_HZ / 1000000u,
+            MIPSEL_EMU_CP0_COUNT_HZ / 1000000u,
             UART16550_MMIO_BASE);
     if (debugger_init(&debugger_config, state, status) != 0) goto done;
     debugger_started = true;
     platform_init(host_uart_tx, NULL);
+
+#if MIPSEL_EMU_ENABLE_SDL
+    if (options.sdl) {
+        display = sdl_display_create_with_framebuffer(
+            "mipsel-emu: guest framebuffer",
+            (pixel_t *)platform_framebuffer_data(),
+            (int)platform_framebuffer_width(),
+            (int)platform_framebuffer_height(),
+            (int)(platform_framebuffer_stride_bytes() / sizeof(pixel_t)));
+        if (!display) goto done;
+        mipsel_runloop_set_service(service_sdl, display);
+    }
+#endif
 
     result = startup(state) == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
     if (!options.tui && options.max_steps &&
@@ -410,6 +463,10 @@ int main(int argc, char **argv) {
     }
 
 done:
+#if MIPSEL_EMU_ENABLE_SDL
+    mipsel_runloop_set_service(NULL, NULL);
+    if (display) sdl_display_destroy(display);
+#endif
     if (debugger_started) debugger_shutdown();
     free(state);
     free(status);

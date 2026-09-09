@@ -27,6 +27,7 @@ void debugger_board_reset(const Registers *state);
 
 void debugger_poll(Registers *state, vmstate_t *vm, bool wait_for_input);
 bool debugger_quit_requested(void);
+void debugger_request_quit(void);
 bool debugger_tui_enabled(void);
 
 #endif

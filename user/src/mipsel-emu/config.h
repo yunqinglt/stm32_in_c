@@ -22,8 +22,21 @@
 #endif
 
 #ifndef MIPSEL_EMU_RAM_SIZE
-#define MIPSEL_EMU_RAM_SIZE (16u * 1024u * 1024u)
+#define MIPSEL_EMU_RAM_SIZE (64u * 1024u * 1024u)
 #endif
+
+/* The emulated CPU runs one instruction per logical CPU cycle. */
+#ifndef MIPSEL_EMU_CPU_CLOCK_HZ
+#define MIPSEL_EMU_CPU_CLOCK_HZ 100000000u
+#endif
+
+/* MIPS32 Count advances at half the CPU clock on a 24K-class core. */
+#ifndef MIPSEL_EMU_CP0_COUNT_DIVIDER
+#define MIPSEL_EMU_CP0_COUNT_DIVIDER 2u
+#endif
+
+#define MIPSEL_EMU_CP0_COUNT_HZ \
+    (MIPSEL_EMU_CPU_CLOCK_HZ / MIPSEL_EMU_CP0_COUNT_DIVIDER)
 
 #ifndef MIPSEL_EMU_ENABLE_UART16550
 #define MIPSEL_EMU_ENABLE_UART16550 1
@@ -49,6 +62,22 @@
 #define MIPSEL_EMU_UART_TX_FIFO_SIZE 16u
 #endif
 
+/* Guest simple-framebuffer aperture. It intentionally lives outside RAM. */
+#ifndef MIPSEL_EMU_FB_MMIO_BASE
+#define MIPSEL_EMU_FB_MMIO_BASE UINT32_C(0x1e000000)
+#endif
+#ifndef MIPSEL_EMU_FB_WIDTH
+#define MIPSEL_EMU_FB_WIDTH 640u
+#endif
+#ifndef MIPSEL_EMU_FB_HEIGHT
+#define MIPSEL_EMU_FB_HEIGHT 480u
+#endif
+#ifndef MIPSEL_EMU_FB_STRIDE_BYTES
+#define MIPSEL_EMU_FB_STRIDE_BYTES (MIPSEL_EMU_FB_WIDTH * 2u)
+#endif
+#define MIPSEL_EMU_FB_SIZE \
+    (MIPSEL_EMU_FB_STRIDE_BYTES * MIPSEL_EMU_FB_HEIGHT)
+
 /* Stack scratch used while copying images between flash and guest RAM. */
 #ifndef MIPSEL_EMU_IMAGE_CHUNK_SIZE
 #define MIPSEL_EMU_IMAGE_CHUNK_SIZE 256u
@@ -64,6 +93,10 @@
 
 #ifndef MIPSEL_EMU_ENABLE_CONSOLE
 #define MIPSEL_EMU_ENABLE_CONSOLE 1
+#endif
+
+#ifndef MIPSEL_EMU_ENABLE_SDL
+#define MIPSEL_EMU_ENABLE_SDL 0
 #endif
 
 /* Fixed storage used by the transport-neutral CDC/TUI command line. */
@@ -104,6 +137,22 @@
 #error "MIPSEL_EMU_RAM_SIZE must fit the 32-bit physical address API"
 #endif
 
+#if MIPSEL_EMU_CPU_CLOCK_HZ == 0
+#error "MIPSEL_EMU_CPU_CLOCK_HZ must be greater than zero"
+#endif
+
+#if MIPSEL_EMU_CP0_COUNT_DIVIDER == 0
+#error "MIPSEL_EMU_CP0_COUNT_DIVIDER must be greater than zero"
+#endif
+
+#if MIPSEL_EMU_CP0_COUNT_DIVIDER > UINT8_MAX
+#error "MIPSEL_EMU_CP0_COUNT_DIVIDER must fit the CPU state"
+#endif
+
+#if MIPSEL_EMU_CPU_CLOCK_HZ % MIPSEL_EMU_CP0_COUNT_DIVIDER != 0
+#error "MIPSEL_EMU_CPU_CLOCK_HZ must be divisible by MIPSEL_EMU_CP0_COUNT_DIVIDER"
+#endif
+
 #if MIPSEL_EMU_ELF_MAX_LOAD_SEGMENTS == 0
 #error "MIPSEL_EMU_ELF_MAX_LOAD_SEGMENTS must be greater than zero"
 #endif
@@ -126,6 +175,11 @@
 
 #if MIPSEL_EMU_UART_IRQ_LINE > 7
 #error "MIPSEL_EMU_UART_IRQ_LINE must select CP0 interrupt input 0..7"
+#endif
+
+#if MIPSEL_EMU_FB_WIDTH == 0 || MIPSEL_EMU_FB_HEIGHT == 0 || \
+    MIPSEL_EMU_FB_STRIDE_BYTES < MIPSEL_EMU_FB_WIDTH * 2u
+#error "MIPSEL_EMU framebuffer dimensions/stride are invalid"
 #endif
 
 #if MIPSEL_EMU_INITRAMFS_ALIGNMENT == 0 || \

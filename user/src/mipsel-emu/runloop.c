@@ -11,6 +11,15 @@
  * mipsel_emu_run_steps() and therefore do not need this global. */
 extern vmstate_t *status;
 
+static mipsel_runloop_service_fn service_callback;
+static void *service_opaque;
+
+void mipsel_runloop_set_service(mipsel_runloop_service_fn service,
+                                void *opaque) {
+    service_callback = service;
+    service_opaque = opaque;
+}
+
 int startup(Registers *state) {
     while (!debugger_quit_requested()) {
         bool paused = status->state == STEPPING && status->steps == 0;
@@ -38,6 +47,7 @@ int startup(Registers *state) {
                 if (status->max_ticks && status->ticks >= status->max_ticks)
                     return 0;
             }
+            if (service_callback) service_callback(service_opaque);
         } else if (status->state == STEPPING && status->steps != 0) {
             cpu_step(state);
             update_cycle(state);
@@ -45,6 +55,7 @@ int startup(Registers *state) {
             status->steps -= 1;
             if (status->max_ticks && status->ticks >= status->max_ticks)
                 return 0;
+            if (service_callback) service_callback(service_opaque);
         }
     }
     return 0;

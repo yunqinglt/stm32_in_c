@@ -122,7 +122,8 @@ void cpu_step(Registers *state) {
 
 void update_cycle(Registers *state) {
     decrease_random(state);
-    increase_counter(state);
+    if (!increase_counter(state))
+        return;
 
     if (state->cp0.byname.cp0r9_t.cp0r9_n.Count ==
         state->cp0.byname.cp0r11_t.cp0r11_n.Compare) {

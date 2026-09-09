@@ -1316,6 +1316,10 @@ bool debugger_quit_requested(void) {
     return debugger.quit || signal_quit;
 }
 
+void debugger_request_quit(void) {
+    debugger.quit = true;
+}
+
 bool debugger_tui_enabled(void) {
     return debugger.tui;
 }

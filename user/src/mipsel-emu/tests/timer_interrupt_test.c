@@ -28,6 +28,8 @@ int main(void) {
     state.cp0.byname.cp0r9_t.cp0r9_n.Count = 0;
     state.cp0.byname.cp0r11_t.cp0r11_n.Compare = 1;
     update_cycle(&state);
+    CHECK(state.cp0.byname.cp0r9_t.cp0r9_n.Count == 0);
+    update_cycle(&state);
     CHECK(GET_BITFIELD(state.cp0.byname.cp0r13_t.cp0r13_n.Cause,
                        CP0_CAUSE_TI_POS, CP0_CAUSE_TI_LEN) == 1);
     CHECK((CAUSE_IP(&state) & (1u << 7)) != 0);

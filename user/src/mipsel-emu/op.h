@@ -1,6 +1,7 @@
 #ifndef _OP_H
 #define _OP_H
 
+#include "config.h"
 #include "compiler.h"
 #include "registers.h"
 // #include "instru.h"
@@ -195,8 +196,14 @@ __STATIC_FORCEINLINE void decrease_random(Registers *state) {
         random <= wired ? 63u : random - 1u;
 }
 
-__STATIC_FORCEINLINE void increase_counter(Registers *state) {
-    state->cp0.byname.cp0r9_t.cp0r9_n.Count += 1;
+__STATIC_FORCEINLINE bool increase_counter(Registers *state) {
+    state->cp0_count_divider += 1u;
+    if (state->cp0_count_divider < MIPSEL_EMU_CP0_COUNT_DIVIDER)
+        return false;
+
+    state->cp0_count_divider = 0;
+    state->cp0.byname.cp0r9_t.cp0r9_n.Count += 1u;
+    return true;
 }
 
 

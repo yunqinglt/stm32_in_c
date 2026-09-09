@@ -17,6 +17,12 @@ typedef struct {
 
 static platform_memory_backend_t memory_backend;
 
+_Alignas(uint16_t) static uint8_t default_framebuffer[MIPSEL_EMU_FB_SIZE];
+static uint8_t *framebuffer = default_framebuffer;
+static uint32_t framebuffer_capacity = MIPSEL_EMU_FB_SIZE;
+static platform_framebuffer_rect_t framebuffer_dirty_rect;
+static bool framebuffer_has_dirty;
+
 // TODO
 // readx(uint32_t addr, Registers *state)
 // -> raise_exception(IBE)?
@@ -120,6 +126,73 @@ bool platform_memory_fill(uint32_t pa, uint8_t value, size_t len) {
         len -= amount;
     }
     return true;
+}
+
+static bool framebuffer_range_valid(uint32_t address, unsigned width) {
+    return width != 0 && address >= MIPSEL_EMU_FB_MMIO_BASE &&
+           address - MIPSEL_EMU_FB_MMIO_BASE <=
+               framebuffer_capacity - width;
+}
+
+static void framebuffer_mark_bytes(uint32_t offset, unsigned width) {
+    uint32_t last_offset = offset + width - 1u;
+    uint32_t first_y = offset / MIPSEL_EMU_FB_STRIDE_BYTES;
+    uint32_t last_y = last_offset / MIPSEL_EMU_FB_STRIDE_BYTES;
+    uint32_t first_pixel = (offset % MIPSEL_EMU_FB_STRIDE_BYTES) / 2u;
+    uint32_t last_pixel = (last_offset % MIPSEL_EMU_FB_STRIDE_BYTES) / 2u;
+    platform_framebuffer_rect_t rect;
+
+    if (first_y >= MIPSEL_EMU_FB_HEIGHT) return;
+    if (last_y >= MIPSEL_EMU_FB_HEIGHT) last_y = MIPSEL_EMU_FB_HEIGHT - 1u;
+    rect = (platform_framebuffer_rect_t) {
+        .x = first_y == last_y ? first_pixel % MIPSEL_EMU_FB_WIDTH : 0,
+        .y = first_y,
+        .width = first_y == last_y ? last_pixel - first_pixel + 1u
+                                   : MIPSEL_EMU_FB_WIDTH,
+        .height = last_y - first_y + 1u,
+    };
+    if (!framebuffer_has_dirty) {
+        framebuffer_dirty_rect = rect;
+        framebuffer_has_dirty = true;
+        return;
+    }
+
+    if (rect.x < framebuffer_dirty_rect.x) framebuffer_dirty_rect.x = rect.x;
+    if (rect.y < framebuffer_dirty_rect.y) framebuffer_dirty_rect.y = rect.y;
+    {
+        uint32_t right = rect.x + rect.width;
+        uint32_t dirty_right = framebuffer_dirty_rect.x +
+                               framebuffer_dirty_rect.width;
+        uint32_t bottom = rect.y + rect.height;
+        uint32_t dirty_bottom = framebuffer_dirty_rect.y +
+                                framebuffer_dirty_rect.height;
+        if (right > dirty_right) framebuffer_dirty_rect.width = right - framebuffer_dirty_rect.x;
+        if (bottom > dirty_bottom) framebuffer_dirty_rect.height = bottom - framebuffer_dirty_rect.y;
+    }
+}
+
+bool platform_framebuffer_bind(uint8_t *bytes, uint32_t size) {
+    if (!bytes || size < MIPSEL_EMU_FB_SIZE) return false;
+    framebuffer = bytes;
+    framebuffer_capacity = size;
+    platform_framebuffer_clear_dirty();
+    return true;
+}
+
+uint8_t *platform_framebuffer_data(void) { return framebuffer; }
+uint32_t platform_framebuffer_size(void) { return MIPSEL_EMU_FB_SIZE; }
+uint32_t platform_framebuffer_width(void) { return MIPSEL_EMU_FB_WIDTH; }
+uint32_t platform_framebuffer_height(void) { return MIPSEL_EMU_FB_HEIGHT; }
+uint32_t platform_framebuffer_stride_bytes(void) { return MIPSEL_EMU_FB_STRIDE_BYTES; }
+
+bool platform_framebuffer_dirty(platform_framebuffer_rect_t *rect) {
+    if (rect) *rect = framebuffer_dirty_rect;
+    return framebuffer_has_dirty;
+}
+
+void platform_framebuffer_clear_dirty(void) {
+    framebuffer_dirty_rect = (platform_framebuffer_rect_t){0, 0, 0, 0};
+    framebuffer_has_dirty = false;
 }
 
 void platform_init(uart16550_tx_callback_t uart_tx, void *opaque) {
@@ -229,6 +302,18 @@ bool platform_bus_read(uint32_t addr, unsigned width, uint32_t *value) {
     uint8_t bytes[4] = {0};
 
     if (!value || (width != 1u && width != 2u && width != 4u)) return false;
+#if MIPSEL_EMU_FB_SIZE > 0
+    if (framebuffer_range_valid(addr, width)) {
+        uint32_t offset = addr - MIPSEL_EMU_FB_MMIO_BASE;
+        *value = framebuffer[offset];
+        if (width >= 2u) *value |= (uint32_t)framebuffer[offset + 1u] << 8;
+        if (width == 4u) {
+            *value |= (uint32_t)framebuffer[offset + 2u] << 16;
+            *value |= (uint32_t)framebuffer[offset + 3u] << 24;
+        }
+        return true;
+    }
+#endif
 #if MIPSEL_EMU_ENABLE_UART16550
     if (uart16550_mmio_read(&uart, addr, width, &mmio_value)) {
         *value = mmio_value;
@@ -249,6 +334,19 @@ bool platform_bus_write(uint32_t addr, unsigned width, uint32_t value) {
     uint8_t bytes[4];
 
     if (width != 1u && width != 2u && width != 4u) return false;
+#if MIPSEL_EMU_FB_SIZE > 0
+    if (framebuffer_range_valid(addr, width)) {
+        uint32_t offset = addr - MIPSEL_EMU_FB_MMIO_BASE;
+        framebuffer[offset] = (uint8_t)value;
+        if (width >= 2u) framebuffer[offset + 1u] = (uint8_t)(value >> 8);
+        if (width == 4u) {
+            framebuffer[offset + 2u] = (uint8_t)(value >> 16);
+            framebuffer[offset + 3u] = (uint8_t)(value >> 24);
+        }
+        framebuffer_mark_bytes(offset, width);
+        return true;
+    }
+#endif
 #if MIPSEL_EMU_ENABLE_UART16550
     if (uart16550_mmio_write(&uart, addr, width, value)) return true;
 #endif

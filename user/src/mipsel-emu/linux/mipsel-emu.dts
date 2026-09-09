@@ -15,8 +15,9 @@
 	};
 
 	chosen {
-		/* Plain earlycon discovers width, shift and clock from this DTB. */
-		bootargs = "earlycon console=ttyS0,115200n8 ignore_loglevel";
+		/* Explicit MMIO32 earlycon is available before the 8250 platform driver. */
+		/* ttyS0 remains last so it is the controlling console for init. */
+		bootargs = "earlycon=ns16550a,mmio32,0x1f000900,115200n8 console=tty0 console=ttyS0,115200n8 ignore_loglevel";
 		stdout-path = "serial0:115200n8";
 		/* Fixed-width placeholders patched by the portable image loader. */
 		linux,initrd-start = <0>;
@@ -38,12 +39,13 @@
 	cpu_clk: cpu-clock {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
+		/* The MIPS Count clock is half this 100 MHz CPU clock. */
 		clock-frequency = <100000000>;
 	};
 
 	memory@0 {
 		device_type = "memory";
-		reg = <0x00000000 0x01000000>;
+		reg = <0x00000000 0x04000000>;
 	};
 
 	cpu_intc: interrupt-controller {
@@ -63,6 +65,16 @@
 		interrupt-parent = <&cpu_intc>;
 		interrupts = <4>;
 		no-loopback-test;
+		status = "okay";
+	};
+
+	framebuffer0: framebuffer@1e000000 {
+		compatible = "simple-framebuffer";
+		reg = <0x1e000000 0x00096000>;
+		width = <640>;
+		height = <480>;
+		stride = <1280>;
+		format = "r5g6b5";
 		status = "okay";
 	};
 };

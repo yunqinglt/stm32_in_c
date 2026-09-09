@@ -15,6 +15,8 @@ option(MIPSEL_EMU_ENABLE_ELF_LOADER "Build ELF image loading support" ON)
 option(MIPSEL_EMU_ENABLE_INITRAMFS "Build initramfs loading support" ON)
 option(MIPSEL_EMU_ENABLE_CONSOLE
        "Build the transport-neutral paused-target monitor" ON)
+option(MIPSEL_EMU_ENABLE_SDL
+       "Build optional SDL framebuffer output for the hosted frontend" OFF)
 set(MIPSEL_EMU_USER_CONFIG_HEADER "" CACHE STRING
     "Board configuration header included by config.h")
 set(MIPSEL_EMU_USER_CONFIG_INCLUDE_DIR "" CACHE PATH
@@ -108,11 +110,17 @@ endforeach()
 # different configuration.
 set(_mipsel_emu_locked_macros
     MIPSEL_EMU_RAM_SIZE
+    MIPSEL_EMU_CPU_CLOCK_HZ
+    MIPSEL_EMU_CP0_COUNT_DIVIDER
     MIPSEL_EMU_UART_MMIO_BASE
     MIPSEL_EMU_UART_CLOCK_HZ
     MIPSEL_EMU_UART_IRQ_LINE
     MIPSEL_EMU_UART_RX_FIFO_SIZE
     MIPSEL_EMU_UART_TX_FIFO_SIZE
+    MIPSEL_EMU_FB_MMIO_BASE
+    MIPSEL_EMU_FB_WIDTH
+    MIPSEL_EMU_FB_HEIGHT
+    MIPSEL_EMU_FB_STRIDE_BYTES
     MIPSEL_EMU_IMAGE_CHUNK_SIZE
     MIPSEL_EMU_CONSOLE_LINE_SIZE
     MIPSEL_EMU_CONSOLE_OUTPUT_SIZE
@@ -371,6 +379,31 @@ if(MIPSEL_EMU_BUILD_HOST)
     target_compile_options(mipsel-emu
         PRIVATE $<$<C_COMPILER_ID:GNU,Clang>:-Wall>
     )
+
+    if(MIPSEL_EMU_ENABLE_SDL)
+        find_package(SDL2 CONFIG QUIET)
+        if(TARGET SDL2::SDL2)
+            set(MIPSEL_EMU_SDL_TARGET SDL2::SDL2)
+        elseif(TARGET SDL2::SDL2-static)
+            set(MIPSEL_EMU_SDL_TARGET SDL2::SDL2-static)
+        else()
+            find_package(SDL2 MODULE REQUIRED)
+            add_library(mipsel_emu_sdl_dependency INTERFACE)
+            target_include_directories(mipsel_emu_sdl_dependency SYSTEM INTERFACE
+                ${SDL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR})
+            target_link_libraries(mipsel_emu_sdl_dependency INTERFACE
+                ${SDL2_LIBRARIES} ${SDL2_LIBRARY})
+            set(MIPSEL_EMU_SDL_TARGET mipsel_emu_sdl_dependency)
+        endif()
+        target_sources(mipsel-emu PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/ui/ui_surface.c"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/platform/sdl/sdl_display.c")
+        target_include_directories(mipsel-emu PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player")
+        target_compile_definitions(mipsel-emu PRIVATE
+            MIPSEL_EMU_ENABLE_SDL=1 PIXEL_FORMAT_RGB565)
+        target_link_libraries(mipsel-emu PRIVATE ${MIPSEL_EMU_SDL_TARGET})
+    endif()
 endif()
 
 include(CTest)
@@ -404,6 +437,13 @@ if(BUILD_TESTING AND NOT CMAKE_CROSSCOMPILING)
         add_executable(platform_uart_test tests/platform_uart_test.c)
         target_link_libraries(platform_uart_test PRIVATE mipsel-emu::core)
         add_test(NAME platform_uart_test COMMAND platform_uart_test)
+    endif()
+
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/platform_framebuffer_test.c")
+        add_executable(platform_framebuffer_test
+            tests/platform_framebuffer_test.c)
+        target_link_libraries(platform_framebuffer_test PRIVATE mipsel-emu::core)
+        add_test(NAME platform_framebuffer_test COMMAND platform_framebuffer_test)
     endif()
 
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/platform_memory_test.c")

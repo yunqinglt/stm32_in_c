@@ -7,13 +7,15 @@ export LC_ALL
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(CDPATH= cd -- "$script_dir/../../../.." && pwd)
 
-busybox_dir=${BUSYBOX_DIR:-"$repo_root/busybox-1.38.0"}
-linux_dir=${LINUX_DIR:-"$repo_root/linux-7.1.4"}
+busybox_dir=${BUSYBOX_DIR:-"$repo_root/tools/busybox-1.38.0"}
+linux_dir=${LINUX_DIR:-"$repo_root/tools/linux"}
 output_dir=${OUTPUT_DIR:-"$repo_root/build/mipsel-emu-rootfs"}
-cross_compile=${CROSS_COMPILE:-"$repo_root/mips32el--musl--stable-2025.08-1/bin/mipsel-buildroot-linux-musl-"}
-kernel_config=${KERNEL_CONFIG:-"$linux_dir/.config"}
+cross_compile=${CROSS_COMPILE:-"$repo_root/tools/mipsel-linux-musl/bin/mipsel-unknown-linux-musl-"}
+kernel_config=${KERNEL_CONFIG:-"$repo_root/build/linux-tiny/.config"}
 host_cc=${HOSTCC:-cc}
 jobs=${JOBS:-4}
+extra_list=${INITRAMFS_EXTRA_LIST:-}
+extra_elf_list=${INITRAMFS_EXTRA_ELF_LIST:-}
 
 busybox_elf="$output_dir/busybox"
 archive_raw="$output_dir/initramfs.cpio"
@@ -58,6 +60,7 @@ stage_busybox_elf="$stage_dir/busybox"
 stage_archive_raw="$stage_dir/initramfs.cpio"
 stage_archive="$stage_dir/initramfs.cpio.gz"
 stage_host_gen="$stage_dir/gen_init_cpio"
+stage_manifest="$stage_dir/initramfs.list"
 mkdir -p "$busybox_stage" "$busybox_build"
 
 # An O= build refuses a source tree that already contains in-tree build
@@ -71,6 +74,8 @@ cp -a "$busybox_dir/." "$busybox_stage/"
 sed \
     -e 's/^# CONFIG_STATIC is not set$/CONFIG_STATIC=y/' \
     -e 's/^CONFIG_PIE=y$/# CONFIG_PIE is not set/' \
+    -e 's/^CONFIG_TC=y$/# CONFIG_TC is not set/' \
+    -e 's/^CONFIG_FEATURE_TC_INGRESS=y$/# CONFIG_FEATURE_TC_INGRESS is not set/' \
     "$busybox_dir/.config" > "$busybox_build/.config"
 if ! grep -qx 'CONFIG_STATIC=y' "$busybox_build/.config"; then
     echo "cannot enable CONFIG_STATIC in the BusyBox configuration" >&2
@@ -115,13 +120,63 @@ if "$cross_readelf" -A "$stage_busybox_elf" | grep -q 'Hard float'; then
     fi
 fi
 
+# Build a disposable manifest so callers can add ordinary gen_init_cpio
+# directives without changing the checked-in base archive description.
+cp "$script_dir/initramfs.list" "$stage_manifest"
+if [ -n "$extra_list" ]; then
+    if [ ! -f "$extra_list" ]; then
+        echo "missing INITRAMFS_EXTRA_LIST: $extra_list" >&2
+        exit 1
+    fi
+    cat "$extra_list" >> "$stage_manifest"
+fi
+
+# INITRAMFS_EXTRA_ELF_LIST contains one whitespace-separated entry per line:
+#   /usr/bin/app /path/to/app.elf [mode]
+# Every entry is checked before it reaches gen_init_cpio. This catches a host
+# executable or a dynamically linked image before Linux tries to exec it.
+if [ -n "$extra_elf_list" ]; then
+    if [ ! -f "$extra_elf_list" ]; then
+        echo "missing INITRAMFS_EXTRA_ELF_LIST: $extra_elf_list" >&2
+        exit 1
+    fi
+    while IFS=' ' read -r destination source mode extra; do
+        case "$destination" in
+            ""|\#*) continue ;;
+        esac
+        if [ -z "$source" ] || [ -n "$extra" ] || [ ! -f "$source" ]; then
+            echo "invalid ELF manifest entry: $destination $source" >&2
+            exit 1
+        fi
+        if ! header=$("$cross_readelf" -h "$source"); then
+            echo "cannot inspect initramfs ELF: $source" >&2
+            exit 1
+        fi
+        printf '%s\n' "$header" | grep -q 'Class:[[:space:]]*ELF32' || {
+            echo "initramfs ELF is not ELF32: $source" >&2; exit 1;
+        }
+        printf '%s\n' "$header" | grep -q 'Data:[[:space:]]*2.*little endian' || {
+            echo "initramfs ELF is not little-endian: $source" >&2; exit 1;
+        }
+        printf '%s\n' "$header" | grep -q 'Machine:[[:space:]]*MIPS' || {
+            echo "initramfs ELF is not MIPS: $source" >&2; exit 1;
+        }
+        if "$cross_readelf" -l "$source" | grep -q INTERP; then
+            echo "initramfs ELF is dynamically linked: $source" >&2
+            exit 1
+        fi
+        printf 'file %s %s %s 0 0\n' "$destination" "$source" \
+            "${mode:-0755}" >> "$stage_manifest"
+    done < "$extra_elf_list"
+fi
+
 # gen_init_cpio can create the initial console device without host root
 # privileges and fixes all metadata through initramfs.list.  Its stdout archive
 # interface also works with older kernel source trees that lack -o.
 "$host_cc_path" -O2 "$linux_dir/usr/gen_init_cpio.c" -o "$stage_host_gen"
 MIPSEL_EMU_INIT="$script_dir/init" \
 MIPSEL_EMU_BUSYBOX="$stage_busybox_elf" \
-    "$stage_host_gen" -t 0 "$script_dir/initramfs.list" > "$stage_archive_raw"
+    "$stage_host_gen" -t 0 "$stage_manifest" > "$stage_archive_raw"
 "$gzip_path" -9n -c "$stage_archive_raw" > "$stage_archive"
 chmod 0644 "$stage_archive_raw" "$stage_archive"
 

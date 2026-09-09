@@ -19,6 +19,11 @@ mount -t devpts devpts /dev/pts ||
 echo
 echo "mipsel-emu: userspace ready on ttyS0"
 
+if [ -x /usr/bin/lvgl-demo ]; then
+    echo "mipsel-emu: starting LVGL framebuffer demo"
+    /usr/bin/lvgl-demo &
+fi
+
 # Run the console in a child so PID 1 remains alive if the user exits the
 # shell.  The child is not a process-group leader, so setsid can always create
 # a session before cttyhack resolves /dev/console to ttyS0 and claims it as the

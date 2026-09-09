@@ -21,6 +21,17 @@ cmake --build build/mipsel-emu
 ctest --test-dir build/mipsel-emu --output-on-failure
 ```
 
+启用 SDL 虚拟屏幕时，宿主需要 SDL2 开发包；Arch Linux 对应 `sdl2`。SDL 前端
+会直接把模拟器的 640x480 RGB565 framebuffer 作为外部 surface，不再复制一份
+中间 framebuffer：
+
+```sh
+cmake -S user/src/mipsel-emu -B build/mipsel-emu-sdl \
+  -DMIPSEL_EMU_ENABLE_SDL=ON
+cmake --build build/mipsel-emu-sdl -j
+ctest --test-dir build/mipsel-emu-sdl --output-on-failure
+```
+
 若宿主没有 ncursesw，可构建无 TUI 版本：
 
 ```sh
@@ -318,11 +329,64 @@ USB completion 与 guest MMIO 必须在同一任务中处理，或由板级临�
 reset 会使未完成 span 失效。若 USB 栈只能交付自己的接收 buffer，可逐字节调用
 `platform_uart_receive()`，或复制到 RX span 后一次 publish。
 
+### 虚拟屏幕、Linux simplefb 与 LVGL
+
+模拟器把 `0x1e000000` 到 `0x1e095fff` 映射为 640x480、每行 1280 字节的 RGB565
+MMIO framebuffer。guest DTB 中的 `simple-framebuffer` 节点描述同一段地址，因此主线
+Linux 的 `simplefb` 驱动会创建 `/dev/fb0`；guest 用户态只需要标准 Linux
+framebuffer API，不需要模拟器私有 ioctl。CPU 对该区间的每次 8/16/32 位写都会更新
+宿主 framebuffer 并合并脏矩形，SDL service 在有界执行片段之间把脏矩形上传到纹理。
+
+仓库中的 LVGL 9.2 demo、BusyBox 和 MIPS musl 工具链都放在 `tools/`。工具链配置目标
+是 `mipsel-unknown-linux-musl`（O32、mips32r2、小端、soft-float、静态用户态），输出
+目录为 `tools/mipsel-linux-musl/`。首次构建需要网络；本地代理可通过以下变量提供给
+crosstool-NG：
+
+```sh
+export HTTP_PROXY=http://127.0.0.1:10808
+export HTTPS_PROXY=http://127.0.0.1:10808
+export ALL_PROXY=http://127.0.0.1:10808
+ct-ng -C tools/crosstool-ng build.12
+```
+
+工具链完成后，构建 LVGL ELF 并把它加入 initramfs：
+
+```sh
+make -C tools/lvgl-demo \
+  CROSS_COMPILE="$PWD/tools/mipsel-linux-musl/bin/mipsel-unknown-linux-musl-" -j
+tools/lvgl-demo/build-initramfs.sh
+cmake --build build/mipsel-emu-sdl --target mipsel-emu-dtb -j
+```
+
+`build-initramfs.sh` 会从 `tools/busybox-1.38.0/.config` 生成一次性静态 BusyBox
+构建，检查每个额外 ELF 为 ELF32/MIPS 小端且没有 `PT_INTERP`，然后用 Linux 源码中的
+`gen_init_cpio` 原子发布 `build/mipsel-emu-rootfs/initramfs.cpio.gz`。`init` 在启动
+交互 shell 的同时后台启动 `/usr/bin/lvgl-demo`。
+
+端到端运行（有桌面环境时直接显示 SDL 窗口）：
+
+```sh
+build/mipsel-emu-sdl/mipsel-emu \
+  --kernel ./vmlinuz \
+  --dtb build/mipsel-emu-sdl/mipsel-emu.dtb \
+  --initramfs build/mipsel-emu-rootfs/initramfs.cpio.gz \
+  --sdl --max-steps 300000000
+```
+
+预期串口会先出现 `userspace ready on ttyS0`，随后是 `starting LVGL framebuffer demo`
+和 demo 的 framebuffer 参数。设置 `SDL_VIDEODRIVER=dummy` 可在无窗口环境中运行，
+不改变 guest 的 MMIO 或 `/dev/fb0` 路径。
+
 ## 设备树和 UHI 启动约定
 
-设备树描述 16 MiB RAM，以及位于物理地址 `0x1f000900` 的 16550A UART。
+设备树描述 64 MiB RAM、位于物理地址 `0x1f000900` 的 16550A UART，以及
+`0x1e000000` 的 640x480 RGB565 `simple-framebuffer`。后者是独立于 RAM 的
+MMIO aperture；宿主模拟器把 guest 写入转换为 SDL 窗口更新，并提供脏矩形查询。
 UART 寄存器宽度为 32 位、间隔为 4 字节（`reg-io-width = 4`、
 `reg-shift = 2`），输入时钟为 14.7456 MHz，连接到 CPU 硬件中断 4。
+
+CPU 节点报告 100 MHz，模拟器每两条指令推进一次 CP0 Count，因此 Linux Generic
+MIPS 会以 50 MHz 注册 `MIPS` clocksource 和 R4K Compare/IP7 clockevent。
 
 安装了 `dtc` 时，CMake 会提供 DTB 目标：
 
@@ -344,8 +408,8 @@ loader 将 DTB 复制到物理地址 `0x00010000`，并按 MIPS UHI 协议进入
 - `a1 = 0x80010000`（DTB 的 KSEG0 地址）；
 - `a2 = a3 = 0`。
 
-设备树的 `chosen` 节点使用 `earlycon` 和 `stdout-path`。这里特意使用不带显式
-MMIO 参数的 `earlycon`，让内核从 DTB 获取 `reg-shift`、访问宽度和 UART 时钟。
+设备树的 `chosen` 节点使用显式 `earlycon=ns16550a,mmio32,0x1f000900,115200n8`
+和 `stdout-path`，因此内核在 8250 平台驱动探测前也会同步输出 printk。
 
 ## Linux 配置与构建
 
@@ -355,24 +419,27 @@ printk、TTY、8250 console、OF probing、外部 initramfs、静态 BusyBox ELF
 
 ```sh
 repo_root=$PWD
-linux_dir="$repo_root/linux-7.1.4"
-cross_prefix="$repo_root/mips32el--musl--stable-2025.08-1/bin/mipsel-buildroot-linux-musl-"
+linux_dir="$repo_root/tools/linux"
+linux_build="$repo_root/build/linux-tiny"
 
-"$linux_dir/scripts/kconfig/merge_config.sh" -m -O "$linux_dir" \
-  "$linux_dir/.config" \
+make -C "$linux_dir" O="$linux_build" ARCH=mips LLVM=1 tinyconfig
+"$linux_dir/scripts/kconfig/merge_config.sh" -m -O "$linux_build" \
+  "$linux_build/.config" \
   "$repo_root/user/src/mipsel-emu/linux/emu.config"
-make -C "$linux_dir" ARCH=mips CROSS_COMPILE="$cross_prefix" olddefconfig
-make -C "$linux_dir" ARCH=mips CROSS_COMPILE="$cross_prefix" -j"$(nproc)" vmlinuz
+make -C "$linux_dir" O="$linux_build" ARCH=mips LLVM=1 olddefconfig
+make -C "$linux_dir" O="$linux_build" ARCH=mips LLVM=1 -j"$(nproc)" vmlinux
 ```
 
-全新配置可先执行 `make ... 32r2el_defconfig`，再合入 fragment。该 defconfig
-启用的功能较多，最终应检查 ELF 的所有 `PT_LOAD` 段和 BSS 是否仍能放入
-16 MiB guest RAM。仓库内的 musl 工具链使用 O32 hard-float ABI，而模拟器没有
-实现 CP1，因此 `CONFIG_MIPS_FP_SUPPORT=y` 不能裁掉：Linux 会通过
-`arch/mips/math-emu` 模拟用户态浮点指令；否则 BusyBox 会收到 `SIGILL`。
+全新配置推荐先用 `tinyconfig`，再合入 fragment；fragment 已锁定 MIPS32r2
+小端选择。若需要对照通用平台，也可执行 `make ... 32r2el_defconfig`，但该
+defconfig 启用的功能较多，最终应检查 ELF 的所有 `PT_LOAD` 段和 BSS 是否仍能放入
+64 MiB guest RAM。仓库内的 musl 工具链使用 O32 soft-float ABI；LVGL 和 BusyBox
+因此不会生成 CP1 指令。内核仍保留 `CONFIG_MIPS_FP_SUPPORT=y`，这样以后加入使用
+hard-float ABI 的 ELF 时可以由 `arch/mips/math-emu` 模拟用户态浮点指令；如果整个
+用户态始终保持 soft-float，则该选项不是 LVGL demo 的运行时依赖。
 
 fragment 只保留 gzip initramfs 解压器；未压缩的 `newc` cpio 也可直接使用。仓库
-根目录的 `busybox-1.38.0/` 可通过以下脚本构建为静态 BusyBox 和最小 initramfs：
+`tools/busybox-1.38.0/` 可通过以下脚本构建为静态 BusyBox 和最小 initramfs：
 
 ```sh
 user/src/mipsel-emu/linux/build-initramfs.sh
@@ -385,6 +452,14 @@ user/src/mipsel-emu/linux/build-initramfs.sh
 并行度。脚本还会验证实际 kernel `.config` 已为 hard-float BusyBox 启用软件 FPU，
 并检查 `/init` 依赖的 ash、mount、setsid 和 cttyhack 等 applet。
 
+可通过 `INITRAMFS_EXTRA_LIST` 追加额外的 `gen_init_cpio` 指令；专门的
+`INITRAMFS_EXTRA_ELF_LIST` 每行格式为 `/目标路径 /主机上的 MIPS-ELF [模式]`，脚本
+会验证 ELF32、小端、MIPS 和无 `PT_INTERP` 后再打包。例如 LVGL 静态应用可以写入：
+
+```text
+/usr/bin/lvgl-demo /path/to/lvgl-demo.elf 0755
+```
+
 因为根文件系统本身就是 initramfs，`CONFIG_DEVTMPFS_MOUNT` 不会替 PID 1 自动挂载
 devtmpfs；随附 `/init` 会挂载 devtmpfs、proc、sysfs 和 devpts，再由 `cttyhack` 在
 `ttyS0` 上启动具有 controlling tty 和 job control 的交互式 shell；PID 1 会在 shell
@@ -395,7 +470,7 @@ devtmpfs；随附 `/init` 会挂载 devtmpfs、proc、sysfs 和 devpts，再由 
 CLI 形式为：
 
 ```text
-mipsel-emu [--kernel FILE] [--dtb FILE] [--tui] [--run]
+mipsel-emu [--kernel FILE] [--dtb FILE] [--tui] [--run] [--sdl]
             [--initramfs FILE] [--trace FILE] [--max-steps N]
 ```
 
@@ -406,7 +481,7 @@ mipsel-emu [--kernel FILE] [--dtb FILE] [--tui] [--run]
 
 ```sh
 build/mipsel-emu/mipsel-emu \
-  --kernel linux-7.1.4/vmlinux \
+  --kernel build/linux-tiny/vmlinux \
   --dtb build/mipsel-emu/mipsel-emu.dtb \
   --initramfs build/mipsel-emu-rootfs/initramfs.cpio.gz
 ```
@@ -418,7 +493,11 @@ ash。需要寄存器和 debug windows 时，可在命令末尾添加 `--tui --r
 `--initramfs` 必须与 `--dtb` 一起使用。loader 将 archive 放在 RAM 顶部附近、避开
 ELF 和 DTB，并修改 `/chosen/linux,initrd-start` 与 `linux,initrd-end`；随仓库提供的
 DTS 已预留这两个定宽属性。内核、BSS、DTB、initramfs 和运行时页分配仍共享
-`MIPSEL_EMU_RAM_SIZE`，16 MiB 配置下应控制 BusyBox 和 archive 大小。
+`MIPSEL_EMU_RAM_SIZE`，64 MiB 配置下仍应控制 BusyBox 和 archive 大小。
+
+SDL 输出需要以 `-DMIPSEL_EMU_ENABLE_SDL=ON` 构建宿主前端，然后添加 `--sdl`。SDL
+与 CPU 在同一线程运行，每个有界指令批次轮询窗口事件并上传 framebuffer 脏区；
+自动化环境可设置 `SDL_VIDEODRIVER=dummy`。
 
 不加 `--tui` 时使用 headless console；可配合 `--max-steps` 做有界的回归运行。
 UART 输出在 TUI 模式进入 console window，headless 模式写入宿主 stdout，指令
