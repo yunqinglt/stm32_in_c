@@ -8,15 +8,22 @@
 #include <stdint.h>
 // CPU: MIPS32 Little Endian Release 2 no FPU / Version 0.1
 /*
+    [*] = archived
+    [ ] = todo
+    [/] = doing
+    [-] = not planned
+    [x] = failed
+
     Features: 
     [*] single pipeline
     [*] basic mips32 release 2 behavior
     [x] Cache and Sync (C-based emulator has no hazard)
     [*] branch delay
+    ------ Boot Linux kernel ------
     [*] virtual mmio device
     [*] ->   16550A UART Console
     [ ] ->   Display
-    [ ] Multi-Thread Application-Specific Extension
+    [/] Multi-Thread Application-Specific Extension
     [ ] ->   shadow register set
     [ ] SmartMIPS Application-Specific Extension
     [*] virtual debug support

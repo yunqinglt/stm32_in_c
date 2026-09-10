@@ -225,8 +225,7 @@ void op_jalr(uint32_t instr, Registers *state) {
 
     S0_IS_0(state);
 
-    state->is_delay_slot = 1;
-    state->is_taken = 1;
+    unconditional_branch(state);
     /* A misaligned target faults on the target fetch, after the delay slot. */
     state->target_pc = target;
 }
@@ -672,7 +671,7 @@ void op_lwl(uint32_t instr, Registers *state) {
     if (TEST_RESULT(pa)) {
         uint32_t word = read32((uint32_t) pa.value.ok);
         uint32_t reg_val = state->gpr[rt];
-        
+
         switch (byte_offset) {
             case 0: reg_val = (reg_val & 0x00ffffff) | (word << 24); break;
             case 1: reg_val = (reg_val & 0x0000ffff) | (word << 16); break;
@@ -709,7 +708,7 @@ void op_lwr(uint32_t instr, Registers *state) {
     if (TEST_RESULT(pa)) {
         uint32_t word = read32((uint32_t) pa.value.ok);
         uint32_t reg_val = state->gpr[rt];
-        
+
         switch (byte_offset) {
             case 0: reg_val = word; break;
             case 1: reg_val = (reg_val & 0xff000000) | (word >> 8);  break;
@@ -763,7 +762,7 @@ void op_lhu(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    
+
     if (va & 0x01) {
         raise_exception(state, va, EXC_AdEL, MIPS_VECTOR_GENERAL);
         return;
@@ -794,7 +793,7 @@ void op_lw(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    
+
     if (va & 0x03) {
         raise_exception(state, va, EXC_AdEL, MIPS_VECTOR_GENERAL);
         return;
@@ -986,7 +985,7 @@ void op_ll(uint32_t instr, Registers *state) {
     uint32_t offset = sign_extend(getimm(instr));
 
     uint32_t va = state->gpr[rs] + offset;
-    
+
     if (va & 0x03) {
         raise_exception(state, va, EXC_AdEL, MIPS_VECTOR_GENERAL);
         return;
@@ -1544,14 +1543,14 @@ void op_tlbp(uint32_t instr, Registers *state) {
     }
 
     if (found) {
-        state->cp0.byname.cp0r0_t.cp0r0_n.Index = 
+        state->cp0.byname.cp0r0_t.cp0r0_n.Index =
             SET_BITFIELD(state->cp0.byname.cp0r0_t.cp0r0_n.Index, 0, 6, matched);
-        state->cp0.byname.cp0r0_t.cp0r0_n.Index = 
+        state->cp0.byname.cp0r0_t.cp0r0_n.Index =
             SET_BITFIELD(state->cp0.byname.cp0r0_t.cp0r0_n.Index, 31, 1, 0);
     }
     else {
         // Undefined -> The index field left its value
-        state->cp0.byname.cp0r0_t.cp0r0_n.Index = 
+        state->cp0.byname.cp0r0_t.cp0r0_n.Index =
             SET_BITFIELD(state->cp0.byname.cp0r0_t.cp0r0_n.Index, 31, 1, 1);
     }
 }
@@ -1559,12 +1558,12 @@ void op_tlbp(uint32_t instr, Registers *state) {
 void op_eret(uint32_t instr, Registers *state) {
     if (STATUS_ERL(state) == 1) {
         state->next_pc = state->cp0.byname.cp0r30_t.cp0r30_n.ErrorEPC;
-        state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
+        state->cp0.byname.cp0r12_t.cp0r12_n.Status =
             SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_ERL_POS, CP0_STATUS_ERL_LEN, 0);
         // Clear flag
     } else {
         state->next_pc = state->cp0.byname.cp0r14_t.cp0r14_n.EPC;
-        state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
+        state->cp0.byname.cp0r12_t.cp0r12_n.Status =
             SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status, CP0_STATUS_EXL_POS, CP0_STATUS_EXL_LEN, 0);
     }
 
@@ -1610,7 +1609,7 @@ void op_mfmc0(uint32_t instr, Registers *state) {
 
     state->gpr[rt] = state->cp0.byname.cp0r12_t.cp0r12_n.Status;
     uint32_t ie_val = ((func >> 5) & 0x01) ? 1 : 0;
-    state->cp0.byname.cp0r12_t.cp0r12_n.Status = 
+    state->cp0.byname.cp0r12_t.cp0r12_n.Status =
         SET_BITFIELD(state->cp0.byname.cp0r12_t.cp0r12_n.Status,\
             CP0_STATUS_IE_POS, CP0_STATUS_IE_LEN, ie_val);
 
