@@ -35,6 +35,9 @@ endif()
 option(MIPSEL_EMU_ENABLE_QT_GUI
        "Build the Qt6 desktop frontend (no arguments starts the GUI)"
        ${_mipsel_emu_qt_gui_default})
+option(MIPSEL_EMU_BUILD_DISPATCH_BENCHMARK
+       "Build the host-only instruction-dispatch throughput benchmark"
+       OFF)
 
 if(MIPSEL_EMU_IS_EMBEDDED_SYSTEM)
     set(MIPSEL_EMU_BUILD_HOST OFF CACHE BOOL
@@ -78,8 +81,6 @@ set(CMAKE_C_EXTENSIONS ON)
 
 set(MIPSEL_EMU_CORE_SOURCES
     emu.c
-    instru.c
-    op.c
     exception.c
     registers.c
     platform.c
@@ -384,6 +385,19 @@ target_compile_definitions(mipsel_emu_core
         MIPSEL_EMU_ENABLE_FRAMEBUFFER=$<BOOL:${MIPSEL_EMU_ENABLE_FRAMEBUFFER}>
         CONFIG_IS_EMBEDDED_SYSTEM=$<BOOL:${MIPSEL_EMU_IS_EMBEDDED_SYSTEM}>
 )
+
+if(MIPSEL_EMU_BUILD_DISPATCH_BENCHMARK)
+    if(NOT MIPSEL_EMU_BUILD_HOST)
+        message(FATAL_ERROR
+            "MIPSEL_EMU_BUILD_DISPATCH_BENCHMARK requires a native host build")
+    endif()
+    add_executable(mipsel_emu_dispatch_benchmark
+        tests/dispatch_benchmark.c
+    )
+    target_link_libraries(mipsel_emu_dispatch_benchmark PRIVATE
+        mipsel-emu::core
+    )
+endif()
 
 if(MIPSEL_EMU_USER_CONFIG_HEADER)
     target_compile_definitions(mipsel_emu_core PUBLIC

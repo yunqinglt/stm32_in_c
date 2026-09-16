@@ -1,24 +1,27 @@
 #include "op.h"
 #include "compiler.h"
 #include "exception.h"
-#include "instru.h"
 #include "platform.h"
 #include "registers.h"
 #include <stdint.h>
 
-extern MIPS_Instruction_Handler regimm_table[];
-extern MIPS_Instruction_Handler special1_table[];
-extern MIPS_Instruction_Handler special2_table[];
-extern MIPS_Instruction_Handler special3_table[];
-extern MIPS_Instruction_Handler cop0_table0[];
-extern MIPS_Instruction_Handler cop0_table1[];
-
 __STATIC_FORCEINLINE void nop(uint32_t instr, Registers *state) {}
 
-__ALIAS("nop") void op_cache(uint32_t instr, Registers *state);
-__ALIAS("nop") void op_sync(uint32_t instr, Registers *state);
-__ALIAS("nop") void op_synci(uint32_t instr, Registers *state);
-__ALIAS("nop") void op_pref(uint32_t instr, Registers *state);
+__STATIC_FORCEINLINE void op_cache(uint32_t instr, Registers *state) {
+    nop(instr, state);
+}
+
+__STATIC_FORCEINLINE void op_sync(uint32_t instr, Registers *state) {
+    nop(instr, state);
+}
+
+__STATIC_FORCEINLINE void op_synci(uint32_t instr, Registers *state) {
+    nop(instr, state);
+}
+
+__STATIC_FORCEINLINE void op_pref(uint32_t instr, Registers *state) {
+    nop(instr, state);
+}
 
 __STATIC_FORCEINLINE void unconditional_branch(Registers *state) {
     state->is_delay_slot = 1;
@@ -32,7 +35,7 @@ __STATIC_FORCEINLINE uint32_t branch_target(const Registers *state,
 
 
 // Near 256MB Jump
-void op_j(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_j(uint32_t instr, Registers *state) {
     uint32_t target = gettar(instr);
 
     unconditional_branch(state);
@@ -40,7 +43,7 @@ void op_j(uint32_t instr, Registers *state) {
 }
 
 // Near 256MB Jump and place return address
-void op_jal(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_jal(uint32_t instr, Registers *state) {
     uint32_t target = gettar(instr);
 
     unconditional_branch(state);
@@ -49,7 +52,7 @@ void op_jal(uint32_t instr, Registers *state) {
 }
 
 // Branch on Equal
-void op_beq(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_beq(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
@@ -63,7 +66,7 @@ void op_beq(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bne(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bne(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
@@ -77,7 +80,7 @@ void op_bne(uint32_t instr, Registers *state) {
     }
 }
 
-void op_blez(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_blez(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -90,7 +93,7 @@ void op_blez(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bgtz(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bgtz(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -103,7 +106,7 @@ void op_bgtz(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bltz(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bltz(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -116,7 +119,7 @@ void op_bltz(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bltzl(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bltzl(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t offset = getimm(instr);
 
@@ -130,7 +133,7 @@ void op_bltzl(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bgezl(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bgezl(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t offset = getimm(instr);
 
@@ -144,7 +147,7 @@ void op_bgezl(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bgezal(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bgezal(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -158,7 +161,7 @@ void op_bgezal(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bltzal(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bltzal(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -172,7 +175,7 @@ void op_bltzal(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bgezall(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bgezall(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t offset = getimm(instr);
 
@@ -187,7 +190,7 @@ void op_bgezall(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bltzall(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bltzall(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t offset = getimm(instr);
 
@@ -202,7 +205,7 @@ void op_bltzall(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bgez(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bgez(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -215,7 +218,7 @@ void op_bgez(uint32_t instr, Registers *state) {
     }
 }
 
-void op_jalr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_jalr(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t rd = getrd(instr);
     uint32_t target = state->gpr[rs];
@@ -230,7 +233,7 @@ void op_jalr(uint32_t instr, Registers *state) {
     state->target_pc = target;
 }
 
-void op_slti(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_slti(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     int32_t imm = sign_extend(getimm(instr));
@@ -239,7 +242,7 @@ void op_slti(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_sltiu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sltiu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t imm = sign_extend(getimm(instr));
@@ -248,7 +251,7 @@ void op_sltiu(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_andi(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_andi(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t imm = zero_extend(getimm(instr));
@@ -257,7 +260,7 @@ void op_andi(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_ori(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_ori(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t imm = zero_extend(getimm(instr));
@@ -268,7 +271,7 @@ void op_ori(uint32_t instr, Registers *state) {
 
 // void op_addi
 
-void op_addu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_addu(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
@@ -277,21 +280,21 @@ void op_addu(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_move_from_hi(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_move_from_hi(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
 
     state->gpr[rd] = state->hi;
     S0_IS_0(state);
 }
 
-void op_move_from_lo(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_move_from_lo(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
 
     state->gpr[rd] = state->lo;
     S0_IS_0(state);
 }
 
-void op_srl(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_srl(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rt = getrt(instr);
     uint8_t mask = getmask(instr);
@@ -312,7 +315,7 @@ void op_srl(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_subu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_subu(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
@@ -321,7 +324,7 @@ void op_subu(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_and(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_and(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
@@ -330,7 +333,7 @@ void op_and(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_or(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_or(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
@@ -339,7 +342,7 @@ void op_or(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_xor(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_xor(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
@@ -348,7 +351,7 @@ void op_xor(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_slt(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_slt(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
@@ -360,7 +363,7 @@ void op_slt(uint32_t instr, Registers *state) {
     }
 }
 
-void op_sltu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sltu(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
@@ -372,7 +375,7 @@ void op_sltu(uint32_t instr, Registers *state) {
     }
 }
 
-void op_nor(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_nor(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
@@ -382,7 +385,7 @@ void op_nor(uint32_t instr, Registers *state) {
 }
 
 
-void op_tge(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tge(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -391,7 +394,7 @@ void op_tge(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tgeu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tgeu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -400,7 +403,7 @@ void op_tgeu(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tlt(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tlt(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -409,7 +412,7 @@ void op_tlt(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tltu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tltu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -418,7 +421,7 @@ void op_tltu(uint32_t instr, Registers *state) {
     }
 }
 
-void op_teq(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_teq(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -427,7 +430,7 @@ void op_teq(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tne(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tne(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -436,7 +439,7 @@ void op_tne(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tgei(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tgei(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -445,7 +448,7 @@ void op_tgei(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tgeiu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tgeiu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -454,7 +457,7 @@ void op_tgeiu(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tlti(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tlti(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -463,7 +466,7 @@ void op_tlti(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tltiu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tltiu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -472,7 +475,7 @@ void op_tltiu(uint32_t instr, Registers *state) {
     }
 }
 
-void op_teqi(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_teqi(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -481,7 +484,7 @@ void op_teqi(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tnei(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tnei(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t imm = getimm(instr);
 
@@ -490,7 +493,7 @@ void op_tnei(uint32_t instr, Registers *state) {
     }
 }
 
-void op_addi(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_addi(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     int32_t value = (int32_t)state->gpr[rs];
@@ -506,7 +509,7 @@ void op_addi(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_xori(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_xori(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
@@ -515,7 +518,7 @@ void op_xori(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_lui(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_lui(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
 
@@ -523,7 +526,7 @@ void op_lui(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_beql(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_beql(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint16_t offset = getimm(instr);
@@ -538,7 +541,7 @@ void op_beql(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bnel(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bnel(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint16_t offset = getimm(instr);
@@ -553,7 +556,7 @@ void op_bnel(uint32_t instr, Registers *state) {
     }
 }
 
-void op_blezl(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_blezl(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t offset = getimm(instr);
 
@@ -567,7 +570,7 @@ void op_blezl(uint32_t instr, Registers *state) {
     }
 }
 
-void op_bgtzl(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_bgtzl(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint16_t offset = getimm(instr);
 
@@ -581,7 +584,7 @@ void op_bgtzl(uint32_t instr, Registers *state) {
     }
 }
 
-void op_jalx(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_jalx(uint32_t instr, Registers *state) {
     uint32_t target = gettar(instr);
 
     unconditional_branch(state);
@@ -592,7 +595,7 @@ void op_jalx(uint32_t instr, Registers *state) {
 }
 
 // load byte
-void op_lb(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_lb(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr); // Base
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -624,7 +627,7 @@ void op_lb(uint32_t instr, Registers *state) {
 }
 
 // load half
-void op_lh(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_lh(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr); // Base
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -656,7 +659,7 @@ void op_lh(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_lwl(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_lwl(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -693,7 +696,7 @@ void op_lwl(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_lwr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_lwr(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -730,7 +733,7 @@ void op_lwr(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_lbu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_lbu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -756,7 +759,7 @@ void op_lbu(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_lhu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_lhu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -787,7 +790,7 @@ void op_lhu(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_lw(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_lw(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -817,7 +820,7 @@ void op_lw(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_sb(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sb(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -843,7 +846,7 @@ void op_sb(uint32_t instr, Registers *state) {
     }
 }
 
-void op_sh(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sh(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -873,7 +876,7 @@ void op_sh(uint32_t instr, Registers *state) {
     }
 }
 
-void op_sw(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sw(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -903,7 +906,7 @@ void op_sw(uint32_t instr, Registers *state) {
     }
 }
 
-void op_swl(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_swl(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -941,7 +944,7 @@ void op_swl(uint32_t instr, Registers *state) {
     }
 }
 
-void op_swr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_swr(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -979,7 +982,7 @@ void op_swr(uint32_t instr, Registers *state) {
     }
 }
 
-void op_ll(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_ll(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -1011,7 +1014,7 @@ void op_ll(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_sc(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sc(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint32_t offset = sign_extend(getimm(instr));
@@ -1048,7 +1051,7 @@ void op_sc(uint32_t instr, Registers *state) {
     }
 }
 
-void op_sll(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sll(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
     uint8_t mask = getmask(instr);
@@ -1057,7 +1060,7 @@ void op_sll(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_sra(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sra(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
     uint8_t mask = getmask(instr) & 0x1f;
@@ -1066,7 +1069,7 @@ void op_sra(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_sllv(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sllv(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1075,7 +1078,7 @@ void op_sllv(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_srlv(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_srlv(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1098,7 +1101,7 @@ void op_srlv(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_srav(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_srav(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1107,7 +1110,7 @@ void op_srav(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_jr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_jr(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint32_t target = state->gpr[rs];
 
@@ -1117,7 +1120,7 @@ void op_jr(uint32_t instr, Registers *state) {
     state->target_pc = target;
 }
 
-void op_movz(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_movz(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1129,7 +1132,7 @@ void op_movz(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_movn(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_movn(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1141,25 +1144,25 @@ void op_movn(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_syscall(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_syscall(uint32_t instr, Registers *state) {
     raise_exception(state, 0, EXC_SC, MIPS_VECTOR_GENERAL);
 }
 
-void op_break(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_break(uint32_t instr, Registers *state) {
     raise_exception(state, 0, EXC_BP, MIPS_VECTOR_GENERAL);
 }
 
-void op_move_to_hi(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_move_to_hi(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     state->hi = state->gpr[rs];
 }
 
-void op_move_to_lo(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_move_to_lo(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     state->lo = state->gpr[rs];
 }
 
-void op_mult(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_mult(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -1174,7 +1177,7 @@ void op_mult(uint32_t instr, Registers *state) {
     state->lo = (uint32_t)prod;
 }
 
-void op_div(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_div(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -1195,7 +1198,7 @@ void op_div(uint32_t instr, Registers *state) {
     state->hi = (uint32_t)(num % den);
 }
 
-void op_divu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_divu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -1210,7 +1213,7 @@ void op_divu(uint32_t instr, Registers *state) {
     state->hi = num % den;
 }
 
-void op_add(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_add(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1231,7 +1234,7 @@ void op_add(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_sub(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_sub(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1253,7 +1256,7 @@ void op_sub(uint32_t instr, Registers *state) {
 }
 
 
-void op_madd(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_madd(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -1270,7 +1273,7 @@ void op_madd(uint32_t instr, Registers *state) {
     state->lo = (uint32_t)(res & 0xFFFFFFFFULL);
 }
 
-void op_maddu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_maddu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -1287,7 +1290,7 @@ void op_maddu(uint32_t instr, Registers *state) {
     state->lo = (uint32_t)(res & 0xFFFFFFFFULL);
 }
 
-void op_mul(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_mul(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1298,7 +1301,7 @@ void op_mul(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_msub(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_msub(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -1315,7 +1318,7 @@ void op_msub(uint32_t instr, Registers *state) {
     state->lo = (uint32_t)(res & 0xFFFFFFFFULL);
 }
 
-void op_msubu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_msubu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
 
@@ -1333,7 +1336,7 @@ void op_msubu(uint32_t instr, Registers *state) {
 }
 
 // counter
-void op_clo(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_clo(uint32_t instr, Registers *state) {
     uint32_t count = 0;
     uint8_t rs = getrs(instr);
     uint8_t rd = getrd(instr);
@@ -1354,7 +1357,7 @@ void op_clo(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_clz(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_clz(uint32_t instr, Registers *state) {
     uint32_t count = 0;
     uint8_t rs = getrs(instr);
     uint8_t rd = getrd(instr);
@@ -1376,7 +1379,7 @@ void op_clz(uint32_t instr, Registers *state) {
 }
 
 
-void op_ext(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_ext(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t msbd = getrd(instr);
@@ -1394,7 +1397,7 @@ void op_ext(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_ins(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_ins(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint8_t msb = getrd(instr);
@@ -1415,7 +1418,7 @@ void op_ins(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_addiu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_addiu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint16_t imm = getimm(instr);
@@ -1425,7 +1428,7 @@ void op_addiu(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_multu(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_multu(uint32_t instr, Registers *state) {
     uint8_t rs = getrs(instr);
     uint8_t rt = getrt(instr);
     uint64_t tmp = (uint64_t) state->gpr[rs] * (uint64_t) state->gpr[rt];
@@ -1436,45 +1439,57 @@ void op_multu(uint32_t instr, Registers *state) {
 
 
 // Reserved Instruction
-void beta(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void beta(uint32_t instr, Registers *state) {
     raise_exception(state, 0, EXC_RI, MIPS_VECTOR_GENERAL);
 }
 
 // Coprocessor Unusable
-void delta(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void delta(uint32_t instr, Registers *state) {
     uint8_t cop_id = getop(instr) & 0x03;
     raise_exception(state, cop_id, EXC_CpU, MIPS_VECTOR_GENERAL);
 }
 
-void op_deret(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_deret(uint32_t instr, Registers *state) {
     delta(instr, state);
 }
 
-void op_wfe(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_wfe(uint32_t instr, Registers *state) {
     /* A simple single-threaded model treats WAIT as an idle cycle. The main
      * loop keeps Count and device IRQs advancing between instructions. */
     (void)instr;
     (void)state;
 }
 
-void op_rdpgpr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_rdpgpr(uint32_t instr, Registers *state) {
     delta(instr, state);
 }
 
-void op_wrpgpr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_wrpgpr(uint32_t instr, Registers *state) {
     delta(instr, state);
 }
 
-void regimm_handler(uint32_t instr, Registers *state) {
-    uint8_t rt = getrt(instr);
-
-    MIPS_Instruction_Handler handler = regimm_table[rt];
-
-    // 100% Hit
-    handler(instr, state);
+__STATIC_FORCEINLINE void regimm_handler(uint32_t instr, Registers *state) {
+    switch (getrt(instr)) {
+        case 0x00: op_bltz(instr, state); return;
+        case 0x01: op_bgez(instr, state); return;
+        case 0x02: op_bltzl(instr, state); return;
+        case 0x03: op_bgezl(instr, state); return;
+        case 0x08: op_tgei(instr, state); return;
+        case 0x09: op_tgeiu(instr, state); return;
+        case 0x0a: op_tlti(instr, state); return;
+        case 0x0b: op_tltiu(instr, state); return;
+        case 0x0c: op_teqi(instr, state); return;
+        case 0x0e: op_tnei(instr, state); return;
+        case 0x10: op_bltzal(instr, state); return;
+        case 0x11: op_bgezal(instr, state); return;
+        case 0x12: op_bltzall(instr, state); return;
+        case 0x13: op_bgezall(instr, state); return;
+        case 0x1f: op_synci(instr, state); return;
+        default: beta(instr, state); return;
+    }
 }
 
-void op_tlbr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tlbr(uint32_t instr, Registers *state) {
     uint8_t index = (state->cp0.byname.cp0r0_t.cp0r0_n.Index & 0x0000003f); // [5:0]
 
     if (index < 64) {
@@ -1488,7 +1503,7 @@ void op_tlbr(uint32_t instr, Registers *state) {
     }   // else = undefined -> do nothing
 }
 
-void op_tlbwi(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tlbwi(uint32_t instr, Registers *state) {
     uint8_t index = (state->cp0.byname.cp0r0_t.cp0r0_n.Index & 0x0000003f); // [5:0]
 
     if (index < 64) {
@@ -1503,7 +1518,7 @@ void op_tlbwi(uint32_t instr, Registers *state) {
     }
 }
 
-void op_tlbwr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tlbwr(uint32_t instr, Registers *state) {
     uint8_t index = (state->cp0.byname.cp0r1_t.cp0r1_n.Random & 0x3f);
 
     if (index < 64) {
@@ -1519,7 +1534,7 @@ void op_tlbwr(uint32_t instr, Registers *state) {
 }
 
 // Probe TLB for matching entry
-void op_tlbp(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_tlbp(uint32_t instr, Registers *state) {
     uint8_t current_asid = state->cp0.byname.cp0r10_t.cp0r10_n.EntryHi & 0xFF;
     uint8_t matched = 0;
     uint8_t found = 0;
@@ -1555,7 +1570,7 @@ void op_tlbp(uint32_t instr, Registers *state) {
     }
 }
 
-void op_eret(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_eret(uint32_t instr, Registers *state) {
     if (STATUS_ERL(state) == 1) {
         state->next_pc = state->cp0.byname.cp0r30_t.cp0r30_n.ErrorEPC;
         state->cp0.byname.cp0r12_t.cp0r12_n.Status =
@@ -1578,7 +1593,7 @@ void op_eret(uint32_t instr, Registers *state) {
 
 
 
-void op_mfc0(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_mfc0(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
     uint8_t sel = getsel(instr);
@@ -1587,7 +1602,7 @@ void op_mfc0(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_mtc0(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_mtc0(uint32_t instr, Registers *state) {
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
     uint8_t sel = getsel(instr);
@@ -1597,7 +1612,7 @@ void op_mtc0(uint32_t instr, Registers *state) {
 }
 
 // Enable and disable interrupts
-void op_mfmc0(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_mfmc0(uint32_t instr, Registers *state) {
     uint8_t func = getfunc(instr);
     uint8_t rt = getrt(instr);
     uint8_t rd = getrd(instr);
@@ -1616,7 +1631,7 @@ void op_mfmc0(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void op_wsbh(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_wsbh(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rt = getrt(instr);
 
@@ -1626,7 +1641,7 @@ void op_wsbh(uint32_t instr, Registers *state) {
     state->gpr[rd] = ((v & 0x00FF00FF) << 8) | ((v & 0xFF00FF00) >> 8);
 }
 
-void op_seb(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_seb(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rt = getrt(instr);
 
@@ -1641,7 +1656,7 @@ void op_seb(uint32_t instr, Registers *state) {
     state->gpr[rd] = (uint32_t)(int32_t)(int8_t)temp;
 }
 
-void op_seh(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_seh(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rt = getrt(instr);
 
@@ -1651,15 +1666,16 @@ void op_seh(uint32_t instr, Registers *state) {
     state->gpr[rd] = sign_extend(temp);
 }
 
-void op_bshfl(uint32_t instr, Registers *state) {
-    uint8_t funct = getmask(instr);
-
-    MIPS_Instruction_Handler handler = bshfl_table[funct];
-
-    handler(instr, state);
+__STATIC_FORCEINLINE void op_bshfl(uint32_t instr, Registers *state) {
+    switch (getmask(instr)) {
+        case 0x02: op_wsbh(instr, state); return;
+        case 0x10: op_seb(instr, state); return;
+        case 0x18: op_seh(instr, state); return;
+        default: beta(instr, state); return;
+    }
 }
 
-void op_rdhwr(uint32_t instr, Registers *state) {
+__STATIC_FORCEINLINE void op_rdhwr(uint32_t instr, Registers *state) {
     uint8_t rd = getrd(instr);
     uint8_t rt = getrt(instr);
 
@@ -1701,36 +1717,74 @@ void op_rdhwr(uint32_t instr, Registers *state) {
     S0_IS_0(state);
 }
 
-void special1_handler(uint32_t instr, Registers *state) {
-    uint8_t funct = getfunc(instr);
-
-    MIPS_Instruction_Handler handler = special1_table[funct];
-
-    // 100% Hit
-    handler(instr, state);
+__STATIC_FORCEINLINE void special1_handler(uint32_t instr, Registers *state) {
+    switch (getfunc(instr)) {
+        case 0x00: op_sll(instr, state); return;
+        case 0x01: delta(instr, state); return;
+        case 0x02: op_srl(instr, state); return;
+        case 0x03: op_sra(instr, state); return;
+        case 0x04: op_sllv(instr, state); return;
+        case 0x06: op_srlv(instr, state); return;
+        case 0x07: op_srav(instr, state); return;
+        case 0x08: op_jr(instr, state); return;
+        case 0x09: op_jalr(instr, state); return;
+        case 0x0a: op_movz(instr, state); return;
+        case 0x0b: op_movn(instr, state); return;
+        case 0x0c: op_syscall(instr, state); return;
+        case 0x0d: op_break(instr, state); return;
+        case 0x0f: op_sync(instr, state); return;
+        case 0x10: op_move_from_hi(instr, state); return;
+        case 0x11: op_move_to_hi(instr, state); return;
+        case 0x12: op_move_from_lo(instr, state); return;
+        case 0x13: op_move_to_lo(instr, state); return;
+        case 0x18: op_mult(instr, state); return;
+        case 0x19: op_multu(instr, state); return;
+        case 0x1a: op_div(instr, state); return;
+        case 0x1b: op_divu(instr, state); return;
+        case 0x20: op_add(instr, state); return;
+        case 0x21: op_addu(instr, state); return;
+        case 0x22: op_sub(instr, state); return;
+        case 0x23: op_subu(instr, state); return;
+        case 0x24: op_and(instr, state); return;
+        case 0x25: op_or(instr, state); return;
+        case 0x26: op_xor(instr, state); return;
+        case 0x27: op_nor(instr, state); return;
+        case 0x2a: op_slt(instr, state); return;
+        case 0x2b: op_sltu(instr, state); return;
+        case 0x30: op_tge(instr, state); return;
+        case 0x31: op_tgeu(instr, state); return;
+        case 0x32: op_tlt(instr, state); return;
+        case 0x33: op_tltu(instr, state); return;
+        case 0x34: op_teq(instr, state); return;
+        case 0x36: op_tne(instr, state); return;
+        default: beta(instr, state); return;
+    }
 }
 
-void special2_handler(uint32_t instr, Registers *state) {
-    uint8_t funct = getfunc(instr);
-
-    MIPS_Instruction_Handler handler = special2_table[funct];
-
-    // 100% Hit
-    handler(instr, state);
+__STATIC_FORCEINLINE void special2_handler(uint32_t instr, Registers *state) {
+    switch (getfunc(instr)) {
+        case 0x00: op_madd(instr, state); return;
+        case 0x01: op_maddu(instr, state); return;
+        case 0x02: op_mul(instr, state); return;
+        case 0x05: op_msub(instr, state); return;
+        case 0x06: op_msubu(instr, state); return;
+        case 0x20: op_clz(instr, state); return;
+        case 0x21: op_clo(instr, state); return;
+        default: beta(instr, state); return;
+    }
 }
 
-void special3_handler(uint32_t instr, Registers *state) {
-    uint8_t funct = getfunc(instr);
-
-    MIPS_Instruction_Handler handler = special3_table[funct];
-
-    // 100% Hit
-    handler(instr, state);
+__STATIC_FORCEINLINE void special3_handler(uint32_t instr, Registers *state) {
+    switch (getfunc(instr)) {
+        case 0x00: op_ext(instr, state); return;
+        case 0x04: op_ins(instr, state); return;
+        case 0x20: op_bshfl(instr, state); return;
+        case 0x3b: op_rdhwr(instr, state); return;
+        default: beta(instr, state); return;
+    }
 }
 
-void op_cop0_handler(uint32_t instr, Registers *state) {
-    MIPS_Instruction_Handler handler;
-
+__STATIC_FORCEINLINE void op_cop0_handler(uint32_t instr, Registers *state) {
     /* Kernel/EXL/ERL always has CP0 access; other modes require Status.CU0. */
     if (!STATUS_EXL(state) && !STATUS_ERL(state) &&
         STATUS_KSU(state) != 0 && !STATUS_CU0(state)) {
@@ -1739,10 +1793,24 @@ void op_cop0_handler(uint32_t instr, Registers *state) {
     }
 
     if (CFLAG(instr) == 1) {
-        handler = cop0_table0[getfunc(instr)]; // FUNC[5:0]
+        switch (getfunc(instr)) {
+            case 0x01: op_tlbr(instr, state); return;
+            case 0x02: op_tlbwi(instr, state); return;
+            case 0x06: op_tlbwr(instr, state); return;
+            case 0x08: op_tlbp(instr, state); return;
+            case 0x18: op_eret(instr, state); return;
+            case 0x1f: op_deret(instr, state); return;
+            case 0x20: op_wfe(instr, state); return;
+            default: beta(instr, state); return;
+        }
     } else {
-        handler = cop0_table1[getrs(instr)]; // RS[24:21]
+        switch (getrs(instr)) {
+            case 0x00: op_mfc0(instr, state); return;
+            case 0x04: op_mtc0(instr, state); return;
+            case 0x0a: op_rdpgpr(instr, state); return;
+            case 0x0b: op_mfmc0(instr, state); return;
+            case 0x0e: op_wrpgpr(instr, state); return;
+            default: beta(instr, state); return;
+        }
     }
-
-    handler(instr, state);
 }

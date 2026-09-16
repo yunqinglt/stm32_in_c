@@ -161,7 +161,7 @@ int main(void) {
     CHECK(state.gpr[2] == UINT32_MAX);
 
     state.exception_pending = 0;
-    op_wfe(UINT32_C(0x42000020), &state);
+    execute_instr(UINT32_C(0x42000020), &state);
     CHECK(!state.exception_pending);
 
     pool = calloc(1, PLATFORM_MEMORY_SIZE);
