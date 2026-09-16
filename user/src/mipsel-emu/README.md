@@ -21,6 +21,21 @@ cmake --build build/mipsel-emu
 ctest --test-dir build/mipsel-emu --output-on-failure
 ```
 
+宿主构建默认同时生成 Qt6 图形前端。需要 Qt6 Widgets 开发包（Arch Linux 对应
+`qt6-base`）；运行 `mipsel-emu` 且不带参数会打开图形监视器。窗口中的三个文本输入
+框分别接受 kernel ELF、DTB 和 initramfs 路径，`Load`/`Reset` 后即可使用运行控制、
+寄存器变化高亮、UART、处理器异常记录、SDL 兼容 RGB565 framebuffer、内存布局和
+Monitor 命令行。异常标签页保留最近 128 条事件，显示异常编码、EPC/Cause、向量和
+分支延迟槽标志，格式与 TUI 的 Exceptions 窗口一致。
+
+若只需要原来的命令行/TUI 前端，可关闭 Qt：
+
+```sh
+cmake -S user/src/mipsel-emu -B build/mipsel-emu-cli \
+  -DMIPSEL_EMU_ENABLE_QT_GUI=OFF
+cmake --build build/mipsel-emu-cli
+```
+
 启用 SDL 虚拟屏幕时，宿主需要 SDL2 开发包；Arch Linux 对应 `sdl2`。SDL 前端
 会直接把模拟器的 640x480 RGB565 framebuffer 作为外部 surface，不再复制一份
 中间 framebuffer：
@@ -42,8 +57,8 @@ cmake --build build/mipsel-emu-headless
 
 ## 嵌入式静态库
 
-模块专用工具链默认生成 Cortex-M0 Thumb/soft-float 静态库，不构建 POSIX 前端或
-宿主测试，也不指定 startup、linker script、nano/nosys specs：
+模块专用 ARM 工具链默认生成 Cortex-M0 Thumb/soft-float 静态库，不构建 POSIX
+前端或宿主测试，也不指定 startup、linker script、nano/nosys specs：
 
 ```sh
 cmake -S user/src/mipsel-emu -B build/mipsel-emu-arm-m0 \
@@ -68,6 +83,42 @@ arm-none-eabi-size build/mipsel-emu-arm-m0/libmipsel_emu_core.a
 add_subdirectory(user/src/mipsel-emu build/mipsel-emu-core)
 target_link_libraries(board_firmware PRIVATE mipsel-emu::embedded)
 ```
+
+### CH32V203F6P6 / RV32IMAC profile
+
+CH32V203F6P6 使用独立的 `riscv32-elf.cmake` profile。它把模拟器编译为不依赖
+POSIX、Qt、SDL、ncurses 或宿主 Monitor 的 `mipsel_emu_core` 静态库，同时保留
+MIPS32EL、CP0/TLB/MMU、异常、分支延迟槽、LL/SC、ELF/DTB/initramfs loader 和
+16550 UART。`CONFIG_IS_EMBEDDED_SYSTEM` 只关闭图形与宿主观察层，不改变 Linux
+所需的 MIPS 指令和地址翻译架构。
+
+```sh
+cmake -S user/src/mipsel-emu -B build/mipsel-emu-ch32 \
+  -DCMAKE_TOOLCHAIN_FILE="$PWD/user/src/mipsel-emu/cmake/riscv32-elf.cmake" \
+  -DMIPSEL_EMU_USER_CONFIG_HEADER=board_mipsel_emu_config.h \
+  -DMIPSEL_EMU_USER_CONFIG_INCLUDE_DIR="$PWD/user/src/mipsel-emu/boards/ch32v203f6p6" \
+  -DCMAKE_BUILD_TYPE=MinSizeRel
+cmake --build build/mipsel-emu-ch32 --target mipsel_emu_core -j2
+```
+
+板级头文件将 APS6404L 的 8 MiB 外部 PSRAM 作为 guest RAM；CH32 的 32 KiB Flash
+（`0x08000000`）和 10 KiB SRAM（`0x20000000`）留给最终 firmware、USB/SPI/UART
+维护代码及模拟器状态。W25Q64 中的 kernel、DTB 和 initramfs 通过
+`mipsel_image_t.read` 回调按块读取，不复制到内部 SRAM。最终工程仍需提供 linker
+script、reset/startup 和这些外设驱动，核心库不会假定具体 CH32 IO 寄存器布局。
+
+headless guest 可由仓库脚本生成。它使用 tinyconfig 加上 `linux/emu.config`，关闭
+framebuffer/DRM，保留 earlycon、8250、MIPS32EL+MMU、ELF 和 gzip initramfs，并以
+静态 BusyBox 作为 initramfs：
+
+```sh
+JOBS=2 user/src/mipsel-emu/linux/build-embedded-guest.sh
+```
+
+产物位于 `build/linux-embedded/{vmlinux,mipsel-emu-embedded.dtb}` 和
+`build/mipsel-emu-embedded-rootfs/{busybox,initramfs.cpio.gz}`。BusyBox 构建会检查
+MIPS ELF32 little-endian、无动态解释器，并使用 `CONFIG_LFS=y` 匹配该 musl 工具链的
+64 位 `off_t`。
 
 公共入口是 `mipsel_emu.h`。`config.h` 中的默认值均可由 `-D` 覆盖，也可以让板级
 工程提供一个配置头。配置会改变地址和公开结构大小，因此必须同时作用于库及其
@@ -473,6 +524,17 @@ CLI 形式为：
 mipsel-emu [--kernel FILE] [--dtb FILE] [--tui] [--run] [--sdl]
             [--initramfs FILE] [--trace FILE] [--max-steps N]
 ```
+
+图形模式不需要参数：
+
+```sh
+build/mipsel-emu/mipsel-emu
+```
+
+带任意参数时同一个程序继续使用 CLI/TUI 解析路径，因此脚本和既有调试工作流无需
+修改。Qt 窗口的 Monitor 支持与 TUI 相同的 `help`、`tlb [index]`、`translate <va>`、
+`reg [name [value]]`、`mrb|mrh|mrw`、`mwb|mwh|mww` 和 `disasm [word]` 命令，
+并额外提供 `run`、`pause`、`reset`、`status`，通过同一平台总线读取 RAM/MMIO。
 
 `--kernel` 也可以写成第一个位置参数，默认值为当前目录下的 `./vmlinuz`。
 `--tui` 默认暂停在第一条指令；同时给出 `--run` 可立即连续执行。

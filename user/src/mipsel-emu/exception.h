@@ -52,6 +52,6 @@ void linux_load_reset(Registers *state);
 
 /* Schedule a precise exception. cpu_step() commits the selected vector. */
 void raise_exception(Registers *state, uint32_t exc_info,
-                     uint8_t exc_code, VectorClass class);
+                     uint8_t exc_code, VectorClass vector_class);
 
 #endif

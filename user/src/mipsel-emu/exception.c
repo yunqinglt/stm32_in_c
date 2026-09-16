@@ -156,13 +156,13 @@ void linux_load_reset(Registers *state) {
 }
 
 void raise_exception(Registers *state, uint32_t exc_info,
-                     uint8_t exc_code, VectorClass class) {
+                     uint8_t exc_code, VectorClass vector_class) {
     const bool already_in_exception = STATUS_EXL(state) != 0;
     const bool in_delay_slot = state->bds != 0;
     uint32_t vector;
 
     /* Reset-class events do not write ExcCode/EPC or enter EXL. */
-    if (class == MIPS_VECTOR_RESET) {
+    if (vector_class == MIPS_VECTOR_RESET) {
         if (exc_code == EXC_RESET) {
             reset_cpu(state);
             state->next_pc = state->pc;
@@ -172,7 +172,7 @@ void raise_exception(Registers *state, uint32_t exc_info,
             state->next_pc = state->pc;
             state->exception_pending = 1;
         }
-        mipsel_emu_observer_exception(state, exc_info, exc_code, class);
+        mipsel_emu_observer_exception(state, exc_info, exc_code, vector_class);
         return;
     }
 
@@ -210,7 +210,7 @@ void raise_exception(Registers *state, uint32_t exc_info,
         update_tlb_exception_state(state, exc_info);
     }
 
-    switch (class) {
+    switch (vector_class) {
         case MIPS_VECTOR_INTERRUPT:
             vector = interrupt_vector(state);
             break;
@@ -234,5 +234,5 @@ void raise_exception(Registers *state, uint32_t exc_info,
     flush_control_transfer(state);
     state->next_pc = vector;
     state->exception_pending = 1;
-    mipsel_emu_observer_exception(state, exc_info, exc_code, class);
+    mipsel_emu_observer_exception(state, exc_info, exc_code, vector_class);
 }

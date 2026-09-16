@@ -22,6 +22,18 @@
 
 因此，首先应该做 profiling，而不是直接更换 SDL、OpenGL 或 Vulkan。建议至少分别测量：guest instructions/s、MMIO writes/s、dirty region 合并次数、`SDL_UpdateTexture()` 时间和 `SDL_RenderPresent()` 阻塞时间。
 
+### 当前已落地的宿主边界
+
+Qt6 图形前端已经作为宿主层接入 `mipsel-emu`，而 `mipsel-emu_core` 保持纯 C、无 Qt
+依赖。无参数时启动 Qt 监视器；带参数时仍转发到原有 CLI/TUI。GUI 的连续执行调用
+`mipsel_emu_run_steps()`，一次定时器回调提交一批 guest 指令，避免每条指令都跨越
+C++ 包装层。寄存器、UART 和 Qt framebuffer 视图在同一宿主线程刷新；发现 SDL2 时，
+同一个 RGB565 framebuffer 还会通过现有 SDL surface 在伴随窗口显示。
+
+这不是最终的并行架构：当前仍是确定性单线程模式，SDL/Qt 刷新发生在批次边界。后续
+引入 frame mailbox、独立 SDL 线程或设备线程时，必须保留 `mipsel_emu_run_steps()` 的
+批量接口和共享内存语义，不能退回到每次 RAM/MMIO 访问都经过 IPC 的设计。
+
 ## SDL 优化方案
 
 ### 推荐的线程边界

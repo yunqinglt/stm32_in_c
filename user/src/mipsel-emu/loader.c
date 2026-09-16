@@ -382,7 +382,7 @@ static void host_uart_tx(void *opaque, uint8_t byte) {
     debugger_uart_tx(byte);
 }
 
-int main(int argc, char **argv) {
+int mipsel_emu_cli_main(int argc, char **argv) {
     ProgramOptions options;
     BoardConfig board_config;
     DebuggerConfig debugger_config;

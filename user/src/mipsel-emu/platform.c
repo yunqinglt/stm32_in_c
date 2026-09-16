@@ -17,11 +17,13 @@ typedef struct {
 
 static platform_memory_backend_t memory_backend;
 
+#if MIPSEL_EMU_ENABLE_FRAMEBUFFER
 _Alignas(uint16_t) static uint8_t default_framebuffer[MIPSEL_EMU_FB_SIZE];
 static uint8_t *framebuffer = default_framebuffer;
 static uint32_t framebuffer_capacity = MIPSEL_EMU_FB_SIZE;
 static platform_framebuffer_rect_t framebuffer_dirty_rect;
 static bool framebuffer_has_dirty;
+#endif
 
 // TODO
 // readx(uint32_t addr, Registers *state)
@@ -128,6 +130,7 @@ bool platform_memory_fill(uint32_t pa, uint8_t value, size_t len) {
     return true;
 }
 
+#if MIPSEL_EMU_ENABLE_FRAMEBUFFER
 static bool framebuffer_range_valid(uint32_t address, unsigned width) {
     return width != 0 && address >= MIPSEL_EMU_FB_MMIO_BASE &&
            address - MIPSEL_EMU_FB_MMIO_BASE <=
@@ -194,6 +197,24 @@ void platform_framebuffer_clear_dirty(void) {
     framebuffer_dirty_rect = (platform_framebuffer_rect_t){0, 0, 0, 0};
     framebuffer_has_dirty = false;
 }
+#else
+bool platform_framebuffer_bind(uint8_t *bytes, uint32_t size) {
+    (void)bytes;
+    (void)size;
+    return false;
+}
+
+uint8_t *platform_framebuffer_data(void) { return NULL; }
+uint32_t platform_framebuffer_size(void) { return 0; }
+uint32_t platform_framebuffer_width(void) { return 0; }
+uint32_t platform_framebuffer_height(void) { return 0; }
+uint32_t platform_framebuffer_stride_bytes(void) { return 0; }
+bool platform_framebuffer_dirty(platform_framebuffer_rect_t *rect) {
+    if (rect) *rect = (platform_framebuffer_rect_t){0, 0, 0, 0};
+    return false;
+}
+void platform_framebuffer_clear_dirty(void) {}
+#endif
 
 void platform_init(uart16550_tx_callback_t uart_tx, void *opaque) {
 #if MIPSEL_EMU_ENABLE_UART16550
@@ -302,7 +323,7 @@ bool platform_bus_read(uint32_t addr, unsigned width, uint32_t *value) {
     uint8_t bytes[4] = {0};
 
     if (!value || (width != 1u && width != 2u && width != 4u)) return false;
-#if MIPSEL_EMU_FB_SIZE > 0
+#if MIPSEL_EMU_ENABLE_FRAMEBUFFER
     if (framebuffer_range_valid(addr, width)) {
         uint32_t offset = addr - MIPSEL_EMU_FB_MMIO_BASE;
         *value = framebuffer[offset];
@@ -334,7 +355,7 @@ bool platform_bus_write(uint32_t addr, unsigned width, uint32_t value) {
     uint8_t bytes[4];
 
     if (width != 1u && width != 2u && width != 4u) return false;
-#if MIPSEL_EMU_FB_SIZE > 0
+#if MIPSEL_EMU_ENABLE_FRAMEBUFFER
     if (framebuffer_range_valid(addr, width)) {
         uint32_t offset = addr - MIPSEL_EMU_FB_MMIO_BASE;
         framebuffer[offset] = (uint8_t)value;

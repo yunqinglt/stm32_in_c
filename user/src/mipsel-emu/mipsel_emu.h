@@ -5,8 +5,8 @@
 #include "config.h"
 #if MIPSEL_EMU_ENABLE_CONSOLE
 #include "console.h"
-#endif
 #include "disasm.h"
+#endif
 #include "emu.h"
 #include "exception.h"
 #include "image_loader.h"

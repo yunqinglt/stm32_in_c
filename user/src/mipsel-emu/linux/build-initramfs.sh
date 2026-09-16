@@ -8,6 +8,7 @@ script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(CDPATH= cd -- "$script_dir/../../../.." && pwd)
 
 busybox_dir=${BUSYBOX_DIR:-"$repo_root/tools/busybox-1.38.0"}
+busybox_config=${BUSYBOX_CONFIG:-"$script_dir/busybox-embedded.config"}
 linux_dir=${LINUX_DIR:-"$repo_root/tools/linux"}
 output_dir=${OUTPUT_DIR:-"$repo_root/build/mipsel-emu-rootfs"}
 cross_compile=${CROSS_COMPILE:-"$repo_root/tools/mipsel-linux-musl/bin/mipsel-unknown-linux-musl-"}
@@ -22,8 +23,8 @@ archive_raw="$output_dir/initramfs.cpio"
 archive="$output_dir/initramfs.cpio.gz"
 host_gen="$output_dir/gen_init_cpio"
 
-if [ ! -f "$busybox_dir/.config" ]; then
-    echo "missing BusyBox configuration: $busybox_dir/.config" >&2
+if [ ! -f "$busybox_config" ]; then
+    echo "missing BusyBox configuration: $busybox_config" >&2
     exit 1
 fi
 if ! cross_gcc=$(command -v "${cross_compile}gcc" 2>/dev/null); then
@@ -69,14 +70,49 @@ mkdir -p "$busybox_stage" "$busybox_build"
 cp -a "$busybox_dir/." "$busybox_stage/"
 "$make_path" -s -C "$busybox_stage" mrproper
 
-# Keep the user's applet selection but configure this disposable build for
-# static linking.
-sed \
-    -e 's/^# CONFIG_STATIC is not set$/CONFIG_STATIC=y/' \
-    -e 's/^CONFIG_PIE=y$/# CONFIG_PIE is not set/' \
-    -e 's/^CONFIG_TC=y$/# CONFIG_TC is not set/' \
-    -e 's/^CONFIG_FEATURE_TC_INGRESS=y$/# CONFIG_FEATURE_TC_INGRESS is not set/' \
-    "$busybox_dir/.config" > "$busybox_build/.config"
+# The embedded profile is a small feature fragment.  Starting from
+# allnoconfig prevents desktop applets (and their transitive code) from
+# returning when BusyBox gains new defaults.  A full legacy .config is still
+# accepted through BUSYBOX_CONFIG for the desktop image.
+if grep -qx 'CONFIG_HAVE_DOT_CONFIG=y' "$busybox_config"; then
+    sed \
+        -e 's/^# CONFIG_STATIC is not set$/CONFIG_STATIC=y/' \
+        -e 's/^CONFIG_PIE=y$/# CONFIG_PIE is not set/' \
+        -e 's/^CONFIG_TC=y$/# CONFIG_TC is not set/' \
+        -e 's/^CONFIG_FEATURE_TC_INGRESS=y$/# CONFIG_FEATURE_TC_INGRESS is not set/' \
+        "$busybox_config" > "$busybox_build/.config"
+else
+    "$make_path" -s -C "$busybox_stage" O="$busybox_build" allnoconfig \
+        </dev/null >/dev/null
+    while IFS= read -r option; do
+        case "$option" in
+            CONFIG_*=y)
+                symbol=${option%%=*}
+                sed -i \
+                    -e "s/^# $symbol is not set$/$option/" \
+                    -e "s/^$symbol=.*/$option/" \
+                    "$busybox_build/.config"
+                ;;
+            ""|\#*) ;;
+            *)
+                echo "unsupported BusyBox fragment line: $option" >&2
+                exit 1
+                ;;
+        esac
+    done < "$busybox_config"
+fi
+# BusyBox's Makefile gives CONFIG_CROSS_COMPILER_PREFIX precedence over the
+# environment.  allnoconfig emits an empty value, which would silently switch
+# this build back to the host compiler and fail its 32-bit off_t checks.
+cross_compile_config=$(printf '%s' "$cross_compile" | sed 's/[&|]/\\&/g')
+if grep -q '^CONFIG_CROSS_COMPILER_PREFIX=' "$busybox_build/.config"; then
+    sed -i \
+        -e "s|^CONFIG_CROSS_COMPILER_PREFIX=.*|CONFIG_CROSS_COMPILER_PREFIX=\"$cross_compile_config\"|" \
+        "$busybox_build/.config"
+else
+    printf 'CONFIG_CROSS_COMPILER_PREFIX="%s"\n' "$cross_compile" >> \
+        "$busybox_build/.config"
+fi
 if ! grep -qx 'CONFIG_STATIC=y' "$busybox_build/.config"; then
     echo "cannot enable CONFIG_STATIC in the BusyBox configuration" >&2
     exit 1

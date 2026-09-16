@@ -2,8 +2,12 @@ cmake_minimum_required(VERSION 3.22)
 
 project(mipsel_emu VERSION 0.1.0 LANGUAGES C)
 
+option(MIPSEL_EMU_IS_EMBEDDED_SYSTEM
+       "Build the size-constrained firmware profile (CONFIG_IS_EMBEDDED_SYSTEM)"
+       OFF)
+
 set(_mipsel_emu_host_default ON)
-if(CMAKE_SYSTEM_NAME STREQUAL "Generic")
+if(CMAKE_SYSTEM_NAME STREQUAL "Generic" OR MIPSEL_EMU_IS_EMBEDDED_SYSTEM)
     set(_mipsel_emu_host_default OFF)
 endif()
 option(MIPSEL_EMU_BUILD_HOST
@@ -17,6 +21,39 @@ option(MIPSEL_EMU_ENABLE_CONSOLE
        "Build the transport-neutral paused-target monitor" ON)
 option(MIPSEL_EMU_ENABLE_SDL
        "Build optional SDL framebuffer output for the hosted frontend" OFF)
+set(_mipsel_emu_framebuffer_default ON)
+if(MIPSEL_EMU_IS_EMBEDDED_SYSTEM)
+    set(_mipsel_emu_framebuffer_default OFF)
+endif()
+option(MIPSEL_EMU_ENABLE_FRAMEBUFFER
+       "Build the RGB565 framebuffer MMIO device"
+       ${_mipsel_emu_framebuffer_default})
+set(_mipsel_emu_qt_gui_default ON)
+if(CMAKE_SYSTEM_NAME STREQUAL "Generic")
+    set(_mipsel_emu_qt_gui_default OFF)
+endif()
+option(MIPSEL_EMU_ENABLE_QT_GUI
+       "Build the Qt6 desktop frontend (no arguments starts the GUI)"
+       ${_mipsel_emu_qt_gui_default})
+
+if(MIPSEL_EMU_IS_EMBEDDED_SYSTEM)
+    set(MIPSEL_EMU_BUILD_HOST OFF CACHE BOOL
+        "The embedded profile has no POSIX frontend" FORCE)
+    set(MIPSEL_EMU_ENABLE_TUI OFF CACHE BOOL
+        "The embedded profile has no ncurses frontend" FORCE)
+    set(MIPSEL_EMU_ENABLE_CONSOLE OFF CACHE BOOL
+        "The embedded profile has no text monitor" FORCE)
+    set(MIPSEL_EMU_ENABLE_SDL OFF CACHE BOOL
+        "The embedded profile has no SDL output" FORCE)
+    set(MIPSEL_EMU_ENABLE_QT_GUI OFF CACHE BOOL
+        "The embedded profile has no Qt frontend" FORCE)
+    set(MIPSEL_EMU_ENABLE_FRAMEBUFFER OFF CACHE BOOL
+        "The embedded profile has no framebuffer MMIO" FORCE)
+endif()
+
+# Keep the preprocessor spelling requested by the firmware integration in
+# sync with the CMake profile used to generate the installed config header.
+set(CONFIG_IS_EMBEDDED_SYSTEM ${MIPSEL_EMU_IS_EMBEDDED_SYSTEM})
 set(MIPSEL_EMU_USER_CONFIG_HEADER "" CACHE STRING
     "Board configuration header included by config.h")
 set(MIPSEL_EMU_USER_CONFIG_INCLUDE_DIR "" CACHE PATH
@@ -25,6 +62,13 @@ set(MIPSEL_EMU_USER_CONFIG_INCLUDE_DIR "" CACHE PATH
 if(MIPSEL_EMU_BUILD_HOST AND NOT MIPSEL_EMU_ENABLE_ELF_LOADER)
     message(FATAL_ERROR
         "The host frontend requires MIPSEL_EMU_ENABLE_ELF_LOADER=ON")
+endif()
+
+if(MIPSEL_EMU_BUILD_HOST AND MIPSEL_EMU_ENABLE_QT_GUI)
+    enable_language(CXX)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    find_package(Qt6 REQUIRED COMPONENTS Widgets)
 endif()
 
 set(CMAKE_C_STANDARD 11)
@@ -39,14 +83,15 @@ set(MIPSEL_EMU_CORE_SOURCES
     exception.c
     registers.c
     platform.c
-    observer.c
     image_loader.c
-    disasm.c
-    format.c
 )
 
+if(NOT MIPSEL_EMU_IS_EMBEDDED_SYSTEM)
+    list(APPEND MIPSEL_EMU_CORE_SOURCES observer.c)
+endif()
+
 if(MIPSEL_EMU_ENABLE_CONSOLE)
-    list(APPEND MIPSEL_EMU_CORE_SOURCES console.c)
+    list(APPEND MIPSEL_EMU_CORE_SOURCES console.c disasm.c format.c)
 endif()
 
 if(MIPSEL_EMU_ENABLE_UART16550)
@@ -55,7 +100,6 @@ endif()
 
 set(MIPSEL_EMU_PUBLIC_HEADERS
     compiler.h
-    disasm.h
     emu.h
     exception.h
     image_loader.h
@@ -67,7 +111,7 @@ set(MIPSEL_EMU_PUBLIC_HEADERS
 )
 
 if(MIPSEL_EMU_ENABLE_CONSOLE)
-    list(APPEND MIPSEL_EMU_PUBLIC_HEADERS console.h)
+    list(APPEND MIPSEL_EMU_PUBLIC_HEADERS console.h disasm.h)
 endif()
 
 # The source-tree config keeps desktop-friendly defaults for direct builds.
@@ -85,7 +129,9 @@ foreach(_mipsel_emu_feature
         MIPSEL_EMU_ENABLE_UART16550
         MIPSEL_EMU_ENABLE_ELF_LOADER
         MIPSEL_EMU_ENABLE_INITRAMFS
-        MIPSEL_EMU_ENABLE_CONSOLE)
+        MIPSEL_EMU_ENABLE_CONSOLE
+        MIPSEL_EMU_ENABLE_FRAMEBUFFER
+        CONFIG_IS_EMBEDDED_SYSTEM)
     if(${_mipsel_emu_feature})
         set(_mipsel_emu_feature_value 1)
     else()
@@ -153,7 +199,9 @@ foreach(_mipsel_emu_feature
         MIPSEL_EMU_ENABLE_UART16550
         MIPSEL_EMU_ENABLE_ELF_LOADER
         MIPSEL_EMU_ENABLE_INITRAMFS
-        MIPSEL_EMU_ENABLE_CONSOLE)
+        MIPSEL_EMU_ENABLE_CONSOLE
+        MIPSEL_EMU_ENABLE_FRAMEBUFFER
+        CONFIG_IS_EMBEDDED_SYSTEM)
     if(${_mipsel_emu_feature})
         set(_mipsel_emu_feature_value 1)
     else()
@@ -333,6 +381,8 @@ target_compile_definitions(mipsel_emu_core
         MIPSEL_EMU_ENABLE_ELF_LOADER=$<BOOL:${MIPSEL_EMU_ENABLE_ELF_LOADER}>
         MIPSEL_EMU_ENABLE_INITRAMFS=$<BOOL:${MIPSEL_EMU_ENABLE_INITRAMFS}>
         MIPSEL_EMU_ENABLE_CONSOLE=$<BOOL:${MIPSEL_EMU_ENABLE_CONSOLE}>
+        MIPSEL_EMU_ENABLE_FRAMEBUFFER=$<BOOL:${MIPSEL_EMU_ENABLE_FRAMEBUFFER}>
+        CONFIG_IS_EMBEDDED_SYSTEM=$<BOOL:${MIPSEL_EMU_IS_EMBEDDED_SYSTEM}>
 )
 
 if(MIPSEL_EMU_USER_CONFIG_HEADER)
@@ -375,10 +425,50 @@ if(MIPSEL_EMU_BUILD_HOST)
     endif()
 
     add_executable(mipsel-emu loader.c)
+    if(MIPSEL_EMU_ENABLE_QT_GUI)
+        target_sources(mipsel-emu PRIVATE gui_main.cpp)
+        target_link_libraries(mipsel-emu PRIVATE Qt6::Widgets)
+    else()
+        target_sources(mipsel-emu PRIVATE cli_main.c)
+    endif()
     target_link_libraries(mipsel-emu PRIVATE mipsel-emu::host)
     target_compile_options(mipsel-emu
         PRIVATE $<$<C_COMPILER_ID:GNU,Clang>:-Wall>
     )
+
+    # The Qt framebuffer tab is always available. If SDL2 is installed, also
+    # expose the same guest surface through the existing SDL renderer in a
+    # companion window.
+    if(MIPSEL_EMU_ENABLE_QT_GUI AND NOT MIPSEL_EMU_ENABLE_SDL)
+        find_package(SDL2 CONFIG QUIET)
+        if(TARGET SDL2::SDL2)
+            set(MIPSEL_EMU_QT_SDL_TARGET SDL2::SDL2)
+        elseif(TARGET SDL2::SDL2-static)
+            set(MIPSEL_EMU_QT_SDL_TARGET SDL2::SDL2-static)
+        else()
+            find_package(SDL2 MODULE QUIET)
+            if(SDL2_FOUND)
+                add_library(mipsel_emu_qt_sdl_dependency INTERFACE)
+                target_include_directories(mipsel_emu_qt_sdl_dependency SYSTEM INTERFACE
+                    ${SDL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR})
+                target_link_libraries(mipsel_emu_qt_sdl_dependency INTERFACE
+                    ${SDL2_LIBRARIES} ${SDL2_LIBRARY})
+                set(MIPSEL_EMU_QT_SDL_TARGET mipsel_emu_qt_sdl_dependency)
+            endif()
+        endif()
+        if(MIPSEL_EMU_QT_SDL_TARGET)
+            target_sources(mipsel-emu PRIVATE
+                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/ui/ui_surface.c"
+                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/platform/sdl/sdl_display.c")
+            target_include_directories(mipsel-emu PRIVATE
+                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player")
+            target_compile_definitions(mipsel-emu PRIVATE
+                MIPSEL_EMU_QT_HAVE_SDL=1 PIXEL_FORMAT_RGB565)
+            target_link_libraries(mipsel-emu PRIVATE ${MIPSEL_EMU_QT_SDL_TARGET})
+        endif()
+    elseif(MIPSEL_EMU_ENABLE_QT_GUI AND MIPSEL_EMU_ENABLE_SDL)
+        target_compile_definitions(mipsel-emu PRIVATE MIPSEL_EMU_QT_HAVE_SDL=1)
+    endif()
 
     if(MIPSEL_EMU_ENABLE_SDL)
         find_package(SDL2 CONFIG QUIET)

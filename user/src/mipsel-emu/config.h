@@ -17,6 +17,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifndef CONFIG_IS_EMBEDDED_SYSTEM
+#define CONFIG_IS_EMBEDDED_SYSTEM 0
+#endif
+
 #ifdef MIPSEL_EMU_USER_CONFIG_HEADER
 #include MIPSEL_EMU_USER_CONFIG_HEADER
 #endif
@@ -95,6 +99,10 @@
 #define MIPSEL_EMU_ENABLE_CONSOLE 1
 #endif
 
+#ifndef MIPSEL_EMU_ENABLE_FRAMEBUFFER
+#define MIPSEL_EMU_ENABLE_FRAMEBUFFER (!CONFIG_IS_EMBEDDED_SYSTEM)
+#endif
+
 #ifndef MIPSEL_EMU_ENABLE_SDL
 #define MIPSEL_EMU_ENABLE_SDL 0
 #endif
@@ -127,6 +135,18 @@
 
 #ifndef MIPSEL_EMU_INITRAMFS_ALIGNMENT
 #define MIPSEL_EMU_INITRAMFS_ALIGNMENT 4096u
+#endif
+
+/* The embedded profile has no hosted graphics/debugger state.  Keep these
+ * constraints here as well as in CMake so a board cannot accidentally pull
+ * desktop-only code back in through a conflicting command-line definition. */
+#if CONFIG_IS_EMBEDDED_SYSTEM
+#undef MIPSEL_EMU_ENABLE_CONSOLE
+#define MIPSEL_EMU_ENABLE_CONSOLE 0
+#undef MIPSEL_EMU_ENABLE_FRAMEBUFFER
+#define MIPSEL_EMU_ENABLE_FRAMEBUFFER 0
+#undef MIPSEL_EMU_ENABLE_SDL
+#define MIPSEL_EMU_ENABLE_SDL 0
 #endif
 
 #if MIPSEL_EMU_RAM_SIZE == 0

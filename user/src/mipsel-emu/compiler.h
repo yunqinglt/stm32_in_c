@@ -54,11 +54,17 @@ typedef struct {
 } Result;
 
 __STATIC_FORCEINLINE Result OK(uint32_t val) {
-    return (Result) {Ok, .value.ok = val};
+    Result result = {Ok, {0}};
+    result.tag = Ok;
+    result.value.ok = val;
+    return result;
 }
 
 __STATIC_FORCEINLINE Result ERR(uint32_t val) {
-    return (Result) {Err, .value.reason = val};
+    Result result = {Err, {0}};
+    result.tag = Err;
+    result.value.reason = val;
+    return result;
 }
 
 // repr: Result
