@@ -42,6 +42,9 @@ endif()
 option(MIPSEL_EMU_ENABLE_QT_GUI
        "Build the Qt6 desktop frontend (no arguments starts the GUI)"
        ${_mipsel_emu_qt_gui_default})
+option(MIPSEL_EMU_BUILD_DISPATCH_BENCHMARK
+       "Build the native instruction-dispatch throughput benchmark"
+       OFF)
 
 if(MIPSEL_EMU_IS_EMBEDDED_SYSTEM)
     set(MIPSEL_EMU_BUILD_HOST OFF CACHE BOOL
@@ -564,6 +567,29 @@ target_compile_definitions(mipsel_emu_core
         CONFIG_IS_EMBEDDED_SYSTEM=$<BOOL:${MIPSEL_EMU_IS_EMBEDDED_SYSTEM}>
 )
 
+if(MIPSEL_EMU_BUILD_DISPATCH_BENCHMARK)
+    if(CMAKE_CROSSCOMPILING)
+        message(FATAL_ERROR
+            "MIPSEL_EMU_BUILD_DISPATCH_BENCHMARK requires a native build")
+    endif()
+
+    add_executable(mipsel_emu_dispatch_benchmark
+        tests/dispatch_benchmark.c
+    )
+    target_link_libraries(mipsel_emu_dispatch_benchmark PRIVATE
+        mipsel-emu::core
+    )
+    target_compile_options(mipsel_emu_dispatch_benchmark
+        PRIVATE $<$<C_COMPILER_ID:GNU,Clang>:-Wall>
+    )
+    target_compile_definitions(mipsel_emu_dispatch_benchmark PRIVATE
+        MIPSEL_EMU_BENCHMARK_DISPATCH_MODE="function-pointer-lut"
+        MIPSEL_EMU_BENCHMARK_COMPILER_ID="${CMAKE_C_COMPILER_ID}"
+        MIPSEL_EMU_BENCHMARK_COMPILER_VERSION="${CMAKE_C_COMPILER_VERSION}"
+        MIPSEL_EMU_BENCHMARK_BUILD_CONFIG="$<CONFIG>"
+    )
+endif()
+
 if(MIPSEL_EMU_USER_CONFIG_HEADER)
     target_compile_definitions(mipsel_emu_core PUBLIC
         "$<BUILD_INTERFACE:MIPSEL_EMU_USER_CONFIG_HEADER=\"${MIPSEL_EMU_USER_CONFIG_HEADER}\">")
@@ -780,6 +806,11 @@ endif()
 
 include(CTest)
 if(BUILD_TESTING AND NOT CMAKE_CROSSCOMPILING)
+    if(TARGET mipsel_emu_dispatch_benchmark)
+        add_test(NAME dispatch_benchmark_smoke
+                 COMMAND mipsel_emu_dispatch_benchmark 10003 1 1003)
+    endif()
+
     add_executable(exception_test tests/exception_test.c)
     target_link_libraries(exception_test PRIVATE mipsel-emu::core)
     add_test(NAME exception_test COMMAND exception_test)

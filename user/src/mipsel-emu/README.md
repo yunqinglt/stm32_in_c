@@ -155,6 +155,34 @@ cmake -S user/src/mipsel-emu -B build/mipsel-emu-headless \
 cmake --build build/mipsel-emu-headless
 ```
 
+### 指令分派吞吐基准
+
+`mipsel_emu_dispatch_benchmark` 是原生宿主专用、默认关闭的微基准。它在 4 KiB
+guest RAM 中循环执行 `addiu`、`addu`、无条件分支和分支延迟槽 `nop`，覆盖取指、
+KSEG0 地址翻译、指令分派、分支提交和 CP0 Count 更新。它不依赖 Qt、SDL 或 guest
+镜像。完整性能测量不会作为 CTest 运行；启用该目标时，CTest 只增加一个短预算、
+不设吞吐阈值的状态校验。
+
+为了让不同分派实现和不同 Windows 编译器之间的数据可比较，请使用优化构建；程序
+会报告分派模式、编译器、构建配置、预热步数、每轮 wall time 及中位吞吐。命令行参数
+依次是每轮 step 数、测量轮数和预热 step 数：
+
+```powershell
+cmake -S user/src/mipsel-emu -B build/mipsel-emu-benchmark `
+  -G Ninja -DCMAKE_BUILD_TYPE=Release `
+  -DMIPSEL_EMU_BUILD_DISPATCH_BENCHMARK=ON `
+  -DMIPSEL_EMU_BUILD_HOST=OFF
+cmake --build build/mipsel-emu-benchmark `
+  --target mipsel_emu_dispatch_benchmark --parallel 4
+& .\build\mipsel-emu-benchmark\mipsel_emu_dispatch_benchmark.exe `
+  100000000 5 1000000
+```
+
+这里的 `step` 是 `mipsel_emu_run_steps()` 的预算单位。这个固定 workload 不触发异常
+或中断，所以每个 step 恰好执行并退休一条 guest 指令；该等价关系不应推广到一般
+guest、异常入口或未来的多发射周期模型。跨机器比较时应固定编译器、优化级别、CPU
+电源策略和参数，并优先比较同机多轮中位数。
+
 ## 嵌入式静态库
 
 模块专用 ARM 工具链默认生成 Cortex-M0 Thumb/soft-float 静态库，不构建 POSIX
