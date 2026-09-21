@@ -15,10 +15,15 @@ extern MIPS_Instruction_Handler cop0_table1[];
 
 __STATIC_FORCEINLINE void nop(uint32_t instr, Registers *state) {}
 
-__ALIAS("nop") void op_cache(uint32_t instr, Registers *state);
-__ALIAS("nop") void op_sync(uint32_t instr, Registers *state);
-__ALIAS("nop") void op_synci(uint32_t instr, Registers *state);
-__ALIAS("nop") void op_pref(uint32_t instr, Registers *state);
+/* These four MIPS cache/synchronization instructions intentionally share the
+ * no-op behavior.  Ordinary wrappers are used instead of compiler aliases:
+ * GCC 13 (including the MinGW toolchain shipped with Qt) can otherwise emit
+ * a local alias to the inlined helper and leave the dispatch table undefined
+ * at link time. */
+void op_cache(uint32_t instr, Registers *state) { nop(instr, state); }
+void op_sync(uint32_t instr, Registers *state) { nop(instr, state); }
+void op_synci(uint32_t instr, Registers *state) { nop(instr, state); }
+void op_pref(uint32_t instr, Registers *state) { nop(instr, state); }
 
 __STATIC_FORCEINLINE void unconditional_branch(Registers *state) {
     state->is_delay_slot = 1;

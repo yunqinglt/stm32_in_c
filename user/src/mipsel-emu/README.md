@@ -1,7 +1,8 @@
 # MIPS32EL emulator
 
 这是一个 MIPS32 Release 2 小端模拟器。POSIX 前端可在 Linux PC 上提供 TUI、
-trace 和文件 loader；不依赖 POSIX 的 `mipsel_emu_core` 则可作为静态库由
+trace 和文件 loader；Windows/MSVC 使用无 POSIX 依赖的 headless CLI，并可启用 Qt6
+Widgets 和 SDL2 桌面界面。不依赖 POSIX 的 `mipsel_emu_core` 则可作为静态库由
 `arm-none-eabi-gcc` 编译，并嵌入 MCU 固件。本目录使用独立 CMake 工程，避免把
 ncurses、`poll.h`、宿主 stdio 或固件 linker script 混入另一侧构建。
 
@@ -21,12 +22,111 @@ cmake --build build/mipsel-emu
 ctest --test-dir build/mipsel-emu --output-on-failure
 ```
 
-宿主构建默认同时生成 Qt6 图形前端。需要 Qt6 Widgets 开发包（Arch Linux 对应
+在能找到 Qt6 Widgets 开发包时，宿主构建默认同时生成 Qt6 图形前端（Arch Linux 对应
 `qt6-base`）；运行 `mipsel-emu` 且不带参数会打开图形监视器。窗口中的三个文本输入
 框分别接受 kernel ELF、DTB 和 initramfs 路径，`Load`/`Reset` 后即可使用运行控制、
 寄存器变化高亮、UART、处理器异常记录、SDL 兼容 RGB565 framebuffer、内存布局和
 Monitor 命令行。异常标签页保留最近 128 条事件，显示异常编码、EPC/Cause、向量和
 分支延迟槽标志，格式与 TUI 的 Exceptions 窗口一致。
+
+### Windows/MSVC、Qt6 与 SDL2
+
+Windows 主机使用 MSVC x64；ncurses TUI 在 Windows 默认关闭，不能用
+`MIPSEL_EMU_ENABLE_TUI=ON` 绕过该限制。以下命令以 Visual Studio 安装在
+`E:/Microsoft Visual Studio`、Qt 安装在 `D:/QtLib` 为例（旧安装也可使用 `D:/Qt`）。请在 Visual Studio Developer
+PowerShell 中执行，或让 CMake 从已安装的 Visual Studio 实例中自动找到 `cl.exe`：
+
+示例中的 `E:/Microsoft Visual Studio/18/Community` 是 CMake 已注册的完整 VS 实例路径；
+如果安装的是其他版本或 edition，请替换该路径，或者删除
+`CMAKE_GENERATOR_INSTANCE` 让 CMake 自动选择。
+
+```powershell
+cmake -S user/src/mipsel-emu -B build/mipsel-emu-win `
+  -G "Visual Studio 18 2026" -A x64 `
+  -DCMAKE_GENERATOR_INSTANCE="E:/Microsoft Visual Studio/18/Community" `
+  -DMIPSEL_EMU_ENABLE_TUI=OFF `
+  -DMIPSEL_EMU_ENABLE_QT_GUI=ON `
+  -DMIPSEL_EMU_ENABLE_SDL=ON `
+  -DMIPSEL_EMU_QT_ROOT="D:/QtLib" `
+  -DMIPSEL_EMU_SDL2_ROOT="tools/sdl-player/SDL2-2.30.4"
+cmake --build build/mipsel-emu-win --config Debug
+ctest --test-dir build/mipsel-emu-win -C Debug --output-on-failure
+```
+
+`MIPSEL_EMU_QT_ROOT` 会在 `D:/QtLib/6.*`（或旧的 `D:/Qt/6.*`）下选择与 MSVC x64 匹配的 kit。Qt 安装必须包含
+Qt6 Widgets 开发组件和 `Qt6Config.cmake`；如果 CMake 报告找不到它，请在 Qt Maintenance
+Tool 中安装对应的 MSVC kit。`MIPSEL_EMU_SDL2_ROOT` 可改成其他 SDL2 开发包根目录，
+也可以省略它，让 CMake 使用仓库内的 `tools/sdl-player/SDL2-2.30.4`。启用 SDL 后，
+CLI 的 `--sdl` 选项可用；Qt 窗口仍提供内置 framebuffer 页，并在 SDL 可用时创建
+SDL 镜像窗口。构建后 CMake 会尝试运行 `windeployqt` 部署 Qt DLL/平台插件，并把
+动态 SDL2 DLL 复制到 `build/mipsel-emu-win/Debug`（或 `Release`）。
+
+如果 `D:/QtLib` 只安装了 `6.11.2/mingw_64`，可以直接使用 Qt 安装器附带的
+`D:/QtLib/Tools/mingw1310_64` 工具链，不需要依赖用户目录下的 MinGW：
+
+```powershell
+cmake -S user/src/mipsel-emu -B build/mipsel-emu-win-qt-mingw `
+  -G Ninja `
+  -DCMAKE_BUILD_TYPE=Debug `
+  -DCMAKE_C_COMPILER="D:/QtLib/Tools/mingw1310_64/bin/gcc.exe" `
+  -DCMAKE_CXX_COMPILER="D:/QtLib/Tools/mingw1310_64/bin/g++.exe" `
+  -DMIPSEL_EMU_ENABLE_TUI=OFF `
+  -DMIPSEL_EMU_ENABLE_QT_GUI=ON `
+  -DMIPSEL_EMU_ENABLE_SDL=ON `
+  -DMIPSEL_EMU_QT_ROOT="D:/QtLib" `
+  -DMIPSEL_EMU_SDL2_ROOT="tools/sdl-player/SDL2-2.30.4"
+cmake --build build/mipsel-emu-win-qt-mingw --parallel 4
+ctest --test-dir build/mipsel-emu-win-qt-mingw --output-on-failure
+```
+
+只构建 Windows 核心和 CLI 时，可关闭图形依赖：
+
+```powershell
+cmake -S user/src/mipsel-emu -B build/mipsel-emu-win-cli `
+  -G "Visual Studio 18 2026" -A x64 `
+  -DCMAKE_GENERATOR_INSTANCE="E:/Microsoft Visual Studio/18/Community" `
+  -DMIPSEL_EMU_ENABLE_TUI=OFF `
+  -DMIPSEL_EMU_ENABLE_QT_GUI=OFF `
+  -DMIPSEL_EMU_ENABLE_SDL=OFF
+cmake --build build/mipsel-emu-win-cli --config Debug
+ctest --test-dir build/mipsel-emu-win-cli -C Debug --output-on-failure
+```
+
+如果本机 CMake 不提供 `Visual Studio 18 2026` 生成器，可用 `cmake --help` 查看已安装
+的 Visual Studio 版本，并把上面命令中的生成器名称替换为对应版本；`-A x64` 和其余
+选项保持不变。
+
+### Windows 资源目录
+
+仓库根目录的 `res/` 专门存放本地 guest 资源，已由 `.gitignore` 忽略，不应提交
+`vmlinux`、DTB 或 initramfs。可放入以下文件名：
+`vmlinux`/`vmlinuz`、`mipsel-emu.dtb`/`mipsel-emu-embedded.dtb`、
+`initramfs.cpio.gz`/`initramfs-lvgl.cpio.gz`。配置阶段会使用根目录 `res/`（也可用
+`-DMIPSEL_EMU_RESOURCE_DIR=...` 指定其他目录），每次构建把实际存在的文件复制到
+可执行文件旁的 `res/`。因此 Debug 构建通常得到：
+
+```text
+build/mipsel-emu-win/Debug/mipsel-emu.exe
+build/mipsel-emu-win/Debug/res/vmlinux
+build/mipsel-emu-win/Debug/res/mipsel-emu.dtb
+build/mipsel-emu-win/Debug/res/initramfs.cpio.gz
+```
+
+Windows CLI 在没有显式 `--kernel` 时会先查找可执行文件旁的
+`res\\vmlinux`/`res\\vmlinuz`，再查找当前工作目录；DTB 和 initramfs 建议显式传入。
+Qt GUI 无参数启动时会从可执行文件、构建目录和仓库 `res/` 自动寻找这些文件，找不到
+时可在窗口中选择路径。示例：
+
+```powershell
+& .\\build\\mipsel-emu-win\\Debug\\mipsel-emu.exe `
+  --kernel .\\build\\mipsel-emu-win\\Debug\\res\\vmlinux `
+  --dtb .\\build\\mipsel-emu-win\\Debug\\res\\mipsel-emu.dtb `
+  --initramfs .\\build\\mipsel-emu-win\\Debug\\res\\initramfs.cpio.gz `
+  --max-steps 300000
+```
+
+若要打开 Qt 监视器，直接运行同一个 `.exe` 且不带参数；带任意参数时程序保持 CLI
+解析路径，便于脚本和回归测试复用。
 
 若只需要原来的命令行/TUI 前端，可关闭 Qt：
 

@@ -18,7 +18,7 @@ typedef struct {
 static platform_memory_backend_t memory_backend;
 
 #if MIPSEL_EMU_ENABLE_FRAMEBUFFER
-_Alignas(uint16_t) static uint8_t default_framebuffer[MIPSEL_EMU_FB_SIZE];
+__ALIGN_2 static uint8_t default_framebuffer[MIPSEL_EMU_FB_SIZE];
 static uint8_t *framebuffer = default_framebuffer;
 static uint32_t framebuffer_capacity = MIPSEL_EMU_FB_SIZE;
 static platform_framebuffer_rect_t framebuffer_dirty_rect;

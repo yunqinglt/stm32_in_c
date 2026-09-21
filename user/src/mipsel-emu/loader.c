@@ -12,7 +12,6 @@
 #endif
 
 #include <errno.h>
-#include <getopt.h>
 #include <inttypes.h>
 #include <limits.h>
 #include <stdbool.h>
@@ -21,7 +20,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#define DEFAULT_KERNEL_PATH "res/vmlinux"
+#else
 #define DEFAULT_KERNEL_PATH "./vmlinuz"
+#endif
 
 uint8_t *pool;
 Registers *state;
@@ -58,7 +62,11 @@ static void usage(FILE *stream, const char *program) {
             "  -k, --kernel FILE     ELF32 little-endian MIPS kernel\n"
             "  -d, --dtb FILE        device tree passed with the MIPS UHI ABI\n"
             "  -i, --initramfs FILE  external initramfs copied near top of RAM\n"
+#ifdef _WIN32
+            "  -t, --tui             unavailable on Windows (use the Qt GUI)\n"
+#else
             "  -t, --tui             enable the ncurses debugger (starts paused)\n"
+#endif
             "  -r, --run             start running immediately in TUI mode\n"
             "      --sdl             show the guest framebuffer in an SDL window\n"
             "      --trace FILE      write every instruction/exception ('-' is stderr)\n"
@@ -68,7 +76,11 @@ static void usage(FILE *stream, const char *program) {
             "TUI keys: Space run/pause, s step, n 100 steps, r reset,\n"
             "          F2 UART input, Ctrl-] leave UART input,\n"
             "          F3/: paused-target Monitor, q quit.\n"
+#ifdef _WIN32
+            "Headless mode: Ctrl+C quits.\n",
+#else
             "Headless terminal: Ctrl-] q quits; Ctrl-] Ctrl-] sends Ctrl-].\n",
+#endif
             program);
 }
 
@@ -84,56 +96,191 @@ static bool parse_u64(const char *text, uint64_t *value) {
     return true;
 }
 
-static int parse_options(int argc, char **argv, ProgramOptions *options) {
-    enum { OPT_TRACE = 1000, OPT_MAX_STEPS, OPT_SDL };
-    static const struct option long_options[] = {
-        {"kernel", required_argument, NULL, 'k'},
-        {"dtb", required_argument, NULL, 'd'},
-        {"initramfs", required_argument, NULL, 'i'},
-        {"tui", no_argument, NULL, 't'},
-        {"run", no_argument, NULL, 'r'},
-        {"sdl", no_argument, NULL, OPT_SDL},
-        {"trace", required_argument, NULL, OPT_TRACE},
-        {"max-steps", required_argument, NULL, OPT_MAX_STEPS},
-        {"help", no_argument, NULL, 'h'},
-        {NULL, 0, NULL, 0},
-    };
-    int option;
+static const char *default_kernel_path(void) {
+#ifdef _WIN32
+    static char candidate[4096];
+    char executable[4096];
+    DWORD length;
+    const char *names[] = {"res\\vmlinux", "res\\vmlinuz", "vmlinux",
+                           "vmlinuz"};
+    size_t i;
 
-    *options = (ProgramOptions) {
-        .kernel_path = DEFAULT_KERNEL_PATH,
-    };
-
-    while ((option = getopt_long(argc, argv, "k:d:i:trh", long_options,
-                                 NULL)) != -1) {
-        switch (option) {
-            case 'k': options->kernel_path = optarg; break;
-            case 'd': options->dtb_path = optarg; break;
-            case 'i': options->initramfs_path = optarg; break;
-            case 't': options->tui = true; break;
-            case 'r': options->run_immediately = true; break;
-            case OPT_SDL: options->sdl = true; break;
-            case OPT_TRACE: options->trace_path = optarg; break;
-            case OPT_MAX_STEPS:
-                if (!parse_u64(optarg, &options->max_steps)) {
-                    fprintf(stderr, "invalid --max-steps value: %s\n", optarg);
-                    return -1;
-                }
-                break;
-            case 'h': usage(stdout, argv[0]); return 1;
-            default: usage(stderr, argv[0]); return -1;
+    length = GetModuleFileNameA(NULL, executable, (DWORD)sizeof(executable));
+    if (length != 0 && length < sizeof(executable)) {
+        char *separator = strrchr(executable, '\\');
+        char *slash = strrchr(executable, '/');
+        if (!separator || (slash && slash > separator)) separator = slash;
+        if (separator) *separator = '\0';
+        for (i = 0; i < sizeof(names) / sizeof(names[0]); ++i) {
+            FILE *file;
+            if (separator) {
+                const size_t executable_length = strlen(executable);
+                const size_t name_length = strlen(names[i]);
+                if (executable_length > sizeof(candidate) - 2u ||
+                    name_length > sizeof(candidate) - executable_length - 2u)
+                    continue;
+                memcpy(candidate, executable, executable_length);
+                candidate[executable_length] = '\\';
+                memcpy(candidate + executable_length + 1u, names[i],
+                       name_length + 1u);
+            } else {
+                const size_t name_length = strlen(names[i]);
+                if (name_length >= sizeof(candidate)) continue;
+                memcpy(candidate, names[i], name_length + 1u);
+            }
+            file = fopen(candidate, "rb");
+            if (file) {
+                fclose(file);
+                return candidate;
+            }
         }
     }
+    for (i = 0; i < sizeof(names) / sizeof(names[0]); ++i) {
+        FILE *file;
+        const size_t name_length = strlen(names[i]);
+        if (name_length >= sizeof(candidate)) continue;
+        memcpy(candidate, names[i], name_length + 1u);
+        file = fopen(candidate, "rb");
+        if (file) {
+            fclose(file);
+            return candidate;
+        }
+    }
+#endif
+    return DEFAULT_KERNEL_PATH;
+}
 
-    if (optind < argc) options->kernel_path = argv[optind++];
-    if (optind != argc) {
-        fprintf(stderr, "only one positional kernel path is accepted\n");
-        return -1;
+static int parse_options(int argc, char **argv, ProgramOptions *options) {
+    *options = (ProgramOptions) {
+        .kernel_path = default_kernel_path(),
+    };
+
+    {
+        bool end_options = false;
+        int positional_count = 0;
+        int index;
+
+        for (index = 1; index < argc; ++index) {
+            const char *argument = argv[index];
+            const char *value = NULL;
+
+            if (!end_options && strcmp(argument, "--") == 0) {
+                end_options = true;
+                continue;
+            }
+
+            if (!end_options && argument[0] == '-' && argument[1] == '-') {
+                char name[32];
+                const char *name_start = argument + 2;
+                const char *equals = strchr(name_start, '=');
+                size_t name_length = equals
+                    ? (size_t)(equals - name_start) : strlen(name_start);
+
+                if (name_length == 0 || name_length >= sizeof(name)) {
+                    fprintf(stderr, "unknown option: %s\n", argument);
+                    return -1;
+                }
+                memcpy(name, name_start, name_length);
+                name[name_length] = '\0';
+                if (equals) value = equals + 1;
+
+                if (strcmp(name, "tui") == 0) {
+                    if (value) goto invalid_long_option;
+                    options->tui = true;
+                } else if (strcmp(name, "run") == 0) {
+                    if (value) goto invalid_long_option;
+                    options->run_immediately = true;
+                } else if (strcmp(name, "sdl") == 0) {
+                    if (value) goto invalid_long_option;
+                    options->sdl = true;
+                } else if (strcmp(name, "help") == 0) {
+                    if (value) goto invalid_long_option;
+                    usage(stdout, argv[0]);
+                    return 1;
+                } else {
+                    if (!value) {
+                        if (index + 1 >= argc) {
+                            fprintf(stderr, "option requires an argument: --%s\n", name);
+                            return -1;
+                        }
+                        value = argv[++index];
+                    }
+                    if (strcmp(name, "kernel") == 0) {
+                        options->kernel_path = value;
+                    } else if (strcmp(name, "dtb") == 0) {
+                        options->dtb_path = value;
+                    } else if (strcmp(name, "initramfs") == 0) {
+                        options->initramfs_path = value;
+                    } else if (strcmp(name, "trace") == 0) {
+                        options->trace_path = value;
+                    } else if (strcmp(name, "max-steps") == 0) {
+                        if (!parse_u64(value, &options->max_steps)) {
+                            fprintf(stderr, "invalid --max-steps value: %s\n", value);
+                            return -1;
+                        }
+                    } else {
+                        fprintf(stderr, "unknown option: %s\n", argument);
+                        return -1;
+                    }
+                }
+                continue;
+
+invalid_long_option:
+                fprintf(stderr, "option does not accept '=value': %s\n", argument);
+                return -1;
+            }
+
+            if (!end_options && argument[0] == '-' && argument[1] != '\0') {
+                const char *short_option = argument + 1;
+                while (*short_option) {
+                    char option = *short_option++;
+                    if (option == 't') {
+                        options->tui = true;
+                    } else if (option == 'r') {
+                        options->run_immediately = true;
+                    } else if (option == 'h') {
+                        usage(stdout, argv[0]);
+                        return 1;
+                    } else if (option == 'k' || option == 'd' || option == 'i') {
+                        if (*short_option) {
+                            value = short_option;
+                            short_option += strlen(short_option);
+                        } else if (index + 1 < argc) {
+                            value = argv[++index];
+                        } else {
+                            fprintf(stderr, "option requires an argument: -%c\n", option);
+                            return -1;
+                        }
+                        if (option == 'k') options->kernel_path = value;
+                        if (option == 'd') options->dtb_path = value;
+                        if (option == 'i') options->initramfs_path = value;
+                    } else {
+                        fprintf(stderr, "unknown option: -%c\n", option);
+                        return -1;
+                    }
+                }
+                continue;
+            }
+
+            if (++positional_count > 1) {
+                fprintf(stderr, "only one positional kernel path is accepted\n");
+                return -1;
+            }
+            options->kernel_path = argument;
+        }
     }
     if (options->initramfs_path && !options->dtb_path) {
         fprintf(stderr, "--initramfs requires --dtb so Linux receives its range\n");
         return -1;
     }
+#ifdef _WIN32
+    if (options->tui) {
+        fprintf(stderr,
+                "the ncurses TUI is not available on Windows; "
+                "use the Qt GUI or omit --tui\n");
+        return -1;
+    }
+#endif
 #if !MIPSEL_EMU_ENABLE_INITRAMFS
     if (options->initramfs_path) {
         fprintf(stderr, "this build has initramfs loading disabled\n");

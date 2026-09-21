@@ -7,6 +7,9 @@ extern "C" {
 #include "observer.h"
 #include "platform.h"
 #include "registers.h"
+#ifndef MIPSEL_EMU_QT_HAVE_SDL
+#define MIPSEL_EMU_QT_HAVE_SDL 0
+#endif
 #if MIPSEL_EMU_QT_HAVE_SDL
 extern "C" {
 #include "platform/sdl/sdl_display.h"
@@ -15,8 +18,11 @@ extern "C" {
 }
 
 #include <QApplication>
+#include <QCoreApplication>
+#include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -34,6 +40,7 @@ extern "C" {
 #include <QSpinBox>
 #include <QSplitter>
 #include <QStatusBar>
+#include <QStringList>
 #include <QTabWidget>
 #include <QTableWidget>
 #include <QTextCursor>
@@ -60,6 +67,65 @@ struct ImageBuffer {
     QByteArray bytes;
 };
 
+/*
+ * A desktop build is often launched from a build tree, while packaged
+ * Windows binaries are normally launched from a shortcut with an unrelated
+ * working directory.  Keep the image fields useful in both cases by looking
+ * next to the executable and in its ancestor source/package directories.
+ * MIPSEL_EMU_RESOURCE_DIR is an explicit escape hatch for installed layouts.
+ */
+static QString find_guest_image(const QStringList &names) {
+    QStringList roots;
+    const auto add_root = [&roots](const QString &root) {
+        if (root.isEmpty()) return;
+        const QString clean = QDir::cleanPath(root);
+        if (!roots.contains(clean)) roots.append(clean);
+    };
+
+    add_root(qEnvironmentVariable("MIPSEL_EMU_RESOURCE_DIR"));
+
+    /* Prefer the repository/package resource directory over stale files in
+     * the current directory (for example, an old ./vmlinuz). */
+    const QString application_dir = QCoreApplication::applicationDirPath();
+    QDir application_cursor(application_dir);
+    for (int depth = 0; depth < 8 && !application_cursor.path().isEmpty(); ++depth) {
+        add_root(application_cursor.filePath(QStringLiteral("res")));
+        add_root(application_cursor.path());
+        const QString before = application_cursor.path();
+        if (!application_cursor.cdUp() || application_cursor.path() == before)
+            break;
+    }
+
+    const QString current_dir = QDir::currentPath();
+    add_root(QDir(current_dir).filePath(QStringLiteral("res")));
+    add_root(current_dir);
+
+    for (const QString &root : roots) {
+        for (const QString &name : names) {
+            const QString candidate = QDir(root).filePath(name);
+            if (QFileInfo::exists(candidate) && QFileInfo(candidate).isFile())
+                return QDir::cleanPath(candidate);
+        }
+    }
+    return QString();
+}
+
+static QString default_kernel_path() {
+    const QString path = find_guest_image({QStringLiteral("vmlinux"),
+                                           QStringLiteral("vmlinuz")});
+    return path.isEmpty() ? QStringLiteral("./vmlinuz") : path;
+}
+
+static QString default_dtb_path() {
+    return find_guest_image({QStringLiteral("mipsel-emu-embedded.dtb"),
+                             QStringLiteral("mipsel-emu.dtb")});
+}
+
+static QString default_initramfs_path() {
+    return find_guest_image({QStringLiteral("initramfs-lvgl.cpio.gz"),
+                             QStringLiteral("initramfs.cpio.gz")});
+}
+
 static bool image_read(void *opaque, uint32_t offset, void *destination,
                        size_t length) {
     const ImageBuffer *image = static_cast<const ImageBuffer *>(opaque);
@@ -85,7 +151,7 @@ static bool read_image(const QString &path, ImageBuffer *image,
         if (error) *error = QStringLiteral("Image is larger than 4 GiB: %1").arg(path);
         return false;
     }
-    if (image->bytes.isEmpty() && file.error() != QFile::NoError) {
+    if (file.error() != QFile::NoError) {
         if (error) *error = QStringLiteral("Cannot read %1: %2")
             .arg(path, file.errorString());
         return false;
@@ -289,7 +355,8 @@ public:
             state->gpr[5] = MIPSEL_EMU_DTB_VIRTUAL_ADDRESS;
         }
         platform_reset();
-        std::memset(platform_framebuffer_data(), 0, platform_framebuffer_size());
+        if (platform_framebuffer_data() && platform_framebuffer_size() != 0)
+            std::memset(platform_framebuffer_data(), 0, platform_framebuffer_size());
         platform_framebuffer_clear_dirty();
         *status = vmstate_t{};
         status->cpu_ctx = state;
@@ -487,11 +554,11 @@ private:
         auto *files = new QGroupBox(QStringLiteral("Guest images"), central);
         auto *file_form = new QFormLayout(files);
         kernel_edit = add_file_row(file_form, QStringLiteral("vmlinuz / kernel ELF"),
-                                   QStringLiteral("./vmlinuz"), false);
+                                   default_kernel_path(), false);
         dtb_edit = add_file_row(file_form, QStringLiteral("Device tree (optional)"),
-                                QString(), true);
+                                default_dtb_path(), true);
         initramfs_edit = add_file_row(file_form, QStringLiteral("Initramfs (optional)"),
-                                      QString(), true);
+                                      default_initramfs_path(), true);
         root->addWidget(files);
 
         auto *toolbar = new QHBoxLayout;
@@ -611,8 +678,12 @@ private:
         layout->addWidget(browse);
         form->addRow(label, row);
         QObject::connect(browse, &QPushButton::clicked, this, [this, edit] {
+            QString initial_path = edit->text().trimmed();
+            const QFileInfo initial_info(initial_path);
+            if (!initial_path.isEmpty() && !initial_info.isDir())
+                initial_path = initial_info.absolutePath();
             const QString path = QFileDialog::getOpenFileName(this, QStringLiteral("Select guest image"),
-                                                               edit->text());
+                                                               initial_path);
             if (!path.isEmpty()) edit->setText(path);
         });
         return edit;
@@ -752,8 +823,9 @@ private:
         if (!dtb_edit->text().trimmed().isEmpty())
             add_region(QStringLiteral("DTB reservation"), MIPSEL_EMU_DTB_PHYSICAL_ADDRESS,
                        MIPSEL_EMU_DTB_RESERVED_SIZE, QStringLiteral("MMIO/reserved"));
-        add_region(QStringLiteral("Framebuffer"), MIPSEL_EMU_FB_MMIO_BASE,
-                   platform_framebuffer_size(), QStringLiteral("RGB565 MMIO"));
+        if (platform_framebuffer_size() != 0)
+            add_region(QStringLiteral("Framebuffer"), MIPSEL_EMU_FB_MMIO_BASE,
+                       platform_framebuffer_size(), QStringLiteral("RGB565 MMIO"));
         add_region(QStringLiteral("UART 16550"), MIPSEL_EMU_UART_MMIO_BASE, 8,
                    QStringLiteral("MMIO"));
     }

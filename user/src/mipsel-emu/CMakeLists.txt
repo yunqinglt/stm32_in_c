@@ -11,9 +11,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Generic" OR MIPSEL_EMU_IS_EMBEDDED_SYSTEM)
     set(_mipsel_emu_host_default OFF)
 endif()
 option(MIPSEL_EMU_BUILD_HOST
-       "Build the POSIX command-line frontend and debugger"
+       "Build the hosted command-line or Qt frontend"
        ${_mipsel_emu_host_default})
-option(MIPSEL_EMU_ENABLE_TUI "Build the ncursesw debugger interface" ON)
+# ncurses is a POSIX-only dependency.  Windows uses the terminal-free host
+# debugger below; the Qt/SDL desktop front-end remains usable out of the box.
+set(_mipsel_emu_tui_default ON)
+if(WIN32)
+    set(_mipsel_emu_tui_default OFF)
+endif()
+option(MIPSEL_EMU_ENABLE_TUI "Build the ncursesw debugger interface"
+       ${_mipsel_emu_tui_default})
 option(MIPSEL_EMU_ENABLE_UART16550 "Build the 16550A MMIO UART" ON)
 option(MIPSEL_EMU_ENABLE_ELF_LOADER "Build ELF image loading support" ON)
 option(MIPSEL_EMU_ENABLE_INITRAMFS "Build initramfs loading support" ON)
@@ -64,16 +71,108 @@ if(MIPSEL_EMU_BUILD_HOST AND NOT MIPSEL_EMU_ENABLE_ELF_LOADER)
         "The host frontend requires MIPSEL_EMU_ENABLE_ELF_LOADER=ON")
 endif()
 
+if(MIPSEL_EMU_BUILD_HOST AND MIPSEL_EMU_ENABLE_QT_GUI AND
+   NOT MIPSEL_EMU_ENABLE_CONSOLE)
+    message(FATAL_ERROR
+        "The Qt frontend requires MIPSEL_EMU_ENABLE_CONSOLE=ON for its Monitor tab")
+endif()
+
+set(MIPSEL_EMU_QT_ROOT "" CACHE PATH
+    "Qt installation root used for automatic Windows Qt6 discovery")
+set(MIPSEL_EMU_SDL2_ROOT "" CACHE PATH
+    "SDL2 development package root used for automatic discovery")
+set(MIPSEL_EMU_RESOURCE_DIR
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../../res" CACHE PATH
+    "Optional guest image directory copied beside the hosted executable")
+
 if(MIPSEL_EMU_BUILD_HOST AND MIPSEL_EMU_ENABLE_QT_GUI)
     enable_language(CXX)
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+    if(WIN32 AND (NOT Qt6_DIR OR Qt6_DIR MATCHES "-NOTFOUND$" OR
+                  NOT EXISTS "${Qt6_DIR}"))
+        # Preserve caller-provided prefixes, but also inspect the usual Qt
+        # installation root.  This supports both CMAKE_PREFIX_PATH=D:/QtLib
+        # (or D:/Qt) and a specific kit prefix without baking a machine path.
+        if(NOT MIPSEL_EMU_QT_ROOT)
+            # Qt installations commonly live in either the current Qt
+            # Maintenance Tool prefix or the older D:/Qt layout.  Prefer the
+            # former while retaining compatibility with existing machines.
+            foreach(_mipsel_emu_default_qt_root IN ITEMS "D:/QtLib" "D:/Qt")
+                if(EXISTS "${_mipsel_emu_default_qt_root}")
+                    set(MIPSEL_EMU_QT_ROOT "${_mipsel_emu_default_qt_root}")
+                    break()
+                endif()
+            endforeach()
+        endif()
+        if(MIPSEL_EMU_QT_ROOT)
+            set(_mipsel_emu_qt_prefixes)
+            if(EXISTS
+               "${MIPSEL_EMU_QT_ROOT}/lib/cmake/Qt6/Qt6Config.cmake")
+                list(APPEND _mipsel_emu_qt_prefixes "${MIPSEL_EMU_QT_ROOT}")
+            else()
+                file(GLOB _mipsel_emu_qt_kits LIST_DIRECTORIES true
+                     "${MIPSEL_EMU_QT_ROOT}/6.*/*")
+                list(SORT _mipsel_emu_qt_kits COMPARE NATURAL ORDER DESCENDING)
+                foreach(_mipsel_emu_qt_kit IN LISTS _mipsel_emu_qt_kits)
+                    if(NOT IS_DIRECTORY "${_mipsel_emu_qt_kit}")
+                        continue()
+                    endif()
+                    if(MSVC)
+                        if(CMAKE_GENERATOR_PLATFORM MATCHES "ARM64")
+                            if("${_mipsel_emu_qt_kit}" MATCHES
+                               "[/\\\\]msvc[0-9]+_arm64$")
+                                set(_mipsel_emu_qt_kit_matches TRUE)
+                            else()
+                                set(_mipsel_emu_qt_kit_matches FALSE)
+                            endif()
+                        else()
+                            if("${_mipsel_emu_qt_kit}" MATCHES
+                               "[/\\\\]msvc[0-9]+_64$")
+                                set(_mipsel_emu_qt_kit_matches TRUE)
+                            else()
+                                set(_mipsel_emu_qt_kit_matches FALSE)
+                            endif()
+                        endif()
+                    elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+                        if("${_mipsel_emu_qt_kit}" MATCHES
+                           "[/\\\\](mingw_64|llvm-mingw_64)$")
+                            set(_mipsel_emu_qt_kit_matches TRUE)
+                        else()
+                            set(_mipsel_emu_qt_kit_matches FALSE)
+                        endif()
+                    else()
+                        set(_mipsel_emu_qt_kit_matches TRUE)
+                    endif()
+                    if(NOT _mipsel_emu_qt_kit_matches)
+                        continue()
+                    endif()
+                    if(EXISTS
+                       "${_mipsel_emu_qt_kit}/lib/cmake/Qt6/Qt6Config.cmake")
+                        list(APPEND _mipsel_emu_qt_prefixes
+                             "${_mipsel_emu_qt_kit}")
+                        break()
+                    endif()
+                endforeach()
+            endif()
+            if(_mipsel_emu_qt_prefixes)
+                list(PREPEND CMAKE_PREFIX_PATH ${_mipsel_emu_qt_prefixes})
+                message(STATUS "Using Qt6 from ${_mipsel_emu_qt_prefixes}")
+            else()
+                message(STATUS
+                    "No Qt6Config.cmake found below ${MIPSEL_EMU_QT_ROOT}; "
+                    "install the Qt6 Widgets development component or set Qt6_DIR")
+            endif()
+        endif()
+    endif()
     find_package(Qt6 REQUIRED COMPONENTS Widgets)
 endif()
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-# The instruction tables use GNU range designators and GCC attributes.
+# GCC extensions remain enabled for the firmware-oriented source set;
+# instruction tables themselves use standard C initializers for MSVC.
 set(CMAKE_C_EXTENSIONS ON)
 
 set(MIPSEL_EMU_CORE_SOURCES
@@ -185,14 +284,14 @@ if(CMAKE_C_COMPILER_ARG1)
                        "${CMAKE_C_COMPILER_ARG1}")
     list(APPEND _mipsel_emu_probe_command ${_mipsel_emu_compiler_arg1})
 endif()
-if(CMAKE_C_COMPILER_TARGET)
+if(NOT MSVC AND CMAKE_C_COMPILER_TARGET)
     list(APPEND _mipsel_emu_probe_command
          "--target=${CMAKE_C_COMPILER_TARGET}")
 endif()
-if(CMAKE_SYSROOT_COMPILE)
+if(NOT MSVC AND CMAKE_SYSROOT_COMPILE)
     list(APPEND _mipsel_emu_probe_command
          "--sysroot=${CMAKE_SYSROOT_COMPILE}")
-elseif(CMAKE_SYSROOT)
+elseif(NOT MSVC AND CMAKE_SYSROOT)
     list(APPEND _mipsel_emu_probe_command "--sysroot=${CMAKE_SYSROOT}")
 endif()
 foreach(_mipsel_emu_feature
@@ -207,22 +306,85 @@ foreach(_mipsel_emu_feature
     else()
         set(_mipsel_emu_feature_value 0)
     endif()
-    list(APPEND _mipsel_emu_probe_command
-         "-D${_mipsel_emu_feature}=${_mipsel_emu_feature_value}")
+    if(MSVC)
+        list(APPEND _mipsel_emu_probe_command
+             "/D${_mipsel_emu_feature}=${_mipsel_emu_feature_value}")
+    else()
+        list(APPEND _mipsel_emu_probe_command
+             "-D${_mipsel_emu_feature}=${_mipsel_emu_feature_value}")
+    endif()
     file(APPEND "${_mipsel_emu_config_probe}"
          "#if ${_mipsel_emu_feature} != ${_mipsel_emu_feature_value}\n"
          "#error \"board config overrides ${_mipsel_emu_feature}\"\n"
          "#endif\n")
 endforeach()
 if(MIPSEL_EMU_USER_CONFIG_HEADER)
-    list(APPEND _mipsel_emu_probe_command
-         "-DMIPSEL_EMU_USER_CONFIG_HEADER=\"${MIPSEL_EMU_USER_CONFIG_HEADER}\"")
+    if(MSVC)
+        list(APPEND _mipsel_emu_probe_command
+             "/DMIPSEL_EMU_USER_CONFIG_HEADER=\"${MIPSEL_EMU_USER_CONFIG_HEADER}\"")
+    else()
+        list(APPEND _mipsel_emu_probe_command
+             "-DMIPSEL_EMU_USER_CONFIG_HEADER=\"${MIPSEL_EMU_USER_CONFIG_HEADER}\"")
+    endif()
 endif()
-list(APPEND _mipsel_emu_probe_command
-     "-I${CMAKE_CURRENT_SOURCE_DIR}")
-if(MIPSEL_EMU_USER_CONFIG_INCLUDE_DIR)
+if(MSVC)
     list(APPEND _mipsel_emu_probe_command
-         "-I${MIPSEL_EMU_USER_CONFIG_INCLUDE_DIR}")
+         "/I${CMAKE_CURRENT_SOURCE_DIR}")
+else()
+    list(APPEND _mipsel_emu_probe_command
+         "-I${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
+if(MIPSEL_EMU_USER_CONFIG_INCLUDE_DIR)
+    if(MSVC)
+        list(APPEND _mipsel_emu_probe_command
+             "/I${MIPSEL_EMU_USER_CONFIG_INCLUDE_DIR}")
+    else()
+        list(APPEND _mipsel_emu_probe_command
+             "-I${MIPSEL_EMU_USER_CONFIG_INCLUDE_DIR}")
+    endif()
+endif()
+
+if(MSVC)
+    # The compiler probe is executed directly by CMake, outside the Visual
+    # Studio project environment.  Supply the CRT and Windows SDK include
+    # roots explicitly so a fresh PowerShell (without vcvarsall.bat) works as
+    # well as a Developer Command Prompt.
+    get_filename_component(_mipsel_emu_msvc_bin_dir
+        "${CMAKE_C_COMPILER}" DIRECTORY)
+    get_filename_component(_mipsel_emu_msvc_host_dir
+        "${_mipsel_emu_msvc_bin_dir}" DIRECTORY)
+    get_filename_component(_mipsel_emu_msvc_bin_root
+        "${_mipsel_emu_msvc_host_dir}" DIRECTORY)
+    get_filename_component(_mipsel_emu_msvc_root
+        "${_mipsel_emu_msvc_bin_root}" DIRECTORY)
+    if(EXISTS "${_mipsel_emu_msvc_root}/include")
+        list(APPEND _mipsel_emu_probe_command
+             "/I${_mipsel_emu_msvc_root}/include")
+    endif()
+
+    # KitsRoot10 is present for normal Visual Studio installations.  The
+    # ProgramFiles fallback also covers portable SDK layouts.
+    get_filename_component(_mipsel_emu_windows_kits_root
+        "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots;KitsRoot10]"
+        ABSOLUTE)
+    if(NOT EXISTS "${_mipsel_emu_windows_kits_root}")
+        set(_mipsel_emu_windows_kits_root
+            "$ENV{ProgramFiles}/Windows Kits/10")
+    endif()
+    file(GLOB _mipsel_emu_windows_kits_roots
+         "${_mipsel_emu_windows_kits_root}/Include/10.*")
+    list(SORT _mipsel_emu_windows_kits_roots COMPARE NATURAL ORDER DESCENDING)
+    list(LENGTH _mipsel_emu_windows_kits_roots
+         _mipsel_emu_windows_kits_count)
+    if(_mipsel_emu_windows_kits_count GREATER 0)
+        list(GET _mipsel_emu_windows_kits_roots 0 _mipsel_emu_windows_kit)
+        foreach(_mipsel_emu_windows_kit_include ucrt shared um)
+            if(EXISTS "${_mipsel_emu_windows_kit}/${_mipsel_emu_windows_kit_include}")
+                list(APPEND _mipsel_emu_probe_command
+                     "/I${_mipsel_emu_windows_kit}/${_mipsel_emu_windows_kit_include}")
+            endif()
+        endforeach()
+    endif()
 endif()
 # Match CMake's compile-command precedence: target definitions/includes come
 # before global/configuration flags, so a conflicting -D in CMAKE_C_FLAGS is
@@ -246,7 +408,14 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
              "-std=c${CMAKE_C_STANDARD}")
     endif()
 endif()
-list(APPEND _mipsel_emu_probe_command -E -P -x c)
+if(MSVC)
+    # cl.exe uses /EP (preprocess to stdout) and /TC (treat the probe as C).
+    # Do not use /P here: it writes a source-adjacent .i file and leaves the
+    # configure tree dirty when CMake invokes the compiler directly.
+    list(APPEND _mipsel_emu_probe_command /nologo /EP /TC)
+else()
+    list(APPEND _mipsel_emu_probe_command -E -P -x c)
+endif()
 foreach(_mipsel_emu_macro IN LISTS _mipsel_emu_locked_macros)
     file(APPEND "${_mipsel_emu_config_probe}"
          "MIPSEL_EMU_CONFIG_VALUE_${_mipsel_emu_macro} "
@@ -342,6 +511,16 @@ unset(_mipsel_emu_probe_config_c_flags)
 unset(_mipsel_emu_probe_result)
 unset(_mipsel_emu_probe_output)
 unset(_mipsel_emu_probe_error)
+unset(_mipsel_emu_msvc_bin_dir)
+unset(_mipsel_emu_msvc_host_dir)
+unset(_mipsel_emu_msvc_bin_root)
+unset(_mipsel_emu_msvc_root)
+unset(_mipsel_emu_windows_kits_roots)
+unset(_mipsel_emu_windows_kits_root)
+unset(_mipsel_emu_candidate_kits)
+unset(_mipsel_emu_windows_kits_count)
+unset(_mipsel_emu_windows_kit)
+unset(_mipsel_emu_windows_kit_include)
 unset(_mipsel_emu_numeric_config)
 unset(_mipsel_emu_locked_config)
 unset(_mipsel_emu_locked_macros)
@@ -391,8 +570,23 @@ if(MIPSEL_EMU_USER_CONFIG_HEADER)
 endif()
 
 if(MIPSEL_EMU_BUILD_HOST)
+    # Keep one executable entry point for compatibility: with no arguments it
+    # opens the Qt monitor, while arguments are still handled by the CLI.
+    # Windows selects a terminal-free debugger backend below; POSIX builds
+    # retain the full ncurses/debugger implementation.
+    if(WIN32 AND MIPSEL_EMU_ENABLE_TUI)
+        message(FATAL_ERROR
+            "MIPSEL_EMU_ENABLE_TUI is not supported on Windows; "
+            "use the Qt GUI or the headless CLI debugger")
+    endif()
+
+    if(WIN32)
+        set(_mipsel_emu_debugger_source debugger_headless.c)
+    else()
+        set(_mipsel_emu_debugger_source debugger.c)
+    endif()
     add_library(mipsel_emu_host STATIC
-        debugger.c
+        ${_mipsel_emu_debugger_source}
         runloop.c
     )
     add_library(mipsel-emu::host ALIAS mipsel_emu_host)
@@ -402,6 +596,10 @@ if(MIPSEL_EMU_BUILD_HOST)
     target_compile_options(mipsel_emu_host
         PRIVATE $<$<C_COMPILER_ID:GNU,Clang>:-Wall>
     )
+    if(MSVC)
+        target_compile_definitions(mipsel_emu_host
+            PRIVATE _CRT_SECURE_NO_WARNINGS)
+    endif()
     target_link_libraries(mipsel_emu_host PUBLIC mipsel-emu::core)
 
     if(MIPSEL_EMU_ENABLE_TUI)
@@ -432,68 +630,152 @@ if(MIPSEL_EMU_BUILD_HOST)
         target_sources(mipsel-emu PRIVATE cli_main.c)
     endif()
     target_link_libraries(mipsel-emu PRIVATE mipsel-emu::host)
+
     target_compile_options(mipsel-emu
         PRIVATE $<$<C_COMPILER_ID:GNU,Clang>:-Wall>
     )
-
-    # The Qt framebuffer tab is always available. If SDL2 is installed, also
-    # expose the same guest surface through the existing SDL renderer in a
-    # companion window.
-    if(MIPSEL_EMU_ENABLE_QT_GUI AND NOT MIPSEL_EMU_ENABLE_SDL)
-        find_package(SDL2 CONFIG QUIET)
-        if(TARGET SDL2::SDL2)
-            set(MIPSEL_EMU_QT_SDL_TARGET SDL2::SDL2)
-        elseif(TARGET SDL2::SDL2-static)
-            set(MIPSEL_EMU_QT_SDL_TARGET SDL2::SDL2-static)
-        else()
-            find_package(SDL2 MODULE QUIET)
-            if(SDL2_FOUND)
-                add_library(mipsel_emu_qt_sdl_dependency INTERFACE)
-                target_include_directories(mipsel_emu_qt_sdl_dependency SYSTEM INTERFACE
-                    ${SDL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR})
-                target_link_libraries(mipsel_emu_qt_sdl_dependency INTERFACE
-                    ${SDL2_LIBRARIES} ${SDL2_LIBRARY})
-                set(MIPSEL_EMU_QT_SDL_TARGET mipsel_emu_qt_sdl_dependency)
-            endif()
-        endif()
-        if(MIPSEL_EMU_QT_SDL_TARGET)
-            target_sources(mipsel-emu PRIVATE
-                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/ui/ui_surface.c"
-                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/platform/sdl/sdl_display.c")
-            target_include_directories(mipsel-emu PRIVATE
-                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player")
-            target_compile_definitions(mipsel-emu PRIVATE
-                MIPSEL_EMU_QT_HAVE_SDL=1 PIXEL_FORMAT_RGB565)
-            target_link_libraries(mipsel-emu PRIVATE ${MIPSEL_EMU_QT_SDL_TARGET})
-        endif()
-    elseif(MIPSEL_EMU_ENABLE_QT_GUI AND MIPSEL_EMU_ENABLE_SDL)
-        target_compile_definitions(mipsel-emu PRIVATE MIPSEL_EMU_QT_HAVE_SDL=1)
+    if(MSVC)
+        target_compile_definitions(mipsel-emu
+            PRIVATE _CRT_SECURE_NO_WARNINGS)
     endif()
 
+    # Qt always has its native framebuffer tab.  SDL is optional for Qt, but
+    # remains required when the CLI --sdl option is explicitly enabled.
+    set(_mipsel_emu_sdl_requested OFF)
     if(MIPSEL_EMU_ENABLE_SDL)
+        set(_mipsel_emu_sdl_requested ON)
+    elseif(MIPSEL_EMU_ENABLE_QT_GUI)
+        set(_mipsel_emu_sdl_requested OFF)
+    endif()
+    if(MIPSEL_EMU_ENABLE_SDL OR MIPSEL_EMU_ENABLE_QT_GUI)
+        if(WIN32 AND (NOT SDL2_DIR OR SDL2_DIR MATCHES "-NOTFOUND$" OR
+                      NOT EXISTS "${SDL2_DIR}"))
+            if(NOT MIPSEL_EMU_SDL2_ROOT)
+                set(_mipsel_emu_local_sdl_root
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/SDL2-2.30.4")
+                if(EXISTS "${_mipsel_emu_local_sdl_root}/cmake/sdl2-config.cmake")
+                    set(MIPSEL_EMU_SDL2_ROOT "${_mipsel_emu_local_sdl_root}")
+                endif()
+            endif()
+            if(MIPSEL_EMU_SDL2_ROOT AND
+               EXISTS "${MIPSEL_EMU_SDL2_ROOT}/cmake/sdl2-config.cmake")
+                set(SDL2_DIR "${MIPSEL_EMU_SDL2_ROOT}/cmake")
+            endif()
+        endif()
         find_package(SDL2 CONFIG QUIET)
         if(TARGET SDL2::SDL2)
             set(MIPSEL_EMU_SDL_TARGET SDL2::SDL2)
         elseif(TARGET SDL2::SDL2-static)
             set(MIPSEL_EMU_SDL_TARGET SDL2::SDL2-static)
         else()
-            find_package(SDL2 MODULE REQUIRED)
-            add_library(mipsel_emu_sdl_dependency INTERFACE)
-            target_include_directories(mipsel_emu_sdl_dependency SYSTEM INTERFACE
-                ${SDL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR})
-            target_link_libraries(mipsel_emu_sdl_dependency INTERFACE
-                ${SDL2_LIBRARIES} ${SDL2_LIBRARY})
-            set(MIPSEL_EMU_SDL_TARGET mipsel_emu_sdl_dependency)
+            if(_mipsel_emu_sdl_requested)
+                find_package(SDL2 MODULE REQUIRED)
+            else()
+                find_package(SDL2 MODULE QUIET)
+            endif()
+            if(SDL2_FOUND)
+                add_library(mipsel_emu_sdl_dependency INTERFACE)
+                target_include_directories(mipsel_emu_sdl_dependency SYSTEM INTERFACE
+                    ${SDL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR})
+                target_link_libraries(mipsel_emu_sdl_dependency INTERFACE
+                    ${SDL2_LIBRARIES} ${SDL2_LIBRARY})
+                set(MIPSEL_EMU_SDL_TARGET mipsel_emu_sdl_dependency)
+            endif()
         endif()
-        target_sources(mipsel-emu PRIVATE
-            "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/ui/ui_surface.c"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/platform/sdl/sdl_display.c")
-        target_include_directories(mipsel-emu PRIVATE
-            "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player")
-        target_compile_definitions(mipsel-emu PRIVATE
-            MIPSEL_EMU_ENABLE_SDL=1 PIXEL_FORMAT_RGB565)
-        target_link_libraries(mipsel-emu PRIVATE ${MIPSEL_EMU_SDL_TARGET})
+        if(MIPSEL_EMU_SDL_TARGET)
+            target_sources(mipsel-emu PRIVATE
+                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/ui/ui_surface.c"
+                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/platform/sdl/sdl_display.c")
+            target_include_directories(mipsel-emu PRIVATE
+                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player")
+            if(MIPSEL_EMU_ENABLE_QT_GUI)
+                target_compile_definitions(mipsel-emu PRIVATE
+                    MIPSEL_EMU_QT_HAVE_SDL=1 PIXEL_FORMAT_RGB565)
+                if(MIPSEL_EMU_ENABLE_SDL)
+                    target_compile_definitions(mipsel-emu PRIVATE
+                        MIPSEL_EMU_ENABLE_SDL=1)
+                endif()
+            else()
+                target_compile_definitions(mipsel-emu PRIVATE
+                    MIPSEL_EMU_ENABLE_SDL=1 PIXEL_FORMAT_RGB565)
+            endif()
+            target_link_libraries(mipsel-emu PRIVATE ${MIPSEL_EMU_SDL_TARGET})
+        elseif(_mipsel_emu_sdl_requested)
+            message(FATAL_ERROR "SDL2 is required when MIPSEL_EMU_ENABLE_SDL=ON")
+        endif()
     endif()
+
+    if(WIN32 AND TARGET SDL2::SDL2)
+        add_custom_command(TARGET mipsel-emu POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                    "$<TARGET_FILE:SDL2::SDL2>"
+                    "$<TARGET_FILE_DIR:mipsel-emu>"
+            COMMENT "Copying SDL2 runtime DLL")
+    endif()
+
+    if(WIN32 AND MIPSEL_EMU_ENABLE_QT_GUI)
+        # windeployqt copies Qt6Core/Gui/Widgets and the platform plugin next
+        # to the executable.  It is optional so a package can deploy Qt by a
+        # separate installer when windeployqt is not present.
+        set(_mipsel_emu_qt_bin_dir)
+        if(TARGET Qt6::Core)
+            foreach(_mipsel_emu_qt_config RELEASE RELWITHDEBINFO DEBUG)
+                get_target_property(_mipsel_emu_qt_core_location Qt6::Core
+                    "IMPORTED_LOCATION_${_mipsel_emu_qt_config}")
+                if(_mipsel_emu_qt_core_location AND
+                   NOT _mipsel_emu_qt_core_location MATCHES "-NOTFOUND$")
+                    get_filename_component(_mipsel_emu_qt_bin_dir
+                        "${_mipsel_emu_qt_core_location}" DIRECTORY)
+                    break()
+                endif()
+            endforeach()
+        endif()
+        if(NOT _mipsel_emu_qt_bin_dir AND Qt6_DIR)
+            get_filename_component(_mipsel_emu_qt_cmake_dir
+                "${Qt6_DIR}" ABSOLUTE)
+            get_filename_component(_mipsel_emu_qt_cmake_parent
+                "${_mipsel_emu_qt_cmake_dir}" DIRECTORY)
+            get_filename_component(_mipsel_emu_qt_lib_dir
+                "${_mipsel_emu_qt_cmake_parent}" DIRECTORY)
+            get_filename_component(_mipsel_emu_qt_prefix
+                "${_mipsel_emu_qt_lib_dir}" DIRECTORY)
+            set(_mipsel_emu_qt_bin_dir "${_mipsel_emu_qt_prefix}/bin")
+        endif()
+        find_program(MIPSEL_EMU_WINDEPLOYQT_EXECUTABLE
+            NAMES windeployqt windeployqt.exe
+            HINTS "${_mipsel_emu_qt_bin_dir}")
+        if(MIPSEL_EMU_WINDEPLOYQT_EXECUTABLE)
+            add_custom_command(TARGET mipsel-emu POST_BUILD
+                COMMAND "${MIPSEL_EMU_WINDEPLOYQT_EXECUTABLE}"
+                        --no-translations "$<TARGET_FILE:mipsel-emu>"
+                WORKING_DIRECTORY "$<TARGET_FILE_DIR:mipsel-emu>"
+                COMMENT "Deploying Qt runtime")
+        else()
+            message(STATUS
+                "windeployqt not found; Qt runtime deployment is skipped")
+        endif()
+    endif()
+
+    # Keep all local guest images next to the executable when the ignored
+    # res/ directory is present.  Missing resources are allowed so the project
+    # can still be built from a clean source archive.
+    if(EXISTS "${MIPSEL_EMU_RESOURCE_DIR}")
+        add_custom_command(TARGET mipsel-emu POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy_directory
+                    "${MIPSEL_EMU_RESOURCE_DIR}"
+                    "$<TARGET_FILE_DIR:mipsel-emu>/res"
+            COMMENT "Copying guest resources from ${MIPSEL_EMU_RESOURCE_DIR}")
+    endif()
+    unset(_mipsel_emu_debugger_source)
+    unset(_mipsel_emu_sdl_requested)
+    unset(_mipsel_emu_local_sdl_root)
+    unset(_mipsel_emu_qt_cmake_dir)
+    unset(_mipsel_emu_qt_cmake_parent)
+    unset(_mipsel_emu_qt_lib_dir)
+    unset(_mipsel_emu_qt_prefix)
+    unset(_mipsel_emu_qt_bin_dir)
+    unset(_mipsel_emu_default_qt_root)
+    unset(MIPSEL_EMU_SDL_TARGET)
 endif()
 
 include(CTest)
