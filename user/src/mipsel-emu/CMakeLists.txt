@@ -174,14 +174,12 @@ endif()
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-# GCC extensions remain enabled for the firmware-oriented source set;
-# instruction tables themselves use standard C initializers for MSVC.
+# GCC extensions remain enabled for the firmware-oriented source set.  The
+# switch dispatcher itself stays compatible with the MSVC compiler shim.
 set(CMAKE_C_EXTENSIONS ON)
 
 set(MIPSEL_EMU_CORE_SOURCES
     emu.c
-    instru.c
-    op.c
     exception.c
     registers.c
     platform.c
@@ -583,7 +581,7 @@ if(MIPSEL_EMU_BUILD_DISPATCH_BENCHMARK)
         PRIVATE $<$<C_COMPILER_ID:GNU,Clang>:-Wall>
     )
     target_compile_definitions(mipsel_emu_dispatch_benchmark PRIVATE
-        MIPSEL_EMU_BENCHMARK_DISPATCH_MODE="function-pointer-lut"
+        MIPSEL_EMU_BENCHMARK_DISPATCH_MODE="force-inlined-switch"
         MIPSEL_EMU_BENCHMARK_COMPILER_ID="${CMAKE_C_COMPILER_ID}"
         MIPSEL_EMU_BENCHMARK_COMPILER_VERSION="${CMAKE_C_COMPILER_VERSION}"
         MIPSEL_EMU_BENCHMARK_BUILD_CONFIG="$<CONFIG>"

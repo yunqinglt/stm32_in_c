@@ -41,7 +41,7 @@ int main(void) {
     state.gpr[2] = UINT32_C(1) << CP0_CAUSE_IP_POS;
     mtc0_cause = (0x10u << 26) | (0x04u << 21) |
                  (2u << 16) | (13u << 11);
-    op_mtc0(mtc0_cause, &state);
+    execute_instr(mtc0_cause, &state);
     CHECK(GET_BITFIELD(state.cp0.byname.cp0r13_t.cp0r13_n.Cause,
                        CP0_CAUSE_TI_POS, CP0_CAUSE_TI_LEN) == 1);
     CHECK((CAUSE_IP(&state) & (1u << 7)) != 0);
@@ -52,7 +52,7 @@ int main(void) {
     state.gpr[2] = 100;
     mtc0_compare = (0x10u << 26) | (0x04u << 21) |
                    (2u << 16) | (11u << 11);
-    op_mtc0(mtc0_compare, &state);
+    execute_instr(mtc0_compare, &state);
     CHECK(state.cp0.byname.cp0r11_t.cp0r11_n.Compare == 100);
     CHECK(GET_BITFIELD(state.cp0.byname.cp0r13_t.cp0r13_n.Cause,
                        CP0_CAUSE_TI_POS, CP0_CAUSE_TI_LEN) == 0);
