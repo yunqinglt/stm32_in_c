@@ -2,6 +2,8 @@
 
 记录日期：2026-08-29
 
+结构更新：2026-09-23 将 SDL 播放器与平台无关 UI 拆为两个由主仓库直接固定的子模块。
+
 ## 原始想法
 
 > 现在的任务是需要你快速预览整个大项目结构。由于这是一个完全由C组成的练手项目，我偏好于多方面推进，以模拟器理解状态机模型；UI理解高级编程；SDL虚拟屏幕和寄存器封装理解MMIO和寄存器总线。现在对于并发和高级设备，我的下一步是：1、在模拟器子项目中添加Sharp LR35902，玩GameBoy Color游戏；2、在tools中添加基于Bulk的DAPLink，也许需要FreeRTOS；3、还是在模拟器子项目中添加自己手写的调度模型，用于替代FreeRTOS。
@@ -31,7 +33,8 @@ asm_stm32/
 │     └─ mipsel-emu/              独立构建的 MIPS32EL 模拟器
 └─ tools/
    ├─ vdo2bin.py                  辅助转换工具
-   └─ sdl-player/                 独立构建的 SDL2 framebuffer/UI 实验
+   ├─ sdl-player/                 子模块：SDL2 framebuffer/演示程序
+   └─ treelike-ui/                子模块：平台无关 UI、surface 与测试
 ```
 
 ### ARM 裸机层
@@ -58,13 +61,13 @@ Registers -> fetch/translate -> bus read -> decode/execute
 
 ### SDL 虚拟屏幕与 UI
 
-- `ui_core` 只包含 `UiSurface` 与 `UiBuffer`，不依赖 SDL。
+- `treelike_ui::treelike_ui` 只包含 `UiSurface` 与 `UiBuffer`，不依赖 SDL。
 - `UiSurface` 统一 framebuffer、stride、像素所有权和 dirty rectangle。
 - `UiBuffer` 是共享 framebuffer 的子视图树，通过回调绘制，并向根 surface 传播脏区。
 - 控件建树使用并查集把空间上邻近的控件归组，是一个很好的“数据结构服务于渲染策略”的练习。
 - `sdl_platform` 是唯一正式接触 SDL 类型的层，负责窗口、texture、事件、时钟和 present。
 - `main.c` 只负责组装应用与平台、驱动事件循环；`demo_core` 负责演示状态。
-- `ui/experimental/` 目前只是 object/event/animation 和固定块池的草案，不属于正式运行时能力。
+- `tools/treelike-ui/ui/experimental/` 目前只是 object/event/animation 和固定块池的草案，不属于正式运行时能力。
 
 显示链路可概括为：
 

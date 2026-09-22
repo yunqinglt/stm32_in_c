@@ -16,9 +16,6 @@ compile_commands.json
 .cache/
 .clangd/
 
-/tools/sdl-player/.vscode/
-/tools/sdl-player/SDL2-2.30.4/
-
 # External source trees and locally built toolchains
 /tools/busybox-1.38.0/
 /tools/crosstool-ng/

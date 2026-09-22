@@ -56,7 +56,8 @@ ctest --test-dir build/mipsel-emu-win -C Debug --output-on-failure
 `MIPSEL_EMU_QT_ROOT` 会在 `D:/QtLib/6.*`（或旧的 `D:/Qt/6.*`）下选择与 MSVC x64 匹配的 kit。Qt 安装必须包含
 Qt6 Widgets 开发组件和 `Qt6Config.cmake`；如果 CMake 报告找不到它，请在 Qt Maintenance
 Tool 中安装对应的 MSVC kit。`MIPSEL_EMU_SDL2_ROOT` 可改成其他 SDL2 开发包根目录，
-也可以省略它，让 CMake 使用仓库内的 `tools/sdl-player/SDL2-2.30.4`。启用 SDL 后，
+也可以省略它；若本地存在未跟踪的 `tools/sdl-player/SDL2-2.30.4`，CMake 会把它作为
+fallback。播放器和 UI 子模块需先用 `git submodule update --init --recursive` 初始化。启用 SDL 后，
 CLI 的 `--sdl` 选项可用；Qt 窗口仍提供内置 framebuffer 页，并在 SDL 可用时创建
 SDL 镜像窗口。构建后 CMake 会尝试运行 `windeployqt` 部署 Qt DLL/平台插件，并把
 动态 SDL2 DLL 复制到 `build/mipsel-emu-win/Debug`（或 `Release`）。

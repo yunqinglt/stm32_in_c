@@ -708,9 +708,10 @@ if(MIPSEL_EMU_BUILD_HOST)
         endif()
         if(MIPSEL_EMU_SDL_TARGET)
             target_sources(mipsel-emu PRIVATE
-                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/ui/ui_surface.c"
+                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/treelike-ui/ui/ui_surface.c"
                 "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player/platform/sdl/sdl_display.c")
             target_include_directories(mipsel-emu PRIVATE
+                "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/treelike-ui"
                 "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/sdl-player")
             if(MIPSEL_EMU_ENABLE_QT_GUI)
                 target_compile_definitions(mipsel-emu PRIVATE

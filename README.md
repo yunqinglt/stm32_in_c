@@ -10,12 +10,30 @@ ARM Cortex-M 裸机工程，以及可在 PC 或嵌入式宿主上运行 MIPS32EL
 | `user/src/cortex_m0`、`user/src/cortex_m4` | Cortex-M 启动代码、内存图和芯片寄存器定义。 |
 | `user/inc`、`user/src/main.c` | 根目录 ARM 裸机工程的公共头与入口。 |
 | `user/src/mipsel-emu` | 独立 CMake 的 MIPS32 Release 2 little-endian 模拟器。 |
-| `tools/sdl-player` | SDL2 RGB565 虚拟屏幕与 UI surface。 |
+| `tools/sdl-player` | 子模块：SDL2 framebuffer 虚拟屏幕与演示程序。 |
+| `tools/treelike-ui` | 子模块：不依赖 SDL 的 tree-like UI、surface 与核心测试。 |
 | `tools/lvgl-demo` | 可加入 MIPS initramfs 的 LVGL 示例源码。 |
 | `docs/mipsel-emu-architecture.md` | 多核、设备总线、显示和 GPU 的演进设计记录。 |
 
 `build/`、外部 Linux/BusyBox/LVGL 源码、交叉工具链、kernel、DTB、initramfs、trace
 和可执行文件均为本地可再生产物，不进入版本库。
+
+### 初始化子模块
+
+播放器与 UI 分别固定到 `yunqinglt/sdl_player` 和 `yunqinglt/treelike_ui` 的确定提交。
+`git submodule init` 只登记配置，不会下载内容；已有 checkout 应执行：
+
+```sh
+git submodule update --init --recursive
+```
+
+首次获取主仓库时也可一步完成：
+
+```sh
+git clone --recurse-submodules git@github.com:yunqinglt/stm32_in_c.git
+```
+
+两个子模块均为主仓库的直接子模块；`--recursive` 作为对未来嵌套依赖的兼容写法保留。
 
 本地 guest 镜像可以放在仓库根目录的 `res/` 中；该目录已加入 `.gitignore`，不会被
 提交。Windows 主机构建时，CMake 会把其中存在的 guest 资源复制到可执行文件旁的
@@ -57,8 +75,8 @@ Windows 使用 Visual Studio 的 MSVC x64 生成器；Windows 默认关闭 ncurs
 模拟器核心、无 POSIX 依赖的 CLI 和 Qt6/SDL2 桌面前端。下面的命令以本机 Visual Studio
 安装在 `E:/Microsoft Visual Studio`、Qt 安装在 `D:/QtLib` 为例（旧安装也可使用
 `D:/Qt`）。`MIPSEL_EMU_QT_ROOT`
-会扫描匹配 MSVC x64 的 Qt kit；SDL2 可直接使用仓库内的
-`tools/sdl-player/SDL2-2.30.4`：
+会扫描匹配 MSVC x64 的 Qt kit；若在播放器子模块中放置本地 SDL2 开发包，可直接使用
+`tools/sdl-player/SDL2-2.30.4`（该本地依赖不进入 Git）：
 
 ```powershell
 cmake -S user/src/mipsel-emu -B build/mipsel-emu-win `

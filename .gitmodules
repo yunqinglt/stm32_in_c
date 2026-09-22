@@ -1,0 +1,8 @@
+[submodule "sdl_player"]
+	path = tools/sdl-player
+	url = git@github.com:yunqinglt/sdl_player.git
+	branch = main
+[submodule "treelike_ui"]
+	path = tools/treelike-ui
+	url = git@github.com:yunqinglt/treelike_ui.git
+	branch = main
